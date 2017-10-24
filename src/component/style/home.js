@@ -1,6 +1,10 @@
 import EStyleSheet from "react-native-extended-stylesheet";
 
 const styleHome = EStyleSheet.create({
+    container: {
+        flex: 1,
+        margin: 20
+    },
     homeWrapper: {
         paddingVertical: 15
     },
@@ -19,7 +23,43 @@ const styleHome = EStyleSheet.create({
         },
         shadowOpacity: 0,
         shadowRadius: 2
-    }
+    },
+    header: {
+        flexDirection: 'row',
+        backgroundColor: '#a3a3a3',
+        padding: 0
+    },
+    iconHeader: {
+        fontSize: 30,
+        color: 'white',
+    },
+    menuButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 70
+    },
+    heightHeader: {
+        height: 70,
+    },
+    backgroundOnSelectedItem: {
+        backgroundColor: 'rgb(104, 147, 216)'
+    },
+    box: {
+        borderWidth: 1,
+        borderColor: '#e3e3e3'
+    },
+    boxTitle: {
+        borderBottomWidth: 1,
+        borderBottomColor: '#e3e3e3',
+        justifyContent: 'center',
+        paddingHorizontal: 30,
+    },
+    itemHeader: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    menuItem: {paddingVertical: 20}
 });
 
 export default styleHome;

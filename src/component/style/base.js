@@ -28,6 +28,47 @@ const styles = EStyleSheet.create({
     },
     centerHorizontal: {
         alignItems: "center"
+    },
+    font14: {
+        fontSize: 14
+    },
+    font16: {
+        fontSize: 16
+    },
+    font18: {
+        fontSize: 18
+    },
+    font26: {
+        fontSize: 26
+    },
+    '@media (min-width: 768) and (max-width: 1024)': {
+
+        font14: {
+            fontSize: 18
+        },
+        font16: {
+            fontSize: 20
+        },
+        font18: {
+            fontSize: 22
+        },
+        font26: {
+            fontSize: 30
+        },
+    },
+    '@media (min-width: 1024)': {
+        font14: {
+            fontSize: 20
+        },
+        font16: {
+            fontSize: 25
+        },
+        font18: {
+            fontSize: 30
+        },
+        font26: {
+            fontSize: 35
+        },
     }
 });
 
