@@ -5,6 +5,7 @@ import styleBase from "../style/base";
 import styleHome from "../style/home";
 import Entypo from 'react-native-vector-icons/Entypo';
 import Menu from './Menu';
+import ProductGrid from "./product/productGrid";
 
 class POS extends React.PureComponent {
     constructor(props) {
@@ -65,10 +66,10 @@ class POS extends React.PureComponent {
 
                 </View>
                 <View style={{flex: 1, flexDirection: 'row'}}>
-                    <View style={{flex: 0.6,}}>
+                    <View style={{flex: 0.6}}>
                         {
                             this.state.currentView === 'GridItems' &&
-                            <GridItems/>
+                            <ProductGrid/>
                         }
                         {
                             this.state.currentView === 'Library' &&

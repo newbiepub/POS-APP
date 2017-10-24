@@ -3,7 +3,7 @@ import {StatusBar, View, Platform} from "react-native";
 import { Navigator } from "react-native-deprecated-custom-components";
 import styleBase from "./style/base";
 import Login from "./account/login";
-import Home from "./home/home";
+import Home from "./home/product/productGrid";
 import POS from './home/POS';
 import SortableGrid from './sortableGrid/sortableGrid';
 

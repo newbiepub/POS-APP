@@ -29,6 +29,10 @@ const styles = EStyleSheet.create({
     centerHorizontal: {
         alignItems: "center"
     },
+    center: {
+        justifyContent: "center",
+        alignItems: "center"
+    },
     font14: {
         fontSize: 14
     },
@@ -40,6 +44,12 @@ const styles = EStyleSheet.create({
     },
     font26: {
         fontSize: 26
+    },
+    text4: {
+        color: "#444"
+    },
+    textE5: {
+        color: "#e5e5e5"
     },
     '@media (min-width: 768) and (max-width: 1024)': {
 

@@ -57,8 +57,6 @@ export async function auth() {
                 throw new Error(response.error.message);
             }
             return store.dispatch(loginAction(response));
-        } else {
-            throw new Error();
         }
     } catch(e) {
         throw new Error("Xác thực thất bại");
