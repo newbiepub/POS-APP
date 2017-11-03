@@ -45,6 +45,9 @@ const styles = EStyleSheet.create({
     font26: {
         fontSize: 26
     },
+    font32:{
+        fontSize:32
+    },
     text4: {
         color: "#444"
     },
@@ -65,6 +68,9 @@ const styles = EStyleSheet.create({
         font26: {
             fontSize: 30
         },
+        font32:{
+            fontSize:42
+        },
     },
     '@media (min-width: 1024)': {
         font14: {
@@ -78,6 +84,9 @@ const styles = EStyleSheet.create({
         },
         font26: {
             fontSize: 35
+        },
+        font32:{
+            fontSize:49
         },
     }
 });

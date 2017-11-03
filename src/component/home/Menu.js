@@ -1,6 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
-import {Modal, View, Text, Dimensions, TouchableWithoutFeedback, Animated} from "react-native";
+import {Modal, View, Text, Dimensions, TouchableWithoutFeedback, Animated, FlatList} from "react-native";
 import styleBase from "../style/base";
 import styleHome from "../style/home";
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -14,6 +14,14 @@ class Menu extends React.PureComponent {
             height,
             width,
             marginLeft: new Animated.Value(-width * 30 / 100),
+            menuListItem: [
+                {name: "Điểm bán hàng"},
+                {name: "Hoá đơn"},
+                {name: "Dao dịch"},
+                {name: "Báo cáo"},
+                {name: "Mặt hàng"},
+                {name: "Cài đặt"},
+                {name: "Trợ giúp"}]
         }
     }
 
@@ -59,6 +67,16 @@ class Menu extends React.PureComponent {
 
     }
 
+    _MenuItem = ({item}) => (
+
+        <TouchableWithoutFeedback>
+            <View style={[styleHome.menuItem]}>
+                <Text style={[styleBase.font16, {fontWeight: "600", color: 'white'}]}>{item.name}</Text>
+            </View>
+        </TouchableWithoutFeedback>
+
+    );
+
     render() {
         return (
             <Modal
@@ -83,47 +101,13 @@ class Menu extends React.PureComponent {
                             padding: 40,
                             marginLeft: this.state.marginLeft
                         }}>
-                        <TouchableWithoutFeedback >
-                            <View style={[styleHome.menuItem]}>
-                                <Text style={[styleBase.font16,{fontWeight:"600", color: 'white'}]}>Điểm bán hàng</Text>
-                            </View>
-                        </TouchableWithoutFeedback>
 
-                        <TouchableWithoutFeedback >
-                            <View style={[styleHome.menuItem]}>
-                                <Text style={[styleBase.font16,{fontWeight:"600", color: 'white'}]}>Hoá đơn</Text>
-                            </View>
-                        </TouchableWithoutFeedback>
+                        <FlatList
+                            data={this.state.menuListItem}
 
-                        <TouchableWithoutFeedback >
-                            <View style={[styleHome.menuItem]}>
-                                <Text style={[styleBase.font16,{fontWeight:"600", color: 'white'}]}>Giao dịch</Text>
-                            </View>
-                        </TouchableWithoutFeedback>
-
-                        <TouchableWithoutFeedback >
-                            <View style={[styleHome.menuItem]}>
-                                <Text style={[styleBase.font16,{fontWeight:"600", color: 'white'}]}>Báo cáo</Text>
-                            </View>
-                        </TouchableWithoutFeedback>
-
-                        <TouchableWithoutFeedback >
-                            <View style={[styleHome.menuItem]}>
-                                <Text style={[styleBase.font16,{fontWeight:"600", color: 'white'}]}>Mặt hàng</Text>
-                            </View>
-                        </TouchableWithoutFeedback>
-
-                        <TouchableWithoutFeedback >
-                            <View style={[styleHome.menuItem]}>
-                                <Text style={[styleBase.font16,{fontWeight:"600", color: 'white'}]}>Cài đặt</Text>
-                            </View>
-                        </TouchableWithoutFeedback>
-
-                        <TouchableWithoutFeedback >
-                            <View style={[styleHome.menuItem]}>
-                                <Text style={[styleBase.font16,{fontWeight:"600", color: 'white'}]}>Trợ giúp</Text>
-                            </View>
-                        </TouchableWithoutFeedback>
+                            keyExtractor={item => item.name }
+                            renderItem={this._MenuItem}
+                        />
 
                     </Animated.View>
 

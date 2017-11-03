@@ -51,13 +51,23 @@ const styleHome = EStyleSheet.create({
     boxTitle: {
         borderBottomWidth: 1,
         borderBottomColor: '#e3e3e3',
-        justifyContent: 'center',
+        alignItems: 'center',
         paddingHorizontal: 30,
+        flexDirection:'row',
+        backgroundColor:'white'
     },
     itemHeader: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    borderButtonCustomAmount:{
+        borderWidth: 1,
+        borderColor: '#e5e5e5',
+    },
+    textCenterOfTheBox:{
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     menuItem: {paddingVertical: 20}
 });
