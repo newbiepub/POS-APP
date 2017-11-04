@@ -1,6 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
-import {Text, View, TouchableWithoutFeedback, Animated,Dimensions} from "react-native";
+import {Text, View, TouchableWithoutFeedback, Animated, Dimensions} from "react-native";
 import styleBase from "../../style/base";
 import styleHome from "../../style/home";
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -17,10 +17,10 @@ class POS extends React.PureComponent {
             currentView: 'CustomAmount',
             clearSalesVisible: false,
             titleSize: {w: 0, h: 0},
-            window: {w:width,h:height},
-            clearBoxTop: new Animated.Value(0)
+            window: {w: width, h: height},
+            clearBoxTop: new Animated.Value(0),
+            listCurrentSale: []
         }
-        //console.warn(this.state.titleHeight)
     }
 
     openMenu() {
@@ -35,6 +35,20 @@ class POS extends React.PureComponent {
         })
     }
 
+    clearSale() {
+        this.setState({
+            listCurrentSale: []
+        })
+        this.openClearSales();
+    }
+
+    addToList(itemName, itemPrice) {
+        let newItem = {index: this.state.listCurrentSale.length, title: itemName, price: itemPrice};
+        this.setState({
+            listCurrentSale: [...this.state.listCurrentSale, newItem]
+        })
+    }
+
     async openClearSales() {
         await this.setState({
             clearSalesVisible: !this.state.clearSalesVisible
@@ -44,7 +58,7 @@ class POS extends React.PureComponent {
                 this.state.clearBoxTop,
                 {
                     toValue: this.state.titleSize.h,
-                    duration:200
+                    duration: 200
 
                 },
             ).start();
@@ -53,7 +67,7 @@ class POS extends React.PureComponent {
                 this.state.clearBoxTop,
                 {
                     toValue: 0,
-                    duration:200
+                    duration: 200
 
                 },
             ).start();
@@ -62,12 +76,18 @@ class POS extends React.PureComponent {
 
     }
 
-    getWindowSize(evt){
+    getWindowSize(evt) {
         let height = evt.nativeEvent.layout.height;
         let width = evt.nativeEvent.layout.width;
         this.setState({
             window: {w: width, h: height}
         })
+    }
+
+    numberwithThousandsSeparator(x) {
+        let parts = x.toString().split(",");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        return parts.join(".");
     }
 
     getTitleBoxSize(evt) {
@@ -76,21 +96,31 @@ class POS extends React.PureComponent {
         this.setState({
             titleSize: {w: width, h: height}
         })
-        // console.warn(this.state.titleHeight)
     }
 
     render() {
         let currentView = this.state.currentView;
+
+        let listCurrentSale = this.state.listCurrentSale.map((data) => {
+            return (
+                <View key={data.index} style={{flexDirection: 'row', padding: 10}}>
+                    <Text style={[styleBase.font16, {flex: 1}]}>{data.title}</Text>
+                    <Text
+                        style={[styleBase.font16, {textAlign: 'right',}]}>{this.numberwithThousandsSeparator(data.price)}
+                        đ</Text>
+                </View>
+            )
+        });
         return (
             <View style={[styleBase.container]} onLayout={(event => this.getWindowSize(event))}>
                 <Menu visible={this.state.menuVisible} instant={this}/>
-
+                {/*----------------------------------------Header-------------------------------------*/}
 
                 <View style={[styleHome.header, styleHome.heightHeader]}>
                     <View>
                         <TouchableWithoutFeedback onPress={this.openMenu.bind(this)}>
                             <View style={[styleHome.menuButton, styleHome.heightHeader]}>
-                                <Entypo name="menu" style={styleHome.iconHeader}/>
+                                <Entypo name="menu" style={[styleHome.iconHeader, styleBase.color4]}/>
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
@@ -98,26 +128,29 @@ class POS extends React.PureComponent {
 
                         <TouchableWithoutFeedback onPress={() => this.changeView('GridItems')}>
                             <View
-                                style={[styleHome.itemHeader, styleHome.heightHeader, currentView === "GridItems" && styleHome.backgroundOnSelectedItem]}>
-                                <Entypo name="shop" style={styleHome.iconHeader}/>
+                                style={[styleHome.itemHeader, styleHome.heightHeader, currentView === "GridItems" && styleBase.background2]}>
+                                <Entypo name="shop" style={[styleHome.iconHeader, styleBase.color4]}/>
                             </View>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={() => this.changeView('Library')}>
                             <View
-                                style={[styleHome.itemHeader, styleHome.heightHeader, currentView === "Library" && styleHome.backgroundOnSelectedItem]}>
-                                <Entypo name="list" style={styleHome.iconHeader}/>
+                                style={[styleHome.itemHeader, styleHome.heightHeader, currentView === "Library" && styleBase.background2]}>
+                                <Entypo name="list" style={[styleHome.iconHeader, styleBase.color4]}/>
                             </View>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={() => this.changeView('CustomAmount')}>
                             <View
-                                style={[styleHome.itemHeader, styleHome.heightHeader, currentView === "CustomAmount" && styleHome.backgroundOnSelectedItem]}>
-                                <Entypo name="calculator" style={styleHome.iconHeader}/>
+                                style={[styleHome.itemHeader, styleHome.heightHeader, currentView === "CustomAmount" && styleBase.background2]}>
+                                <Entypo name="calculator" style={[styleHome.iconHeader, styleBase.color4]}/>
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
 
                 </View>
+
+
                 <View style={{flex: 1, flexDirection: 'row'}}>
+                    {/*----------------------------------------Left-View-------------------------------------*/}
                     <View style={{flex: 0.6}}>
                         {
                             this.state.currentView === 'GridItems' &&
@@ -129,10 +162,13 @@ class POS extends React.PureComponent {
                         }
                         {
                             this.state.currentView === 'CustomAmount' &&
-                            <CustomAmount/>
+                            <CustomAmount addToList={(title, price) => {
+                                this.addToList(title, price)
+                            }}/>
                         }
 
                     </View>
+                    {/*----------------------------------------Right-View-------------------------------------*/}
                     <View style={[styleHome.box, {flex: 0.4}]}>
                         <TouchableWithoutFeedback onLayout={(event) => this.getTitleBoxSize(event)}
                                                   onPress={this.openClearSales.bind(this)}>
@@ -152,28 +188,30 @@ class POS extends React.PureComponent {
                             </View>
 
                         </TouchableWithoutFeedback>
-                        <Animated.View style={[styleHome.boxTitle, {
-                            flex: 0.1,
-                            position: 'absolute',
-                            backgroundColor: '#1a1c1e',
-                            zIndex: 5,
-                            top: this.state.clearBoxTop,
-                            height: this.state.titleSize.h,
-                            width: this.state.titleSize.w
-                        }]}>
-                            <Text style={[styleBase.font18, {flex: 1,color:'white'}]}>
-                                Xoa
-                            </Text>
-                        </Animated.View>
-                        <View style={{flex: 0.8}}>
+                        <TouchableWithoutFeedback onPress={this.clearSale.bind(this)}>
+                            <Animated.View style={[styleHome.boxTitle, styleBase.background3, {
+                                flex: 0.1,
+                                position: 'absolute',
+                                zIndex: 5,
+                                top: this.state.clearBoxTop,
+                                height: this.state.titleSize.h,
+                                width: this.state.titleSize.w
+                            }]}>
 
+                                <Text style={[styleBase.font18, styleBase.color4, {flex: 1}]}>
+                                    Xoá
+                                </Text>
+
+                            </Animated.View>
+                        </TouchableWithoutFeedback>
+                        <View style={{flex: 0.8}}>
+                            {listCurrentSale}
                         </View>
-                        <View style={{
-                            backgroundColor: 'rgb(244, 173, 66)',
+                        <View style={[styleBase.background1, {
                             flex: 0.1,
                             justifyContent: 'center',
                             alignItems: 'center'
-                        }}>
+                        }]}>
                             <Text style={[styleBase.font18, {}]}> Thanh toán</Text>
                         </View>
                     </View>

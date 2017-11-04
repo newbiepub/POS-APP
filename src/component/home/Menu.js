@@ -13,11 +13,12 @@ class Menu extends React.PureComponent {
         this.state = {
             height,
             width,
+            currentItem: 'Điểm bán hàng',
             marginLeft: new Animated.Value(-width * 30 / 100),
             menuListItem: [
                 {name: "Điểm bán hàng"},
                 {name: "Hoá đơn"},
-                {name: "Dao dịch"},
+                {name: "Giao dịch"},
                 {name: "Báo cáo"},
                 {name: "Mặt hàng"},
                 {name: "Cài đặt"},
@@ -71,7 +72,7 @@ class Menu extends React.PureComponent {
 
         <TouchableWithoutFeedback>
             <View style={[styleHome.menuItem]}>
-                <Text style={[styleBase.font16, {fontWeight: "600", color: 'white'}]}>{item.name}</Text>
+                <Text style={[styleBase.font16, {fontWeight: "600"}, this.state.currentItem === item.name ? styleBase.color4: styleBase.color3]}>{item.name}</Text>
             </View>
         </TouchableWithoutFeedback>
 

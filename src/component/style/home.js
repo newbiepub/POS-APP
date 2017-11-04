@@ -31,7 +31,6 @@ const styleHome = EStyleSheet.create({
     },
     iconHeader: {
         fontSize: 30,
-        color: 'white',
     },
     menuButton: {
         alignItems: 'center',
@@ -40,9 +39,6 @@ const styleHome = EStyleSheet.create({
     },
     heightHeader: {
         height: 70,
-    },
-    backgroundOnSelectedItem: {
-        backgroundColor: 'rgb(104, 147, 216)'
     },
     box: {
         borderWidth: 1,

@@ -1,6 +1,36 @@
 import EStyleSheet from "react-native-extended-stylesheet";
 
 const styles = EStyleSheet.create({
+
+    // Orange
+    color1: {
+        color: '#f4ad42'
+    },
+    background1: {
+        backgroundColor: '#f4ad42'
+    },
+
+    //Blue
+    color2: {
+        color: '#6893d8'
+    },
+    background2: {
+        backgroundColor: '#6893d8'
+    },
+    //Black
+    color3: {
+        color: '#1a1c1e'
+    },
+    background3: {
+        backgroundColor: '#1a1c1e'
+    },
+    //White
+    color4: {
+        color: '#ffffff'
+    },
+    background4: {
+        backgroundColor: '#ffffff'
+    },
     container: {
         flex: 1
     },
@@ -45,8 +75,8 @@ const styles = EStyleSheet.create({
     font26: {
         fontSize: 26
     },
-    font32:{
-        fontSize:32
+    font32: {
+        fontSize: 32
     },
     text4: {
         color: "#444"
@@ -68,8 +98,8 @@ const styles = EStyleSheet.create({
         font26: {
             fontSize: 30
         },
-        font32:{
-            fontSize:42
+        font32: {
+            fontSize: 42
         },
     },
     '@media (min-width: 1024)': {
@@ -85,8 +115,8 @@ const styles = EStyleSheet.create({
         font26: {
             fontSize: 35
         },
-        font32:{
-            fontSize:49
+        font32: {
+            fontSize: 49
         },
     }
 });
