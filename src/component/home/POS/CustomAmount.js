@@ -2,7 +2,7 @@ import React from "react";
 import {Text, View, TouchableWithoutFeedback,} from "react-native";
 import styleBase from "../../style/base";
 import styleHome from "../../style/home";
-import style from '../../style/customAmount';
+import style from '../../style/POS';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 class CustomAmount extends React.PureComponent {

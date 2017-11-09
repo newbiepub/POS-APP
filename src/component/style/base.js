@@ -63,6 +63,26 @@ const styles = EStyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
     },
+
+
+
+    vector14: {
+        fontSize: 14,
+    },
+    vector16: {
+        fontSize: 16,
+    },
+    vector18: {
+        fontSize: 18,
+
+    },
+    vector26: {
+        fontSize: 26,
+    },
+    vector32: {
+        fontSize: 32,
+    },
+
     font14: {
         fontSize: 14
     },
@@ -73,7 +93,8 @@ const styles = EStyleSheet.create({
         fontSize: 18
     },
     font26: {
-        fontSize: 26
+        fontSize: 26,
+
     },
     font32: {
         fontSize: 32
@@ -96,10 +117,28 @@ const styles = EStyleSheet.create({
             fontSize: 22
         },
         font26: {
-            fontSize: 30
+            fontSize: 30,
+
         },
         font32: {
             fontSize: 42
+        },
+
+        vector14: {
+            fontSize: 18,
+        },
+        vector16: {
+            fontSize: 20,
+        },
+        vector18: {
+            fontSize: 22,
+
+        },
+        vector26: {
+            fontSize: 30,
+        },
+        vector32: {
+            fontSize: 42,
         },
     },
     '@media (min-width: 1024)': {
@@ -113,10 +152,27 @@ const styles = EStyleSheet.create({
             fontSize: 30
         },
         font26: {
-            fontSize: 35
+            fontSize: 35,
+
         },
         font32: {
             fontSize: 49
+        },
+        vector14: {
+            fontSize: 20,
+        },
+        vector16: {
+            fontSize: 20,
+        },
+        vector18: {
+            fontSize: 30,
+
+        },
+        vector26: {
+            fontSize: 35,
+        },
+        vector32: {
+            fontSize: 49,
         },
     }
 });

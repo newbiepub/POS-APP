@@ -45,10 +45,8 @@ const styleHome = EStyleSheet.create({
         borderColor: '#e3e3e3'
     },
     boxTitle: {
-        borderBottomWidth: 1,
-        borderBottomColor: '#e3e3e3',
         alignItems: 'center',
-        paddingHorizontal: 30,
+        paddingHorizontal: 15,
         flexDirection:'row',
         backgroundColor:'white'
     },

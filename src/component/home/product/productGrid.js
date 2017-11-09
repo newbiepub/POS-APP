@@ -38,9 +38,9 @@ class ProductGrid extends React.PureComponent {
                     itemsPerRow                  = { 4 }
                     dragActivationTreshold       = { 200 }
                 >
-                    {[1,2,3,4,5, "add"].map(num => {
-                        if(num !== "add")
-                            return <ProductItem key={num}/>
+                    {this.props.data.map(item => {
+                        if(item !=='add')
+                            return <ProductItem key={item.name} data={item}/>
                         return <AddProduct key="addProduct"/>
                     })}
                 </SortableGrid>

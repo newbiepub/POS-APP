@@ -1,12 +1,14 @@
 import React from "react";
 import {connect} from "react-redux";
-import {Text, View, TouchableWithoutFeedback, Animated, Dimensions} from "react-native";
+import {Text, View, TouchableWithoutFeedback, Animated, Dimensions,ScrollView} from "react-native";
 import styleBase from "../../style/base";
 import styleHome from "../../style/home";
+import style from '../../style/POS';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Menu from '../Menu';
 import ProductGrid from "../product/productGrid";
 import CustomAmount from './CustomAmount';
+import Library from './Library';
 
 class POS extends React.PureComponent {
     constructor(props) {
@@ -14,12 +16,14 @@ class POS extends React.PureComponent {
         var {width, height} = Dimensions.get('window');
         this.state = {
             menuVisible: false,
-            currentView: 'CustomAmount',
+            currentView: 'Library',
             clearSalesVisible: false,
             titleSize: {w: 0, h: 0},
             window: {w: width, h: height},
             clearBoxTop: new Animated.Value(0),
-            listCurrentSale: []
+            listCurrentSale: [],
+            allItems: [{name: 'Cồn', prices: {regular: 1, var: 100}}, {name: 'Nước rửa chén', prices: {regular: 300}}],
+            allDiscounts: []
         }
     }
 
@@ -50,30 +54,43 @@ class POS extends React.PureComponent {
     }
 
     async openClearSales() {
-        await this.setState({
-            clearSalesVisible: !this.state.clearSalesVisible
-        });
-        if (this.state.clearSalesVisible) {
-            Animated.timing(
-                this.state.clearBoxTop,
-                {
-                    toValue: this.state.titleSize.h,
-                    duration: 200
 
-                },
-            ).start();
-        } else {
-            Animated.timing(
-                this.state.clearBoxTop,
-                {
-                    toValue: 0,
-                    duration: 200
+        if(this.state.listCurrentSale.length > 0)
+        {
+            await this.setState({
+                clearSalesVisible: !this.state.clearSalesVisible
+            });
+            if (this.state.clearSalesVisible) {
+                Animated.timing(
+                    this.state.clearBoxTop,
+                    {
+                        toValue: this.state.titleSize.h,
+                        duration: 200
 
-                },
-            ).start();
+                    },
+                ).start();
+            } else {
+                Animated.timing(
+                    this.state.clearBoxTop,
+                    {
+                        toValue: 0,
+                        duration: 200
+
+                    },
+                ).start();
+            }
+
         }
 
 
+    }
+
+    getTotalPrice() {
+        let totalPrice = 0;
+        this.state.listCurrentSale.forEach((item) => {
+            totalPrice = totalPrice + item.price
+        });
+        return this.numberwithThousandsSeparator(totalPrice)
     }
 
     getWindowSize(evt) {
@@ -104,10 +121,12 @@ class POS extends React.PureComponent {
         let listCurrentSale = this.state.listCurrentSale.map((data) => {
             return (
                 <View key={data.index} style={{flexDirection: 'row', padding: 10}}>
-                    <Text style={[styleBase.font16, {flex: 1}]}>{data.title}</Text>
+                    <Text numberOfLines={1} style={[styleBase.font16, {flex: 1}]}>{data.title}</Text>
                     <Text
+                        numberOfLines={1}
                         style={[styleBase.font16, {textAlign: 'right',}]}>{this.numberwithThousandsSeparator(data.price)}
-                        đ</Text>
+                        đ
+                    </Text>
                 </View>
             )
         });
@@ -154,11 +173,11 @@ class POS extends React.PureComponent {
                     <View style={{flex: 0.6}}>
                         {
                             this.state.currentView === 'GridItems' &&
-                            <ProductGrid/>
+                            <ProductGrid data={this.state.allItems}/>
                         }
                         {
                             this.state.currentView === 'Library' &&
-                            <Library/>
+                            <Library dataItems={this.state.allItems} dataDiscounts={this.state.allDiscounts}/>
                         }
                         {
                             this.state.currentView === 'CustomAmount' &&
@@ -172,8 +191,7 @@ class POS extends React.PureComponent {
                     <View style={[styleHome.box, {flex: 0.4}]}>
                         <TouchableWithoutFeedback onLayout={(event) => this.getTitleBoxSize(event)}
                                                   onPress={this.openClearSales.bind(this)}>
-                            <View style={[styleHome.boxTitle, {
-                                flex: 0.1, zIndex: 6,
+                            <View style={[styleHome.boxTitle, styleHome.box,style.itemHeight,{zIndex: 6,
                             }]}>
                                 <Text style={[styleBase.font18, {flex: 1}]}>
                                     Đang mua
@@ -190,7 +208,6 @@ class POS extends React.PureComponent {
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={this.clearSale.bind(this)}>
                             <Animated.View style={[styleHome.boxTitle, styleBase.background3, {
-                                flex: 0.1,
                                 position: 'absolute',
                                 zIndex: 5,
                                 top: this.state.clearBoxTop,
@@ -204,15 +221,14 @@ class POS extends React.PureComponent {
 
                             </Animated.View>
                         </TouchableWithoutFeedback>
-                        <View style={{flex: 0.8}}>
+                        <ScrollView style={{flex:1}}>
                             {listCurrentSale}
-                        </View>
-                        <View style={[styleBase.background1, {
-                            flex: 0.1,
+                        </ScrollView>
+                        <View style={[styleBase.background1,style.itemHeight, {
                             justifyContent: 'center',
                             alignItems: 'center'
                         }]}>
-                            <Text style={[styleBase.font18, {}]}> Thanh toán</Text>
+                            <Text numberOfLines={1} style={[styleBase.font18, {}]}> Thanh toán {this.getTotalPrice()}đ </Text>
                         </View>
                     </View>
                 </View>
@@ -234,22 +250,6 @@ class GridItems extends React.PureComponent {
     }
 }
 
-class Library extends React.PureComponent {
-    render() {
-        return (
-            <View style={[styleHome.container, styleHome.box]}>
-                < View style={[styleHome.boxTitle, {flex: 0.1}]}>
-                    <Text style={[styleBase.font18, {}]}>
-                        Danh dach
-                    </Text>
-
-                </View>
-                <View style={{flex: 0.9}}>
-                </View>
-            </View>
-        )
-    }
-}
 
 const mapStateToProps = (state) => {
     return {
