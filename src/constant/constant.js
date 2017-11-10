@@ -9,3 +9,9 @@ export const ASYNC_STORAGE = {
     USER_LOGGED_IN: "USER_LOGGED_IN",
     AUTH_TOKEN: "AUTH_TOKEN"
 };
+
+export const POPUP = {
+    OPEN_POPUP: "OPEN_POPUP",
+    CLOSE_POPUP: "CLOSE_POPUP",
+    RENDER_POPUP: "RENDER_POPUP"
+};

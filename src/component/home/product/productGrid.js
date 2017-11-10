@@ -49,6 +49,14 @@ class ProductGrid extends React.PureComponent {
     }
 }
 
+ProductGrid.propTypes = {
+    data: React.PropTypes.array
+};
+
+ProductGrid.defaultProps = {
+    data: []
+};
+
 const mapStateToProps = (state) => {
     return {
         account: state.account

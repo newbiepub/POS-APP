@@ -8,6 +8,7 @@ import POS from './home/POS/POS';
 import SortableGrid from './sortableGrid/sortableGrid';
 
 import EStyleSheet from "react-native-extended-stylesheet";
+import Popup from "./popup/popup";
 
 EStyleSheet.build(); // Build Extended StyleSheet
 
@@ -21,8 +22,6 @@ class App extends PureComponent {
         switch (route.id) {
             case "login":
                 return <Login navigator={navigator}/>;
-            case "home":
-                return <Home navigator={navigator}/>
             case "POS":
                 return <POS navigator={navigator}/>
 
@@ -34,7 +33,7 @@ class App extends PureComponent {
     }
 
     configureScene(route, navigator) {
-        if(route.id === "home") {
+        if(route.id === "POS") {
             return Navigator.SceneConfigs.FadeAndroid
         }
         return Navigator.SceneConfigs.PushFromRight
@@ -58,6 +57,7 @@ class App extends PureComponent {
                     renderScene={this.renderScene.bind(this)}
                     onWillFocus={this.onWillFocus.bind(this)}
                 />
+                <Popup/>
             </View>
         )
     }
