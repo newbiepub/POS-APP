@@ -13,7 +13,7 @@ class Popup extends React.PureComponent {
     render() {
         return (
             <Modal
-                visible={false}
+                visible={this.props.visible}
                 transparent={true}
                 onRequestClose={() => {}}
             >
