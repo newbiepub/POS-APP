@@ -3,7 +3,9 @@ import { AsyncStorage } from "react-native";
 
 const initialState = {
     loginState: false,
-    user: {}
+    user: {},
+    access_token: "",
+    refresh_token: ""
 };
 
 function accountReducer(initialState) {
@@ -23,6 +25,12 @@ function accountReducer(initialState) {
                         loginState,
                         access_token,
                         refresh_token
+                    }
+                }
+                case ACCOUNT.GET_CURRENT_USER: {
+                    return {
+                        ...state,
+                        user: action.payload
                     }
                 }
                 default:

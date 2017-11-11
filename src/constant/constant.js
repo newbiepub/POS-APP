@@ -1,7 +1,8 @@
 export const ACCOUNT = {
     LOGIN: "LOGIN",
     AUTH: "AUTH",
-    LOGOUT: "LOGOUT"
+    LOGOUT: "LOGOUT",
+    GET_CURRENT_USER: "GET_CURRENT_USER"
 };
 
 // Async Storage

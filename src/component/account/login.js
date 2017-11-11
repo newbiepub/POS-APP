@@ -18,7 +18,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import KeyboardSpacer from "react-native-keyboard-spacer";
 import * as Animate from "react-native-animatable";
 import {connect} from "react-redux";
-import {auth, login} from "../../action/account";
+import {auth, getCurrentUser, login} from "../../action/account";
 
 const TouchableAnimate = Animate.createAnimatableComponent(TouchableOpacity);
 
@@ -94,9 +94,10 @@ class LoginForm extends PureComponent {
             setTimeout(() => {
                 this.refs["loginBtn"].transitionTo({transform: [{scale: 40}]}, 1000);
                InteractionManager.runAfterInteractions(() => {
-                   this.props.navigator.push({
+                   this.props.navigator.resetTo({
                        id: "POS"
-                   })
+                   });
+                   getCurrentUser();
                })
             }, 200)
         }

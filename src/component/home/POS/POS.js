@@ -4,6 +4,7 @@ import {Text, View, TouchableWithoutFeedback, Animated, Dimensions,ScrollView} f
 import styleBase from "../../style/base";
 import styleHome from "../../style/home";
 import style from '../../style/POS';
+import * as Animate from "react-native-animatable";
 import Entypo from 'react-native-vector-icons/Entypo';
 import Menu from '../Menu';
 import ProductGrid from "../product/productGrid";
@@ -61,28 +62,28 @@ class POS extends React.PureComponent {
                 clearSalesVisible: !this.state.clearSalesVisible
             });
             if (this.state.clearSalesVisible) {
-                Animated.timing(
+                Animated.spring(
                     this.state.clearBoxTop,
                     {
                         toValue: this.state.titleSize.h,
-                        duration: 200
-
+                        duration: 200,
+                        velocity: 10,
+                        friction: 7,
                     },
                 ).start();
             } else {
-                Animated.timing(
+                Animated.spring(
                     this.state.clearBoxTop,
                     {
                         toValue: 0,
-                        duration: 200
-
+                        duration: 200,
+                        velocity: 10,
+                        friction: 10,
                     },
                 ).start();
             }
 
         }
-
-
     }
 
     getTotalPrice() {
@@ -131,7 +132,7 @@ class POS extends React.PureComponent {
             )
         });
         return (
-            <View style={[styleBase.container]} onLayout={(event => this.getWindowSize(event))}>
+            <Animate.View animation={"fadeIn"} duration={750} style={[styleBase.container]} onLayout={(event => this.getWindowSize(event))}>
                 <Menu visible={this.state.menuVisible} instant={this}/>
                 {/*----------------------------------------Header-------------------------------------*/}
 
@@ -231,7 +232,7 @@ class POS extends React.PureComponent {
                     </View>
                 </View>
 
-            </View>
+            </Animate.View>
         )
     }
 }

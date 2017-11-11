@@ -62,3 +62,27 @@ export async function auth() {
         throw new Error("Xác thực thất bại");
     }
 }
+
+function getCurrentUserAction (payload) {
+    return {
+        type: ACCOUNT.GET_CURRENT_USER,
+        payload
+    }
+}
+
+export async function getCurrentUser() {
+    try {
+        let token = await AsyncStorage.getItem(ASYNC_STORAGE.AUTH_TOKEN);
+        if(token) {
+            let { access_token } = JSON.parse(token),
+                response = await fetch(`${config.api}/api/user/me?access_token=${access_token}`);
+            response = await response.json();
+            if(response.error){
+                throw new Error(response.error);
+            }
+            store.dispatch(getCurrentUserAction(response));
+        }
+    } catch(e) {
+        throw e;
+    }
+}
