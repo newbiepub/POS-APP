@@ -10,7 +10,7 @@ class Setting extends React.PureComponent {
 
     render() {
         return (
-            <View style={[styleBase.container]}>
+            <View style={[styleBase.container, {backgroundColor: "green"}]}>
 
             </View>
         )

@@ -10,12 +10,15 @@ import Menu from '../Menu';
 import ProductGrid from "../product/productGrid";
 import CustomAmount from './CustomAmount';
 import Library from './Library';
+import Setting from '../../setting/setting';
+import * as _ from "lodash";
 
 class POS extends React.PureComponent {
     constructor(props) {
         super(props);
         var {width, height} = Dimensions.get('window');
         this.state = {
+            route: this.props.currentRoute,
             menuVisible: false,
             currentView: 'GridItems',
             clearSalesVisible: false,
@@ -52,6 +55,12 @@ class POS extends React.PureComponent {
         this.setState({
             listCurrentSale: [...this.state.listCurrentSale, newItem]
         })
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if(!_.isEqual(this.props.currentRoute, nextProps.currentRoute)) {
+            this.setState({route: nextProps.currentRoute});
+        }
     }
 
     async openClearSales() {
@@ -168,69 +177,76 @@ class POS extends React.PureComponent {
 
                 </View>
 
+                {
+                    this.state.route === "setting" &&
+                        <Setting/>
+                }
 
-                <View style={[{flex: 1, flexDirection: 'row'}]}>
-                    {/*----------------------------------------Left-View-------------------------------------*/}
-                    <View style={[styleBase.background5,{flex: 0.6}]}>
-                        {
-                            this.state.currentView === 'GridItems' &&
-                            <ProductGrid data={this.state.allItems}/>
-                        }
-                        {
-                            this.state.currentView === 'Library' &&
-                            <Library dataItems={this.state.allItems} dataDiscounts={this.state.allDiscounts}/>
-                        }
-                        {
-                            this.state.currentView === 'CustomAmount' &&
-                            <CustomAmount addToList={(title, price) => {
-                                this.addToList(title, price)
-                            }}/>
-                        }
+                {
+                    this.state.route === "POS" &&
+                    <View style={[{flex: 1, flexDirection: 'row'}]}>
+                        {/*----------------------------------------Left-View-------------------------------------*/}
+                        <View style={[styleBase.background5,{flex: 0.6}]}>
+                            {
+                                this.state.currentView === 'GridItems' &&
+                                <ProductGrid data={this.state.allItems}/>
+                            }
+                            {
+                                this.state.currentView === 'Library' &&
+                                <Library dataItems={this.state.allItems} dataDiscounts={this.state.allDiscounts}/>
+                            }
+                            {
+                                this.state.currentView === 'CustomAmount' &&
+                                <CustomAmount addToList={(title, price) => {
+                                    this.addToList(title, price)
+                                }}/>
+                            }
 
-                    </View>
-                    {/*----------------------------------------Right-View-------------------------------------*/}
-                    <View style={[styleHome.box, {flex: 0.4}]}>
-                        <TouchableWithoutFeedback onLayout={(event) => this.getTitleBoxSize(event)}
-                                                  onPress={this.openClearSales.bind(this)}>
-                            <View style={[styleHome.boxTitle, styleHome.borderBottom,style.itemHeight,styleBase.background4,{zIndex: 6,
+                        </View>
+                        {/*----------------------------------------Right-View-------------------------------------*/}
+                        <View style={[styleHome.box, {flex: 0.4}]}>
+                            <TouchableWithoutFeedback onLayout={(event) => this.getTitleBoxSize(event)}
+                                                      onPress={this.openClearSales.bind(this)}>
+                                <View style={[styleHome.boxTitle, styleHome.borderBottom,style.itemHeight,styleBase.background4,{zIndex: 6,
+                                }]}>
+                                    <Text style={[styleBase.font18, {flex: 1}]}>
+                                        Đang mua
+                                    </Text>
+                                    <Entypo name="chevron-thin-down" rotate={90} style={[styleHome.iconHeader,styleBase.color3,
+                                        this.state.clearSalesVisible && {
+                                            transform: [{rotate: '180 deg'}]
+                                        }]}/>
+
+                                </View>
+
+                            </TouchableWithoutFeedback>
+                            <TouchableWithoutFeedback onPress={this.clearSale.bind(this)}>
+                                <Animated.View style={[styleHome.boxTitle, styleBase.background3, {
+                                    position: 'absolute',
+                                    zIndex: 5,
+                                    top: this.state.clearBoxTop,
+                                    height: this.state.titleSize.h,
+                                    width: this.state.titleSize.w
+                                }]}>
+
+                                    <Text style={[styleBase.font18, styleBase.color4, {flex: 1}]}>
+                                        Xoá
+                                    </Text>
+
+                                </Animated.View>
+                            </TouchableWithoutFeedback>
+                            <ScrollView style={{flex:1}}>
+                                {listCurrentSale}
+                            </ScrollView>
+                            <View style={[styleBase.background1,style.itemHeight, {
+                                justifyContent: 'center',
+                                alignItems: 'center'
                             }]}>
-                                <Text style={[styleBase.font18, {flex: 1}]}>
-                                    Đang mua
-                                </Text>
-                                <Entypo name="chevron-thin-down" rotate={90} style={[styleHome.iconHeader,styleBase.color3,
-                                    this.state.clearSalesVisible && {
-                                        transform: [{rotate: '180 deg'}]
-                                    }]}/>
-
+                                <Text numberOfLines={1} style={[styleBase.font18, {}]}> Thanh toán {this.getTotalPrice()}đ </Text>
                             </View>
-
-                        </TouchableWithoutFeedback>
-                        <TouchableWithoutFeedback onPress={this.clearSale.bind(this)}>
-                            <Animated.View style={[styleHome.boxTitle, styleBase.background3, {
-                                position: 'absolute',
-                                zIndex: 5,
-                                top: this.state.clearBoxTop,
-                                height: this.state.titleSize.h,
-                                width: this.state.titleSize.w
-                            }]}>
-
-                                <Text style={[styleBase.font18, styleBase.color4, {flex: 1}]}>
-                                    Xoá
-                                </Text>
-
-                            </Animated.View>
-                        </TouchableWithoutFeedback>
-                        <ScrollView style={{flex:1}}>
-                            {listCurrentSale}
-                        </ScrollView>
-                        <View style={[styleBase.background1,style.itemHeight, {
-                            justifyContent: 'center',
-                            alignItems: 'center'
-                        }]}>
-                            <Text numberOfLines={1} style={[styleBase.font18, {}]}> Thanh toán {this.getTotalPrice()}đ </Text>
                         </View>
                     </View>
-                </View>
+                }
 
             </Animate.View>
         )
@@ -252,7 +268,10 @@ class GridItems extends React.PureComponent {
 
 const mapStateToProps = (state) => {
     return {
-        account: state.account
+        account: state.account,
+        route: state.route,
+        currentRoute: state.route.currentRoute,
+        routeMap: state.route.routeMap
     }
 };
 

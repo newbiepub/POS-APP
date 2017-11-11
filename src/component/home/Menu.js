@@ -1,9 +1,14 @@
 import React from "react";
+import * as _ from "lodash";
 import {connect} from "react-redux";
-import {Modal, View, Text, Dimensions, TouchableWithoutFeedback, Animated, FlatList} from "react-native";
+import {
+    Modal, View, Text, Dimensions, TouchableOpacity,
+    TouchableWithoutFeedback, Animated, FlatList
+} from "react-native";
 import styleBase from "../style/base";
 import styleHome from "../style/home";
 import Entypo from 'react-native-vector-icons/Entypo';
+import {goToRoute} from "../../action/route";
 
 class Menu extends React.PureComponent {
     constructor(props) {
@@ -11,18 +16,10 @@ class Menu extends React.PureComponent {
         const {height, width} = Dimensions.get('window');
 
         this.state = {
+            currentRoute: this.props.currentRoute,
             height,
             width,
-            currentItem: 'Điểm bán hàng',
-            marginLeft: new Animated.Value(-width * 30 / 100),
-            menuListItem: [
-                {name: "Điểm bán hàng"},
-                {name: "Hoá đơn"},
-                {name: "Giao dịch"},
-                {name: "Báo cáo"},
-                {name: "Mặt hàng"},
-                {name: "Cài đặt"},
-                {name: "Trợ giúp"}]
+            marginLeft: new Animated.Value(-width * 30 / 100)
         }
     }
 
@@ -55,7 +52,6 @@ class Menu extends React.PureComponent {
     }
 
     componentWillReceiveProps(nextProps) {
-
         if (nextProps.visible == true) {
             Animated.timing(          // Uses easing functions
                 this.state.marginLeft,    // The value to drive
@@ -65,17 +61,18 @@ class Menu extends React.PureComponent {
                 },           // Configuration
             ).start();
         }
+    }
 
+    onChangeRoute(routeId) {
+        goToRoute(routeId);
+        this.closeMenu();
     }
 
     _MenuItem = ({item}) => (
-
-        <TouchableWithoutFeedback>
-            <View style={[styleHome.menuItem]}>
-                <Text style={[styleBase.font16, {fontWeight: "600"}, this.state.currentItem === item.name ? styleBase.color4: styleBase.color6]}>{item.name}</Text>
-            </View>
-        </TouchableWithoutFeedback>
-
+        <TouchableOpacity onPress={() => this.onChangeRoute(item.id)} style={[styleHome.menuItem]}>
+            <Text
+                style={[styleBase.font16, {fontWeight: "600"}, this.state.currentRoute === item.id ? styleBase.color4 : styleBase.color6]}>{item.name}</Text>
+        </TouchableOpacity>
     );
 
     render() {
@@ -104,24 +101,35 @@ class Menu extends React.PureComponent {
                         }}>
 
                         <FlatList
-                            data={this.state.menuListItem}
+                            data={this.props.routeMap}
 
-                            keyExtractor={item => item.name }
+                            keyExtractor={item => item.name}
                             renderItem={this._MenuItem}
                         />
 
                     </Animated.View>
-
-
                 </View>
             </Modal>
         )
     }
 }
 
+Menu.propTypes = {
+    routeMap: React.PropTypes.array,
+    currentRoute: React.PropTypes.string
+};
+
+Menu.defaultProps = {
+    routeMap: [],
+    currentRoute: ""
+};
+
 const mapStateToProps = (state) => {
     return {
-        account: state.account
+        account: state.account,
+        route: state.route,
+        routeMap: state.route.routeMap,
+        currentRoute: state.route.currentRoute
     }
 };
 
