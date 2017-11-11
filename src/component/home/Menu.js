@@ -72,7 +72,7 @@ class Menu extends React.PureComponent {
 
         <TouchableWithoutFeedback>
             <View style={[styleHome.menuItem]}>
-                <Text style={[styleBase.font16, {fontWeight: "600"}, this.state.currentItem === item.name ? styleBase.color4: styleBase.color3]}>{item.name}</Text>
+                <Text style={[styleBase.font16, {fontWeight: "600"}, this.state.currentItem === item.name ? styleBase.color4: styleBase.color6]}>{item.name}</Text>
             </View>
         </TouchableWithoutFeedback>
 

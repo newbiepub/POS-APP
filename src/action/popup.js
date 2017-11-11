@@ -8,7 +8,7 @@ function openPopupAction(payload) {
     }
 }
 
-function closePopupAction (payload) {
+function closePopupAction(payload) {
     return {
         type: POPUP.CLOSE_POPUP,
         payload
@@ -23,25 +23,33 @@ function renderPopupAction(payload) {
 }
 
 export function openPopup() {
-    try {
-        store.dispatch(openPopupAction({visible: true}))
-    } catch(e) {
-        throw e;
+
+    return async (dispatch, getState) => {
+        try {
+            dispatch(openPopupAction(true))
+        } catch(e) {
+            console.warn(e);
+        }
     }
 }
 
 export function closePopup() {
-    try {
-        store.dispatch(closePopupAction({visible: false}))
-    } catch(e) {
-        throw e;
+
+    return async (dispatch, getState) => {
+        try {
+            dispatch(closePopupAction(false))
+        } catch(e) {
+            console.warn(e);
+        }
     }
 }
 
 export function renderPopup(element) {
-    try {
-        store.dispatch(renderPopupAction(element));
-    } catch(e) {
-        throw e;
+    return async (dispatch, getState) => {
+        try {
+            dispatch(renderPopupAction(element))
+        } catch(e) {
+            console.warn(e);
+        }
     }
 }

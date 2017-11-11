@@ -1,25 +1,53 @@
 import React from "react";
-import {} from "react-native";
-import {Modal} from "react-native";
-import {View} from "react-native";
+import {Modal, View, Dimensions, TouchableWithoutFeedback} from "react-native";
 import styleBase from "../style/base";
 import {connect} from "react-redux";
+import {closePopup} from '../../action/popup';
 
 class Popup extends React.PureComponent {
     constructor(props) {
         super(props);
+        var {width, height} = Dimensions.get('window');
+        this.state = {
+            width
+        }
+
     }
 
+    closePopup() {
+        this.props.closePopup();
+    }
+
+    renderContent(){
+        try{
+            return this.props.renderModal
+        }catch(e)
+        {
+            console.warn(e);
+            return <View></View>
+        }
+
+    }
     render() {
         return (
             <Modal
                 visible={this.props.visible}
                 transparent={true}
-                onRequestClose={() => {}}
+                onRequestClose={() => {
+                }}
             >
-                <View style={[styleBase.overlay]}/>
-                <View style={[styleBase.container, styleBase.center]}>
-                    {this.props.renderModal()}
+                <TouchableWithoutFeedback onPress={() => {
+                    this.closePopup()
+                }}>
+                    <View style={[styleBase.overlay, {position: 'absolute'}]}/>
+                </TouchableWithoutFeedback>
+                <View style={[styleBase.container, styleBase.background4, {
+                    width: this.state.width * 85 / 100,
+                    alignSelf: 'center'
+                }]}>
+                    {Object.keys(this.props.renderModal).length >0 &&
+                        this.renderContent()
+                    }
                 </View>
             </Modal>
         )
@@ -28,12 +56,12 @@ class Popup extends React.PureComponent {
 
 Popup.propTypes = {
     visible: React.PropTypes.bool,
-    renderModal: React.PropTypes.func,
+    renderModal: React.PropTypes.object,
 };
 
 Popup.defaultProps = {
     visible: false,
-    renderModal: () => {}
+    renderModal: null
 };
 
 const mapStateToProps = (state) => {
@@ -42,5 +70,8 @@ const mapStateToProps = (state) => {
         renderModal: state.popup.renderModal
     }
 };
+const mapDispatchToProps = {
+    closePopup
+}
 
-export default connect(mapStateToProps, null) (Popup);
+export default connect(mapStateToProps, mapDispatchToProps)(Popup);

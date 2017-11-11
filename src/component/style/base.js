@@ -19,10 +19,10 @@ const styles = EStyleSheet.create({
     },
     //Black
     color3: {
-        color: '#1a1c1e'
+        color: '#2d2b2b'
     },
     background3: {
-        backgroundColor: '#1a1c1e'
+        backgroundColor: '#2d2b2b'
     },
     //White
     color4: {
@@ -30,6 +30,20 @@ const styles = EStyleSheet.create({
     },
     background4: {
         backgroundColor: '#ffffff'
+    },
+    //gray
+    color5: {
+        color: '#e5e5e5'
+    },
+    background5: {
+        backgroundColor: '#e5e5e5'
+    },
+    //lightPurple
+    color6: {
+        color: '#777791'
+    },
+    background6: {
+        backgroundColor: '#5e5e87'
     },
     container: {
         flex: 1
@@ -88,7 +102,9 @@ const styles = EStyleSheet.create({
     vector32: {
         fontSize: 32,
     },
-
+    vector100: {
+        fontSize: 100,
+    },
     font14: {
         fontSize: 14
     },
@@ -146,6 +162,9 @@ const styles = EStyleSheet.create({
         vector32: {
             fontSize: 42,
         },
+        vector100: {
+            fontSize: 120,
+        },
     },
     '@media (min-width: 1024)': {
         font14: {
@@ -179,6 +198,9 @@ const styles = EStyleSheet.create({
         },
         vector32: {
             fontSize: 49,
+        },
+        vector100: {
+            fontSize: 150,
         },
     }
 });

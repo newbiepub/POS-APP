@@ -16,7 +16,7 @@ class POS extends React.PureComponent {
         var {width, height} = Dimensions.get('window');
         this.state = {
             menuVisible: false,
-            currentView: 'Library',
+            currentView: 'GridItems',
             clearSalesVisible: false,
             titleSize: {w: 0, h: 0},
             window: {w: width, h: height},
@@ -86,7 +86,7 @@ class POS extends React.PureComponent {
     }
 
     getTotalPrice() {
-        let totalPrice = 0;
+        var totalPrice = 0;
         this.state.listCurrentSale.forEach((item) => {
             totalPrice = totalPrice + item.price
         });
@@ -168,9 +168,9 @@ class POS extends React.PureComponent {
                 </View>
 
 
-                <View style={{flex: 1, flexDirection: 'row'}}>
+                <View style={[{flex: 1, flexDirection: 'row'}]}>
                     {/*----------------------------------------Left-View-------------------------------------*/}
-                    <View style={{flex: 0.6}}>
+                    <View style={[styleBase.background5,{flex: 0.6}]}>
                         {
                             this.state.currentView === 'GridItems' &&
                             <ProductGrid data={this.state.allItems}/>
@@ -191,14 +191,12 @@ class POS extends React.PureComponent {
                     <View style={[styleHome.box, {flex: 0.4}]}>
                         <TouchableWithoutFeedback onLayout={(event) => this.getTitleBoxSize(event)}
                                                   onPress={this.openClearSales.bind(this)}>
-                            <View style={[styleHome.boxTitle, styleHome.box,style.itemHeight,{zIndex: 6,
+                            <View style={[styleHome.boxTitle, styleHome.borderBottom,style.itemHeight,styleBase.background4,{zIndex: 6,
                             }]}>
                                 <Text style={[styleBase.font18, {flex: 1}]}>
                                     Đang mua
                                 </Text>
-                                <Entypo name="chevron-thin-down" rotate={90} style={[styleHome.iconHeader, {
-                                    color: 'black'
-                                },
+                                <Entypo name="chevron-thin-down" rotate={90} style={[styleHome.iconHeader,styleBase.color3,
                                     this.state.clearSalesVisible && {
                                         transform: [{rotate: '180 deg'}]
                                     }]}/>

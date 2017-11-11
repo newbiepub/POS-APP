@@ -1,6 +1,7 @@
 import EStyleSheet from "react-native-extended-stylesheet";
 
 const styleHome = EStyleSheet.create({
+    $widthSize: 70,
     container: {
         flex: 1,
         margin: 20
@@ -35,31 +36,52 @@ const styleHome = EStyleSheet.create({
     menuButton: {
         alignItems: 'center',
         justifyContent: 'center',
-        width: 70
+        width: '$widthSize'
     },
     heightHeader: {
-        height: 70,
+        height: '$widthSize',
     },
     box: {
         borderWidth: 1,
         borderColor: '#e3e3e3'
     },
-    boxTitle: {
+    borderBottom:{
+        borderBottomWidth:1,
+        borderColor:'#e3e3e3'
+    },
+    borderTop:{
+        borderTopWidth:1,
+        borderColor:'#e3e3e3'
+    },
+    borderRight:{
+        borderRightWidth:1,
+        borderColor:'#e3e3e3'
+    },
+    borderLeft:{
+        borderLeftWidth:1,
+        borderColor:'#e3e3e3'
+    },
+    paddingModal: {
+        padding: '$widthSize'
+    }
+    , boxTitle: {
         alignItems: 'center',
         paddingHorizontal: 15,
-        flexDirection:'row',
-        backgroundColor:'white'
+        flexDirection: 'row',
+    },
+    boxPadding:{
+        padding:15
     },
     itemHeader: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center'
     },
-    borderButtonCustomAmount:{
+    borderButtonCustomAmount: {
         borderWidth: 1,
         borderColor: '#e5e5e5',
     },
-    textCenterOfTheBox:{
+    textCenterOfTheBox: {
         justifyContent: 'center',
         alignItems: 'center'
     },

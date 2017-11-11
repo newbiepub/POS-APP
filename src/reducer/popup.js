@@ -2,7 +2,7 @@ import {POPUP} from "../constant/constant";
 
 const initialState = {
     visible: false,
-    renderModal: () => {}
+    renderModal: {}
 };
 
 export default popupReducer(initialState);

@@ -51,7 +51,7 @@ class CustomAmount extends React.PureComponent {
 
     render() {
         return (
-            <View style={styleHome.container}>
+            <View style={[styleHome.container,styleBase.background4]}>
                 <View style={[{
                     flex: 1,
                     flexDirection: 'row',

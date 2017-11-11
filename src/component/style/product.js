@@ -2,17 +2,21 @@ import EStyleSheet from "react-native-extended-stylesheet";
 
 const styleProduct = EStyleSheet.create({
     productItem: {
-        height: 100,
-        width: 100,
+        height: 140,
+        width: 140,
         borderRadius: 15,
         backgroundColor: "#999"
+    },
+    productName:{
+        borderBottomLeftRadius: 15,
+        borderBottomRightRadius:15,
     },
     productWrapper: {
         padding: 15
     },
     addItemButton: {
-        height: 100,
-        width: 100,
+        height: 140,
+        width: 140,
         borderRadius: 15,
         backgroundColor: "#444"
     }
