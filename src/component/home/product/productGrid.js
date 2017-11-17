@@ -4,7 +4,8 @@ import {Text, TouchableOpacity, View} from "react-native";
 
 import SortableGrid from "../../sortableGrid/sortableGrid";
 import ProductItem from "./productItem";
-import PopupContent from '../PopupContent';
+import AddItem from '../../popup/Item/CreateItem';
+import ViewItem from '../../popup/Item/ViewItem';
 
 import styleBase from "../../style/base";
 import styleProduct from "../../style/product";
@@ -36,14 +37,17 @@ class ProductGrid extends React.PureComponent {
         super(props);
     }
 
-    itemPress() {
-        console.warn("hello")
+    itemPress(item) {
+        this.props.openPopup();
+        this.props.renderPopup(
+            <ViewItem itemData={item}/>
+        )
     }
 
     addItemPress() {
        this.props.openPopup();
        this.props.renderPopup(
-           <PopupContent/>
+           <AddItem/>
        )
     }
 
@@ -61,7 +65,7 @@ class ProductGrid extends React.PureComponent {
                     {this.props.data.map(item => {
                         if (item.hasOwnProperty("name"))
                             return <ProductItem key={item.name} data={item} itemPress={() => {
-                                this.itemPress()
+                                this.itemPress(item)
                             }}/>
                         return <AddProduct key={"//add//"} itemPress={() => {
                             this.addItemPress()

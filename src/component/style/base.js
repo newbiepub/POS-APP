@@ -19,10 +19,10 @@ const styles = EStyleSheet.create({
     },
     //Black
     color3: {
-        color: '#2d2b2b'
+        color: '#2d2d2d'
     },
     background3: {
-        backgroundColor: '#2d2b2b'
+        backgroundColor: '#2d2d2d'
     },
     //White
     color4: {
@@ -43,10 +43,13 @@ const styles = EStyleSheet.create({
         color: '#777791'
     },
     background6: {
-        backgroundColor: '#5e5e87'
+        backgroundColor: '#777791'
     },
     container: {
         flex: 1
+    },
+    bold:{
+      fontWeight:"600"
     },
     fillParent: {
         position: "absolute",

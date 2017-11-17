@@ -1,5 +1,6 @@
 import React from "react";
 import {Text, View, TouchableWithoutFeedback, TextInput, ScrollView} from "react-native";
+import {TextLarge, TextSmall, TextNormal} from '../../Reusable/Text';
 import styleBase from "../../style/base";
 import styleHome from "../../style/home";
 import style from '../../style/POS';
@@ -29,7 +30,7 @@ class Library extends React.PureComponent {
 
                 if (this.state.currentViewLibrary === 'Danh sách' || this.state.currentViewLibrary === 'Khuyến mãi') {
                     this.props.dataDiscounts.forEach((item) => {
-                        if (item.hasOwnProperty("name") &&  item.name.includes(this.state.searchText)) {
+                        if (item.hasOwnProperty("name") && item.name.includes(this.state.searchText)) {
                             data.push(item)
                         }
                     });
@@ -50,12 +51,12 @@ class Library extends React.PureComponent {
 
     render() {
         return (
-            <View style={[styleBase.background4,styleHome.container, styleHome.box]}>
+            <View style={[styleBase.background4, styleHome.container, styleHome.box]}>
                 {/*------Title------------*/}
                 <TouchableWithoutFeedback onPress={() => {
                     this.setState({currentViewLibrary: 'Danh sách'})
                 }}>
-                    <View style={[styleHome.boxTitle, style.itemHeight,styleHome.borderBottom]}>
+                    <View style={[styleHome.boxTitle, style.itemHeight, styleHome.borderBottom]}>
 
                         {
                             this.state.currentViewLibrary !== 'Danh sách' &&
@@ -63,9 +64,9 @@ class Library extends React.PureComponent {
                                        style={[styleBase.vector26, {alignSelf: 'center'}]}/>
                         }
 
-                        <Text style={[styleBase.font16, {}]}>
+                        <TextLarge>
                             {this.state.currentViewLibrary}
-                        </Text>
+                        </TextLarge>
 
 
                     </View>
@@ -200,38 +201,32 @@ class LibraryItems extends React.PureComponent {
     render() {
         try {
             var listAllItems = this.props.data.map((data) => {
-                if(data.hasOwnProperty("name"))
-                return (
-                    <TouchableWithoutFeedback key={data.name}>
-                        <View style={[styleHome.borderBottom, styleBase.background2, style.itemHeight, {
-                            flexDirection: 'row',
-                            flex: 1
-                        }]}>
-                            <View style={[styleBase.background2, style.backgroundIconWidth, {
+                if (data.hasOwnProperty("name"))
+                    return (
+                        <TouchableWithoutFeedback key={data.name}>
+                            <View style={[styleHome.borderBottom, styleBase.background2, style.itemHeight, {
                                 flexDirection: 'row',
-                                justifyContent: 'center',
-                                alignItems: 'center'
+                                flex: 1
                             }]}>
-                                <Text name="tag"
-                                      style={[styleBase.font16, styleBase.background2, {}]}>
-                                    {data.name.substr(0, 2)}
-                                </Text>
+                                <View style={[styleBase.background2, style.backgroundIconWidth, {
+                                    flexDirection: 'row',
+                                    justifyContent: 'center',
+                                    alignItems: 'center'
+                                }]}>
+
+                                    <TextNormal style={styleBase.background2}>{data.name.substr(0, 2)}</TextNormal>
+                                </View>
+                                <View style={[styleHome.boxTitle, styleBase.background4, {flex: 1}]}>
+                                    <TextSmall style={{flex: 1}}>{data.name}</TextSmall>
+                                    <TextSmall> {Object.keys(data.prices).length} giá</TextSmall>
+                                </View>
                             </View>
-                            <View style={[styleHome.boxTitle,styleBase.background4, {flex: 1}]}>
-                                <Text style={[styleBase.font14, {flex: 1}]}>
-                                    {data.name}
-                                </Text>
-                                <Text style={[styleBase.font14]}>
-                                    {Object.keys(data.prices).length} giá
-                                </Text>
-                            </View>
-                        </View>
-                    </TouchableWithoutFeedback>
-                )
+                        </TouchableWithoutFeedback>
+                    )
             })
         } catch (e) {
             console.warn(e);
-            return  <NotFound/>
+            return <NotFound/>
         }
 
         return (
@@ -261,9 +256,7 @@ class NotFound extends React.PureComponent {
             <View style={{flex: 1, alignItems: 'center'}}>
                 <EvilIcons name="search"
                            style={[styleBase.vector100,]}/>
-                <Text style={styleBase.font18}>
-                    Không tìm thấy kết quả
-                </Text>
+                <TextLarge>Không tìm thấy kết quả</TextLarge>
             </View>
         )
     }

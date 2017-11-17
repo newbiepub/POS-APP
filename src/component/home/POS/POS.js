@@ -1,6 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
-import {Text, View, TouchableWithoutFeedback, Animated, Dimensions,ScrollView} from "react-native";
+import {Text, View, TouchableWithoutFeedback, Animated, Dimensions, ScrollView} from "react-native";
 import styleBase from "../../style/base";
 import styleHome from "../../style/home";
 import style from '../../style/POS';
@@ -10,6 +10,7 @@ import Menu from '../Menu';
 import ProductGrid from "../product/productGrid";
 import CustomAmount from './CustomAmount';
 import Library from './Library';
+import {TextLarge, TextNormal} from '../../Reusable/Text';
 import Setting from '../../setting/setting';
 import * as _ from "lodash";
 
@@ -26,7 +27,7 @@ class POS extends React.PureComponent {
             window: {w: width, h: height},
             clearBoxTop: new Animated.Value(0),
             listCurrentSale: [],
-            allItems: [{name: 'Cồn', prices: {regular: 1, var: 100}}, {name: 'Nước rửa chén', prices: {regular: 300}}],
+            allItems: [{name: 'Cồn', prices:[{type: "Bình thường", value: 100}] }, {name: 'Nước rửa chén', prices: [{type: "Bình thường", value: 1323},{type: "Đặc biệt", value: 4534},{type: "Bìnhassadfsafsfsafsafsafsfsadfsafsafsdfsafasdfsadfasfsadfsafsadf", value: 1323},{type: "Đặc sdaf", value: 4534}]}],
             allDiscounts: []
         }
     }
@@ -65,8 +66,7 @@ class POS extends React.PureComponent {
 
     async openClearSales() {
 
-        if(this.state.listCurrentSale.length > 0)
-        {
+        if (this.state.listCurrentSale.length > 0) {
             await this.setState({
                 clearSalesVisible: !this.state.clearSalesVisible
             });
@@ -131,17 +131,14 @@ class POS extends React.PureComponent {
         let listCurrentSale = this.state.listCurrentSale.map((data) => {
             return (
                 <View key={data.index} style={{flexDirection: 'row', padding: 10}}>
-                    <Text numberOfLines={1} style={[styleBase.font16, {flex: 1}]}>{data.title}</Text>
-                    <Text
-                        numberOfLines={1}
-                        style={[styleBase.font16, {textAlign: 'right',}]}>{this.numberwithThousandsSeparator(data.price)}
-                        đ
-                    </Text>
+                    <TextNormal numberOfLines={1} style={[{flex: 1}]}>{data.title}</TextNormal>
+                    <TextNormal numberOfLines={1}>{this.numberwithThousandsSeparator(data.price)}đ</TextNormal>
                 </View>
             )
         });
         return (
-            <Animate.View animation={"fadeIn"} duration={750} style={[styleBase.container]} onLayout={(event => this.getWindowSize(event))}>
+            <Animate.View animation={"fadeIn"} duration={750} style={[styleBase.container]}
+                          onLayout={(event => this.getWindowSize(event))}>
                 <Menu visible={this.state.menuVisible} instant={this}/>
                 {/*----------------------------------------Header-------------------------------------*/}
 
@@ -252,19 +249,6 @@ class POS extends React.PureComponent {
         )
     }
 }
-
-class GridItems extends React.PureComponent {
-    render() {
-        return (
-            <View>
-                <Text>
-                    GridItem
-                </Text>
-            </View>
-        )
-    }
-}
-
 
 const mapStateToProps = (state) => {
     return {

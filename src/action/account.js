@@ -29,6 +29,7 @@ export function login(username, password, errorCallback) {
                 body: JSON.stringify({username, password})
             });
             response = await response.json();
+            console.warn(JSON.stringify(response));
             if(response.error) {
                 return errorCallback(response.error)
             }

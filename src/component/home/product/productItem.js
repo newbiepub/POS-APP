@@ -9,15 +9,16 @@ class ProductItem extends React.PureComponent {
     }
 
     render() {
+        let data = this.props.data;
         return (
             <View style={styleProduct.productItem}>
                 <View style={[ styleBase.center,{flex:3}]}>
                     <Text style={[styleBase.font26, styleBase.textE5]}>
-                        {this.props.data.name.substr(0, 2)}
+                        {data.name.substr(0, 2)}
                     </Text>
                 </View>
                 <View style={[styleProduct.productName,styleBase.background4,styleBase.center,{flex:1}]}>
-                    <Text style={[styleBase.font14,styleBase.color3]} numberOfLines={1}>{this.props.data.name}</Text>
+                    <Text style={[styleBase.font14,styleBase.color3]} numberOfLines={1}>{data.name}</Text>
                 </View>
             </View>
         )

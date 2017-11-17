@@ -45,21 +45,21 @@ const styleHome = EStyleSheet.create({
         borderWidth: 1,
         borderColor: '#e3e3e3'
     },
-    borderBottom:{
-        borderBottomWidth:1,
-        borderColor:'#e3e3e3'
+    borderBottom: {
+        borderBottomWidth: 1,
+        borderColor: '#e3e3e3'
     },
-    borderTop:{
-        borderTopWidth:1,
-        borderColor:'#e3e3e3'
+    borderTop: {
+        borderTopWidth: 1,
+        borderColor: '#e3e3e3'
     },
-    borderRight:{
-        borderRightWidth:1,
-        borderColor:'#e3e3e3'
+    borderRight: {
+        borderRightWidth: 1,
+        borderColor: '#e3e3e3'
     },
-    borderLeft:{
-        borderLeftWidth:1,
-        borderColor:'#e3e3e3'
+    borderLeft: {
+        borderLeftWidth: 1,
+        borderColor: '#e3e3e3'
     },
     paddingModal: {
         padding: '$widthSize'
@@ -69,8 +69,8 @@ const styleHome = EStyleSheet.create({
         paddingHorizontal: 15,
         flexDirection: 'row',
     },
-    boxPadding:{
-        padding:15
+    boxPadding: {
+        padding: 15
     },
     itemHeader: {
         flex: 1,
@@ -85,7 +85,21 @@ const styleHome = EStyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-    menuItem: {paddingVertical: 20}
+    menuItem: {
+        paddingVertical: 20
+    },
+    borderRadioButton: {
+        borderRadius: 50,
+        width: 30,
+        height: 30,
+        borderWidth: 1,
+        borderColor: 'black'
+    },
+    checkedRadioButton: {
+        borderRadius: 50,
+        width: 20,
+        height: 20
+    }
 });
 
 export default styleHome;

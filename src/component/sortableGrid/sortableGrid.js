@@ -48,11 +48,7 @@ class Block extends PureComponent {
 }
 
 class SortableGrid extends PureComponent {
-
-    itemPress(item){
-        console.log(item.props)
-    }
-    render = () =>
+        render = () =>
         <Animated.View
             style={[this._getGridStyle()]}
             onLayout={this.assessGridSize}

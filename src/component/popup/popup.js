@@ -7,49 +7,66 @@ import {closePopup} from '../../action/popup';
 class Popup extends React.PureComponent {
     constructor(props) {
         super(props);
-        var {width, height} = Dimensions.get('window');
         this.state = {
-            width
+            width: 0,
+            height: 0
         }
-
     }
 
     closePopup() {
         this.props.closePopup();
     }
 
-    renderContent(){
-        try{
+    renderContent() {
+        try {
             return this.props.renderModal
-        }catch(e)
-        {
+        } catch (e) {
             console.warn(e);
             return <View></View>
         }
 
     }
+
+    measureWidth(event){
+        this.setState({
+            width: event.nativeEvent.layout.width,
+        })
+    }
+
+    measureDeviceSize(event) {
+        this.setState({
+            height: event.nativeEvent.layout.height
+        })
+    }
+
     render() {
         return (
-            <Modal
-                visible={this.props.visible}
-                transparent={true}
-                onRequestClose={() => {
-                }}
-            >
-                <TouchableWithoutFeedback onPress={() => {
-                    this.closePopup()
-                }}>
-                    <View style={[styleBase.overlay, {position: 'absolute'}]}/>
-                </TouchableWithoutFeedback>
-                <View style={[styleBase.container, styleBase.background4, {
-                    width: this.state.width * 85 / 100,
-                    alignSelf: 'center'
-                }]}>
-                    {Object.keys(this.props.renderModal).length >0 &&
+            <View onLayout={(event) => this.measureWidth(event)}>
+
+                <Modal
+                    visible={this.props.visible}
+                    transparent={true}
+                    onRequestClose={() => {
+                        this.closePopup()
+                    }}
+                    supportedOrientations={['portrait', 'landscape']}
+                >
+                    <TouchableWithoutFeedback onPress={() => {
+                        this.closePopup()
+                    }} onLayout={(event) => this.measureDeviceSize(event)}>
+                        <View
+                            style={[styleBase.overlay, {position: 'absolute'}]}/>
+                    </TouchableWithoutFeedback>
+                    <View style={[styleBase.container, styleBase.background4, {
+                        width: this.state.width > this.state.height ? this.state.width * 85 / 100 : this.state.width,
+                        alignSelf: 'center'
+                    }]}>
+                        {Object.keys(this.props.renderModal).length > 0 &&
                         this.renderContent()
-                    }
-                </View>
-            </Modal>
+                        }
+                    </View>
+                </Modal>
+            </View>
         )
     }
 }

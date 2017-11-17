@@ -10,6 +10,20 @@ const styleHome = EStyleSheet.create({
         modalTextInputFocus: {
             borderBottomWidth: 2,
             borderBottomColor: '#6893d8'
+        },
+        modalItem: {
+            marginTop: 50,
+
+        },
+        marginVertical: {
+            marginVertical: 10
+        },
+        categoryAddNew: {
+            paddingVertical: 50
+        },
+        choosePriceItem: {
+            height:70,
+            alignItems:'center'
         }
     })
 ;
