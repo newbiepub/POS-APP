@@ -1,6 +1,6 @@
 import React from "react";
 import {ScrollView, View, Dimensions, TouchableWithoutFeedback, Text, TextInput,} from "react-native";
-import {TextInputNormal, TextLarge, TextSmall, TextNormal} from '../../Reusable/Text';
+import {TextInputNormal, TextLarge, TextSmall, TextNormal, TextInputNumber} from '../../Reusable/Text';
 
 import {Navigator} from "react-native-deprecated-custom-components";
 import styleBase from "../../style/base";
@@ -18,7 +18,7 @@ class ViewItem extends React.PureComponent {
         super(props);
         var {width, height} = Dimensions.get('window');
         this.state = {
-            totalPrice: 0,
+            currentPrice: this.props.itemData.prices[0].value,
             itemQuatity: 1,
             note: ""
         };
@@ -56,7 +56,7 @@ class ViewItem extends React.PureComponent {
     render() {
         return (
             <View style={[styleBase.container, styleBase.background4,]}>
-                {/*-----------Header_____________------*/}
+                {/*-----------------------Header_____________------*/}
                 <View style={[styleHome.heightHeader, styleBase.centerHorizontal, styleHome.borderBottom, {
                     flexDirection: 'row'
                 }]}>
@@ -69,8 +69,9 @@ class ViewItem extends React.PureComponent {
                         </View>
                     </TouchableWithoutFeedback>
 
-                    <View style={[{flex: 1}]}>
+                    <View style={[{flex: 1, flexDirection: 'row'}]}>
                         <TextLarge>{this.props.itemData.name || ""}</TextLarge>
+                        <TextLarge>  {this.state.currentPrice * this.state.itemQuatity || ""} đ</TextLarge>
                     </View>
 
                     <TouchableWithoutFeedback onPress={() => {
@@ -84,24 +85,34 @@ class ViewItem extends React.PureComponent {
                     </TouchableWithoutFeedback>
                 </View>
                 <View style={[styleHome.paddingModal, {flex: 1}]}>
+                    {/*-----------------List---------------------------*/}
+                    <ListPrice itemData={this.props.itemData} instant={this}/>
 
-                    <ListPrice itemData={this.props.itemData}/>
-                    {/*Note and Quatity*/}
-                        <TextNormal style={[styleModalItems.marginVertical,styleModalItems.modalItem]}>GHI CHÚ VÀ SỐ LƯỢNG</TextNormal>
-                        <TextInputNormal placeholder={"Ghi chú"} style={styleModalItems.marginVertical}/>
-                    <View style={[styleModalItems.marginVertical,{flexDirection:'row'}]}>
-                        <TouchableWithoutFeedback>
-                            <View>
+
+                    {/*-----------------Note and Quatity---------------------------*/}
+                    <TextNormal style={[styleModalItems.marginVertical, styleModalItems.modalItem]}>GHI CHÚ VÀ SỐ
+                        LƯỢNG</TextNormal>
+                    <TextInputNormal placeholder={"Ghi chú"} value={this.state.note}
+                                     onChangeText={(text) => this.setState({note: text})}
+                                     style={styleModalItems.marginVertical}/>
+                    <View style={[styleModalItems.marginVertical, {flexDirection: 'row'}]}>
+                        <TouchableWithoutFeedback
+                            onPress={() => this.setState({itemQuatity: this.state.itemQuatity > 1 ? this.state.itemQuatity - 1 : 1})}>
+                            <View style={[styleHome.boxPadding, styleHome.box]}>
                                 <TextLarge>-</TextLarge>
                             </View>
                         </TouchableWithoutFeedback>
-                        <View style={[styleBase.center,{flex:1}]}>
-                            <TextInputNormal placeholder={"1"} value={this.state.itemQuatity.toString()} style={{width: 150}}   onChangeText={(text) => {
-                                this.setState({itemQuatity: text})
-                            }} />
+                        <View style={[styleBase.center, {flex: 1}]}>
+                            <TextInputNumber value={this.state.itemQuatity.toString()}
+                                             style={{textAlign: 'center', width: 100}}
+                                             placeholder={this.state.itemQuatity.toString()} onChangeText={(text) => {
+
+                                this.setState({itemQuatity: text>0? text: 1})
+                            }}/>
                         </View>
-                        <TouchableWithoutFeedback>
-                            <View >
+                        <TouchableWithoutFeedback
+                            onPress={() => this.setState({itemQuatity: this.state.itemQuatity + 1})}>
+                            <View style={[styleHome.boxPadding, styleHome.box]}>
                                 <TextLarge>+</TextLarge>
                             </View>
                         </TouchableWithoutFeedback>
@@ -119,7 +130,7 @@ class ListPrice extends React.PureComponent {
         super(props);
         this.state = {
             width: 0,
-            currentType: 'Bình thường'
+            currentType: this.props.itemData.prices[0].type
         }
     }
 
@@ -129,7 +140,8 @@ class ListPrice extends React.PureComponent {
         })
     }
 
-    changeType(type) {
+    changeType(type, price) {
+        this.props.instant.setState({currentPrice: price});
         this.setState({
             currentType: type
         })
@@ -142,7 +154,7 @@ class ListPrice extends React.PureComponent {
         try {
             var listPrice = this.props.itemData.prices.map((data) => {
                 return (
-                    <TouchableWithoutFeedback key={data.type} onPress={() => this.changeType(data.type)}>
+                    <TouchableWithoutFeedback key={data.type} onPress={() => this.changeType(data.type, data.value)}>
                         <View
                             style={[styleHome.box, styleHome.boxPadding, styleModalItems.marginVertical, styleModalItems.choosePriceItem, {
                                 flexDirection: 'row',

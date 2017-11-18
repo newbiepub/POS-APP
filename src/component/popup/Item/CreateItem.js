@@ -1,6 +1,6 @@
 import React from "react";
-import {ScrollView, View, Dimensions, TouchableWithoutFeedback, Text, TextInput,} from "react-native";
-import {TextInputNormal, TextLarge, TextSmall} from '../../Reusable/Text';
+import {ScrollView, View, Dimensions, TouchableWithoutFeedback, Text, Platform,} from "react-native";
+import {TextInputNormal, TextLarge, TextSmall, TextInputPriceMask} from '../../Reusable/Text';
 
 import {Navigator} from "react-native-deprecated-custom-components";
 import styleBase from "../../style/base";
@@ -20,11 +20,11 @@ class CreateItem extends React.PureComponent {
         this.state = {
             width,
             itemName: "",
-            itemPrice: '',
+            itemPrice: 0,
             itemSKU: "",
             description: "",
             newItemName: "",
-            newItemPrice: '',
+            newItemPrice: 0,
             newItemSKU: "",
             category: '',
             currentView: 'Thêm mặt hàng',
@@ -68,15 +68,15 @@ class CreateItem extends React.PureComponent {
 
     }
 
-    getNumberInput(name, num) {
-
-        if (isNaN(num) !== true) {
+    async getNumberInput(name, num) {
+        let newNum =await num.replace(/\./g, '');
+        if (isNaN(newNum) !== true) {
             switch (name) {
                 case "itemPrice" :
-                    this.setState({itemPrice: num});
+                    this.setState({itemPrice: newNum});
                     return;
                 case "newItemPrice" :
-                    this.setState({newItemPrice: num});
+                    this.setState({newItemPrice: newNum});
                     return;
             }
         }
@@ -195,6 +195,20 @@ class AddItem extends React.PureComponent {
         })
     }
 
+    numberwithThousandsSeparator(x) {
+        try{
+            let parts = x.toString().split(",");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            return parts.join(".");
+        }catch(e)
+        {
+            console.warn(e);
+            return x + "đ";
+        }
+
+
+    }
+
     render() {
         let instant = this.props.instant;
         return (
@@ -239,11 +253,11 @@ class AddItem extends React.PureComponent {
                         </TouchableWithoutFeedback>
                         {/*----------------price and SKU-------------------*/}
                         <View style={[styleModalItems.modalItem, {flexDirection: 'row'}]}>
-                            <TextInputNormal placeholder={"0đ"}
-                                             value={instant.state.itemPrice}
+                            <TextInputPriceMask placeholder={"0đ"}
+                                             value={instant.state.itemPrice.toString()}
                                              keyboardType={'numeric'}
                                              onChangeText={(num) => {
-                                                 instant.getNumberInput("itemPrice", num)
+                                                instant.setState({itemPrice: num})
                                              }}
                                              style={[styleModalItems.modalTextInput, {flex: 1}]}
                             />
@@ -279,13 +293,13 @@ class AddItem extends React.PureComponent {
                                                      style={[styleModalItems.modalTextInput, {flex: 1}]}
                                     />
                                     <View style={[{flexDirection: 'row', marginTop: 20}]}>
-                                        <TextInputNormal placeholder={"0đ"}
-                                                         value={instant.state.newItemPrice}
-                                                         keyboardType={'numeric'}
-                                                         onChangeText={(num) => {
-                                                             instant.getNumberInput("newItemPrice", num)
-                                                         }}
-                                                         style={[styleModalItems.modalTextInput, {flex: 1}]}
+                                        <TextInputPriceMask placeholder={"0đ"}
+                                                            value={instant.state.newItemPrice.toString()}
+                                                            keyboardType={'numeric'}
+                                                            onChangeText={(num) => {
+                                                                    instant.setState({newItemPrice: num})
+                                                            }}
+                                                            style={[styleModalItems.modalTextInput, {flex: 1}]}
                                         />
                                         <TextInputNormal placeholder={"Mã SKU"}
                                                          value={instant.state.newItemSKU}
@@ -311,7 +325,7 @@ class AddItem extends React.PureComponent {
                             />
                         </View>
                     </View>
-
+Pla
                 </KeyboardAwareScrollView>
             </View>
         )

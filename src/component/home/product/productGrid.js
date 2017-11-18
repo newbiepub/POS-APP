@@ -38,22 +38,23 @@ class ProductGrid extends React.PureComponent {
     }
 
     itemPress(item) {
-        this.props.openPopup();
+
         this.props.renderPopup(
             <ViewItem itemData={item}/>
-        )
+        );
+        this.props.openPopup();
     }
 
     addItemPress() {
-       this.props.openPopup();
        this.props.renderPopup(
            <AddItem/>
-       )
+       );
+        this.props.openPopup();
     }
 
     render() {
         let arr = this.props.data;
-        arr.push({})
+        arr.push({});
         return (
             <View style={[styleBase.grow, styleProduct.productWrapper, styleBase.background5]}>
                 <SortableGrid

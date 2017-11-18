@@ -5,7 +5,9 @@ import styleBase from "../../style/base";
 import styleHome from "../../style/home";
 import style from '../../style/POS';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
-
+import ViewItem from '../../popup/Item/ViewItem';
+import {connect} from "react-redux";
+import {openPopup,renderPopup} from '../../../action/popup';
 class Library extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -108,6 +110,8 @@ class Library extends React.PureComponent {
                         this.state.currentViewLibrary === 'Mặt hàng' &&
                         (
                             <LibraryItems instant={this}
+                                          openPopup={()=>this.props.openPopup()}
+                                          renderPopup={(item)=>this.props.renderPopup(item)}
                                           data={this.state.searchText === '' ? this.props.dataItems : this.getDataSearch()}/>
                         )
                     }
@@ -197,13 +201,19 @@ class LibraryHome extends React.PureComponent {
 
 class LibraryItems extends React.PureComponent {
 
+    onPressItem(item){
+        this.props.renderPopup(
+            <ViewItem itemData={item}/>
+        );
+        this.props.openPopup();
+    }
 
     render() {
         try {
             var listAllItems = this.props.data.map((data) => {
                 if (data.hasOwnProperty("name"))
                     return (
-                        <TouchableWithoutFeedback key={data.name}>
+                        <TouchableWithoutFeedback key={data.name} onPress={()=> this.onPressItem(data)}>
                             <View style={[styleHome.borderBottom, styleBase.background2, style.itemHeight, {
                                 flexDirection: 'row',
                                 flex: 1
@@ -249,7 +259,6 @@ class LibraryItems extends React.PureComponent {
 
 class NotFound extends React.PureComponent {
 
-
     render() {
 
         return (
@@ -262,4 +271,8 @@ class NotFound extends React.PureComponent {
     }
 }
 
-export default Library;
+const mapDispatchToProps = {
+    openPopup,
+    renderPopup
+};
+export default connect(null,mapDispatchToProps)(Library);

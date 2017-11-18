@@ -4,12 +4,14 @@ import styleBase from "../../style/base";
 import styleHome from "../../style/home";
 import style from '../../style/POS';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {numberwithThousandsSeparator} from '../../Reusable/Function';
+import {TextInputNormal} from '../../Reusable/Text';
 
 class CustomAmount extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            title: 'ghi chú',
+            title: '',
             customAmount: 0
         }
     }
@@ -33,32 +35,36 @@ class CustomAmount extends React.PureComponent {
         }
 
     }
-    addToCategories()
-    {
-        this.props.addToList(this.state.title,this.state.customAmount);
+
+    addToCategories() {
+        this.props.addToList(this.state.title, this.state.customAmount);
         this.setState(
             {
-                customAmount:0
+                customAmount: 0
             }
         )
     }
 
     numberwithThousandsSeparator(x) {
-        let parts = x.toString().split(",");
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        return parts.join(".");
+        return numberwithThousandsSeparator(x);
     }
 
     render() {
         return (
-            <View style={[styleHome.container,styleBase.background4]}>
+            <View style={[styleHome.container, styleBase.background4]}>
                 <View style={[{
                     flex: 1,
                     flexDirection: 'row',
                     alignItems: 'center'
                 }, styleHome.borderButtonCustomAmount, style.paddingContent]}>
                     <View style={{flex: 4, paddingHorizontal: 10}}>
-                        <Text style={styleBase.font14}>{this.state.title}</Text>
+                        <TextInputNormal placeholder={"ghi chú"}
+                                         value={this.state.title}
+                                         onChangeText={(text) => {
+                                             this.setState({title: text})
+                                         }}
+                                         numberOfLines={2}
+                        />
                     </View>
                     <View style={[{
                         flex: 6,
@@ -168,7 +174,7 @@ class CustomAmount extends React.PureComponent {
                             </TouchableWithoutFeedback>
                         </View>
                     </View>
-                    <TouchableWithoutFeedback onPress={()=> this.state.customAmount !== 0 && this.addToCategories()}>
+                    <TouchableWithoutFeedback onPress={() => this.state.customAmount !== 0 && this.addToCategories()}>
                         <View style={[{flex: 1}, styleHome.borderButtonCustomAmount, styleHome.textCenterOfTheBox]}>
                             <Text style={[styleBase.font32, styleBase.color2]}> + </Text>
                         </View>
