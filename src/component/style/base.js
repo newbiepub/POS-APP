@@ -38,12 +38,12 @@ const styles = EStyleSheet.create({
     background5: {
         backgroundColor: '#e5e5e5'
     },
-    //lightPurple
+    //darkGray
     color6: {
-        color: '#777791'
+        color: '#a3a3a3'
     },
     background6: {
-        backgroundColor: '#777791'
+        backgroundColor: '#a3a3a3'
     },
     container: {
         flex: 1

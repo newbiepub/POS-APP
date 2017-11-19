@@ -2,6 +2,7 @@ import EStyleSheet from "react-native-extended-stylesheet";
 
 const styleHome = EStyleSheet.create({
     $widthSize: 70,
+    $color2:"#6893d8",
     container: {
         flex: 1,
         margin: 20
@@ -99,6 +100,22 @@ const styleHome = EStyleSheet.create({
         borderRadius: 50,
         width: 20,
         height: 20
+    },
+    listItem: {
+        marginTop: "$widthSize"
+    },
+//    Item
+    itemBar: {
+        height:'$widthSize',
+
+    },
+    itemIcon:{
+        height:'$widthSize',
+        width:'$widthSize',
+        backgroundColor:'$color2'
+    },
+    categoryBar:{
+        height:'$widthSize',
     }
 });
 

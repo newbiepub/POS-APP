@@ -1,7 +1,7 @@
 import React from "react";
 import {Text, View} from "react-native";
-import styleProduct from "../../style/product";
-import styleBase from "../../style/base";
+import styleProduct from "../../../style/product";
+import styleBase from "../../../style/base";
 
 class ProductItem extends React.PureComponent {
     constructor(props) {

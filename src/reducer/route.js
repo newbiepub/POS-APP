@@ -1,7 +1,7 @@
 import {ROUTE} from "../constant/constant";
 
 const initialState = {
-    currentRoute: "POS",
+    currentRoute: "item",
     routeMap: [
         {id: "POS", name: "Điểm bán hàng"},
         {id: "invoice",name: "Hoá đơn"},

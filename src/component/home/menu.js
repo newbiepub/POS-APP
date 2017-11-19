@@ -71,7 +71,7 @@ class Menu extends React.PureComponent {
     _MenuItem = ({item}) => (
         <TouchableOpacity onPress={() => this.onChangeRoute(item.id)} style={[styleHome.menuItem]}>
             <Text
-                style={[styleBase.font16, {fontWeight: "600"}, this.state.currentRoute === item.id ? styleBase.color4 : styleBase.color6]}>{item.name}</Text>
+                style={[styleBase.font16, {fontWeight: "600"}, this.props.currentRoute === item.id ? styleBase.color4 : styleBase.color6]}>{item.name}</Text>
         </TouchableOpacity>
     );
 

@@ -2,17 +2,17 @@ import React from "react";
 import {connect} from "react-redux";
 import {Text, TouchableOpacity, View} from "react-native";
 
-import SortableGrid from "../../sortableGrid/sortableGrid";
+import SortableGrid from "../../../sortableGrid/sortableGrid";
 import ProductItem from "./productItem";
-import AddItem from '../../popup/Item/createItem';
-import ViewItem from '../../popup/Item/viewItem';
+import AddItem from '../../../popup/Item/createItem';
+import ViewItem from '../../../popup/Item/viewItem';
 
-import styleBase from "../../style/base";
-import styleProduct from "../../style/product";
+import styleBase from "../../../style/base";
+import styleProduct from "../../../style/product";
 
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-import {openPopup,renderPopup} from '../../../action/popup';
+import {openPopup,renderPopup} from '../../../../action/popup';
 
 class AddProduct extends React.PureComponent {
     constructor(props) {

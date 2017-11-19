@@ -6,8 +6,7 @@ import styleHome from "../../style/home";
 import style from '../../style/POS';
 import * as Animate from "react-native-animatable";
 import Entypo from 'react-native-vector-icons/Entypo';
-import Menu from '../menu';
-import ProductGrid from "../product/productGrid";
+import ProductGrid from "../item/product/productGrid";
 import CustomAmount from './customAmount';
 import Library from './library';
 import {TextLarge, TextNormal} from '../../reusable/text';
@@ -18,7 +17,6 @@ class POS extends React.PureComponent {
         super(props);
         let {width, height} = Dimensions.get('window');
         this.state = {
-            menuVisible: false,
             currentView: 'GridItems',
             clearSalesVisible: false,
             titleSize: {w: 0, h: 0},
@@ -40,9 +38,7 @@ class POS extends React.PureComponent {
     }
 
     openMenu() {
-        this.setState({
-            menuVisible: true
-        })
+      this.props.openMenu();
     }
 
     changeView(view) {
@@ -141,7 +137,7 @@ class POS extends React.PureComponent {
         return (
             <Animate.View animation={"fadeIn"} duration={750} style={[styleBase.container]}
                           onLayout={(event => this.getWindowSize(event))}>
-                <Menu visible={this.state.menuVisible} instant={this}/>
+
                 {/*----------------------------------------Header-------------------------------------*/}
 
                 <View style={[styleHome.header, styleHome.heightHeader]}>

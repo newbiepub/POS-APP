@@ -50,7 +50,7 @@ class App extends PureComponent {
                     ref={(ref) => {
                         this.navigator = ref;
                     }}
-                    initialRoute={{id: 'login', index: 0}}
+                    initialRoute={{id: 'Home', index: 0}}
                     configureScene={this.configureScene.bind(this)}
                     renderScene={this.renderScene.bind(this)}
                     onWillFocus={this.onWillFocus.bind(this)}
