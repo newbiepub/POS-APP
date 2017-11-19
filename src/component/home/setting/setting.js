@@ -1,7 +1,7 @@
 import React from "react";
 import {View} from "react-native";
 import {connect} from "react-redux";
-import styleBase from "../style/base";
+import styleBase from "../../style/base";
 
 class Setting extends React.PureComponent {
     constructor(props) {

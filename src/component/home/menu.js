@@ -82,7 +82,7 @@ class Menu extends React.PureComponent {
                 transparent={true}
                 visible={this.props.visible}
                 onRequestClose={() => {
-                    alert("Modal has been closed.")
+                    this.closeMenu();
                 }}
                 supportedOrientations={['portrait', 'landscape']}
             >

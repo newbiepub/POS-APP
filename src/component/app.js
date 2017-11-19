@@ -3,9 +3,7 @@ import {StatusBar, View, Platform} from "react-native";
 import { Navigator } from "react-native-deprecated-custom-components";
 import styleBase from "./style/base";
 import Login from "./account/login";
-import Home from "./home/product/productGrid";
-import POS from './home/POS/POS';
-import SortableGrid from './sortableGrid/sortableGrid';
+import Home from './home/home';
 
 import EStyleSheet from "react-native-extended-stylesheet";
 import Popup from "./popup/popup";
@@ -22,8 +20,8 @@ class App extends PureComponent {
         switch (route.id) {
             case "login":
                 return <Login navigator={navigator}/>;
-            case "POS":
-                return <POS navigator={navigator}/>
+            case "Home":
+                return <Home navigator={navigator}/>
 
         }
     }
@@ -52,7 +50,7 @@ class App extends PureComponent {
                     ref={(ref) => {
                         this.navigator = ref;
                     }}
-                    initialRoute={{id: 'POS', index: 0}}
+                    initialRoute={{id: 'login', index: 0}}
                     configureScene={this.configureScene.bind(this)}
                     renderScene={this.renderScene.bind(this)}
                     onWillFocus={this.onWillFocus.bind(this)}

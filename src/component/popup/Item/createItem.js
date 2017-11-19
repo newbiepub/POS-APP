@@ -1,6 +1,6 @@
 import React from "react";
 import {ScrollView, View, Dimensions, TouchableWithoutFeedback, Text, Platform,} from "react-native";
-import {TextInputNormal, TextLarge, TextSmall, TextInputPriceMask} from '../../Reusable/Text';
+import {TextInputNormal, TextLarge, TextSmall, TextInputPriceMask} from '../../reusable/text';
 
 import {Navigator} from "react-native-deprecated-custom-components";
 import styleBase from "../../style/base";
@@ -325,7 +325,6 @@ class AddItem extends React.PureComponent {
                             />
                         </View>
                     </View>
-Pla
                 </KeyboardAwareScrollView>
             </View>
         )

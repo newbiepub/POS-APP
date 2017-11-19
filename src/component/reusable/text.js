@@ -5,7 +5,7 @@ import styleBase from "../style/base";
 import styleHome from '../style/home';
 import styleModalItems from '../style/modalItem';
 import styleProduct from "../style/product";
-import {numberwithThousandsSeparator} from '../Reusable/Function';
+import {numberwithThousandsSeparator} from './function';
 
 export class TextInputNormal extends React.PureComponent {
     constructor(props) {

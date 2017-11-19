@@ -4,8 +4,8 @@ import {Text, TouchableOpacity, View} from "react-native";
 
 import SortableGrid from "../../sortableGrid/sortableGrid";
 import ProductItem from "./productItem";
-import AddItem from '../../popup/Item/CreateItem';
-import ViewItem from '../../popup/Item/ViewItem';
+import AddItem from '../../popup/Item/createItem';
+import ViewItem from '../../popup/Item/viewItem';
 
 import styleBase from "../../style/base";
 import styleProduct from "../../style/product";

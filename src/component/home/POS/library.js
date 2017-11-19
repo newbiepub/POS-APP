@@ -1,11 +1,11 @@
 import React from "react";
 import {Text, View, TouchableWithoutFeedback, TextInput, ScrollView} from "react-native";
-import {TextLarge, TextSmall, TextNormal} from '../../Reusable/Text';
+import {TextLarge, TextSmall, TextNormal} from '../../reusable/text';
 import styleBase from "../../style/base";
 import styleHome from "../../style/home";
 import style from '../../style/POS';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import ViewItem from '../../popup/Item/ViewItem';
+import ViewItem from '../../popup/Item/viewItem';
 import {connect} from "react-redux";
 import {openPopup,renderPopup} from '../../../action/popup';
 class Library extends React.PureComponent {

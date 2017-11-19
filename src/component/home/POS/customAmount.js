@@ -4,8 +4,8 @@ import styleBase from "../../style/base";
 import styleHome from "../../style/home";
 import style from '../../style/POS';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {numberwithThousandsSeparator} from '../../Reusable/Function';
-import {TextInputNormal} from '../../Reusable/Text';
+import {numberwithThousandsSeparator} from '../../reusable/function';
+import {TextInputNormal} from '../../reusable/text';
 
 class CustomAmount extends React.PureComponent {
     constructor(props) {

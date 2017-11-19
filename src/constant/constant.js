@@ -11,7 +11,7 @@ export const ASYNC_STORAGE = {
     AUTH_TOKEN: "AUTH_TOKEN"
 };
 
-//Popup
+//popup
 export const POPUP = {
     OPEN_POPUP: "OPEN_POPUP",
     CLOSE_POPUP: "CLOSE_POPUP",

@@ -1,6 +1,6 @@
 import React from "react";
 import {ScrollView, View, Dimensions, TouchableWithoutFeedback, Text, TextInput,} from "react-native";
-import {TextInputNormal, TextLarge, TextSmall, TextNormal, TextInputNumber} from '../../Reusable/Text';
+import {TextInputNormal, TextLarge, TextSmall, TextNormal, TextInputNumber} from '../../reusable/text';
 
 import {Navigator} from "react-native-deprecated-custom-components";
 import styleBase from "../../style/base";
