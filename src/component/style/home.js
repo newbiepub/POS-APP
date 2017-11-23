@@ -2,6 +2,7 @@ import EStyleSheet from "react-native-extended-stylesheet";
 
 const styleHome = EStyleSheet.create({
     $widthSize: 70,
+    $marginTopInModalEachItem: 40,
     $color2:"#6893d8",
     container: {
         flex: 1,
@@ -104,7 +105,7 @@ const styleHome = EStyleSheet.create({
     listItem: {
         marginTop: "$widthSize"
     },
-//    Item
+//    product
     itemBar: {
         height:'$widthSize',
 
@@ -116,6 +117,9 @@ const styleHome = EStyleSheet.create({
     },
     categoryBar:{
         height:'$widthSize',
+    },
+    modalItem:{
+        marginTop: "$marginTopInModalEachItem"
     }
 });
 

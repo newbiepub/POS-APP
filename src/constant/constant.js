@@ -22,7 +22,7 @@ export const POPUP = {
 export const ROUTE = {
     GO_TO_ROUTE: "GO_TO_ROUTE"
 };
-//Item
+//product
 export const ITEM = {
     CREATE_ITEM: "CREATE_ITEM",
     ADD_TO_DISCOUNT: "ADD_TO_DISCOUNT",

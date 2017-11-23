@@ -2,17 +2,15 @@ import React from "react";
 import {ScrollView, View, Dimensions, TouchableWithoutFeedback, Text, TextInput,} from "react-native";
 import {TextInputNormal, TextLarge, TextSmall, TextNormal, TextInputNumber} from '../../reusable/text';
 
-import {Navigator} from "react-native-deprecated-custom-components";
 import styleBase from "../../style/base";
 import styleHome from '../../style/home';
 import styleModalItems from '../../style/modalItem';
-import styleProduct from "../../style/product";
+
 import {connect} from "react-redux";
 import {closePopup} from '../../../action/popup';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
 
+import {numberwithThousandsSeparator} from '../../reusable/function';
 class ViewItem extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -30,28 +28,6 @@ class ViewItem extends React.PureComponent {
     }
 
 
-    getNumberInput(name, num) {
-
-        if (isNaN(num) !== true) {
-            switch (name) {
-                case "itemPrice" :
-                    this.setState({itemPrice: num});
-                    return;
-                case "newItemPrice" :
-                    this.setState({newItemPrice: num});
-                    return;
-            }
-        }
-    }
-
-
-    async create() {
-        // console.warn(JSON.stringify(this.props.account.access_token));
-        let {access_token} = this.props.account;
-        let response = await  fetch(`http://localhost:3000/api/category/createCategory?access_token=${access_token}&companyId=helo&employeeId=&nam=long`);
-        response = await response.json();
-        console.warn('api', JSON.stringify(response))
-    }
 
     render() {
         return (
@@ -71,7 +47,7 @@ class ViewItem extends React.PureComponent {
 
                     <View style={[{flex: 1, flexDirection: 'row'}]}>
                         <TextLarge>{this.props.itemData.name || ""}</TextLarge>
-                        <TextLarge>  {this.state.currentPrice * this.state.itemQuatity || ""} đ</TextLarge>
+                        <TextLarge>  { numberwithThousandsSeparator(this.state.currentPrice * this.state.itemQuatity) || ""} đ</TextLarge>
                     </View>
 
                     <TouchableWithoutFeedback onPress={() => {
@@ -163,7 +139,7 @@ class ListPrice extends React.PureComponent {
                             <TextSmall numberOfLines={2}
                                        style={[styleBase.bold, this.state.currentType === data.type && styleBase.color4, {flex: 1}]}>{data.type}</TextSmall>
                             <TextSmall numberOfLines={2}
-                                       style={this.state.currentType === data.type && styleBase.color4}>{data.value}đ</TextSmall>
+                                       style={this.state.currentType === data.type && styleBase.color4}>{numberwithThousandsSeparator(data.value)}đ</TextSmall>
                         </View>
                     </TouchableWithoutFeedback>
                 )

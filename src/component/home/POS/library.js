@@ -5,7 +5,7 @@ import styleBase from "../../style/base";
 import styleHome from "../../style/home";
 import style from '../../style/POS';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import ViewItem from '../../popup/Item/viewItem';
+import ViewItem from '../../popup/product/viewProduct';
 import {connect} from "react-redux";
 import {openPopup,renderPopup} from '../../../action/popup';
 class Library extends React.PureComponent {

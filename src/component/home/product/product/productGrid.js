@@ -4,8 +4,8 @@ import {Text, TouchableOpacity, View} from "react-native";
 
 import SortableGrid from "../../../sortableGrid/sortableGrid";
 import ProductItem from "./productItem";
-import AddItem from '../../../popup/Item/createItem';
-import ViewItem from '../../../popup/Item/viewItem';
+import AddItem from '../../../popup/product/createModifyProduct';
+import ViewItem from '../../../popup/product/viewProduct';
 
 import styleBase from "../../../style/base";
 import styleProduct from "../../../style/product";
@@ -14,47 +14,39 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 
 import {openPopup,renderPopup} from '../../../../action/popup';
 
-class AddProduct extends React.PureComponent {
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        return (
-            <View style={[styleProduct.addItemButton, styleBase.center]}>
-                <Ionicons name='ios-add-outline'
-                          style={[styleBase.vector32, styleBase.textE5]}
-                />
-            </View>
-        )
-    }
-}
-
-export {AddProduct};
+// class AddProduct extends React.PureComponent {
+//     constructor(props) {
+//         super(props);
+//     }
+//
+//     render() {
+//         return (
+//             <View style={[styleProduct.addItemButton, styleBase.center]}>
+//                 <Ionicons name='ios-add-outline'
+//                           style={[styleBase.vector32, styleBase.textE5]}
+//                 />
+//             </View>
+//         )
+//     }
+// }
+//
+// export {AddProduct};
 
 class ProductGrid extends React.PureComponent {
     constructor(props) {
         super(props);
     }
 
-    itemPress(item) {
+    async itemPress(item) {
 
-        this.props.renderPopup(
+       await this.props.renderPopup(
             <ViewItem itemData={item}/>
         );
         this.props.openPopup();
     }
 
-    addItemPress() {
-       this.props.renderPopup(
-           <AddItem/>
-       );
-        this.props.openPopup();
-    }
-
     render() {
-        let arr = this.props.data;
-        arr.push({});
+
         return (
             <View style={[styleBase.grow, styleProduct.productWrapper, styleBase.background5]}>
                 <SortableGrid
@@ -68,9 +60,6 @@ class ProductGrid extends React.PureComponent {
                             return <ProductItem key={item.name} data={item} itemPress={() => {
                                 this.itemPress(item)
                             }}/>
-                        return <AddProduct key={"//add//"} itemPress={() => {
-                            this.addItemPress()
-                        }}/>
 
                     })}
 

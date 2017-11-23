@@ -2,7 +2,7 @@ import React, { PureComponent } from "react";
 import { View} from "react-native";
 import styleBase from "../style/base";
 import POS from './POS/pointOfSale';
-import Item from './item/items';
+import Item from './product/product';
 import Setting from './setting/setting';
 import {connect}from 'react-redux';
 import * as _ from "lodash";

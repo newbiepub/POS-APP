@@ -63,7 +63,8 @@ class CustomAmount extends React.PureComponent {
                                          onChangeText={(text) => {
                                              this.setState({title: text})
                                          }}
-                                         numberOfLines={2}
+                                         multiline={true}
+                                         style={{justifyContent:'center'}}
                         />
                     </View>
                     <View style={[{

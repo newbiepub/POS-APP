@@ -2,13 +2,13 @@ import { combineReducers } from 'redux';
 import account from "./account";
 import popup from "./popup";
 import route from "./route";
-import item from "./item";
+import product from "./product";
 
 const appReducers = combineReducers({
     account,
     popup,
     route,
-    item
+    product
 });
 
 export default appReducers;

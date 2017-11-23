@@ -5,7 +5,8 @@ const styleHome = EStyleSheet.create({
             height: 300,
         },
         modalTextInput: {
-            paddingBottom: 20
+            paddingHorizontal: 10,
+            paddingVertical:20
         },
         modalTextInputFocus: {
             borderBottomWidth: 2,

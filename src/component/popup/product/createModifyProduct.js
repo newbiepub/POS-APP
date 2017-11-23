@@ -1,8 +1,6 @@
 import React from "react";
 import {ScrollView, View, Dimensions, TouchableWithoutFeedback, Text, Platform,} from "react-native";
 import {TextInputNormal, TextLarge, TextSmall, TextInputPriceMask} from '../../reusable/text';
-
-import {Navigator} from "react-native-deprecated-custom-components";
 import styleBase from "../../style/base";
 import styleHome from '../../style/home';
 import styleModalItems from '../../style/modalItem';
@@ -12,6 +10,8 @@ import {closePopup} from '../../../action/popup';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
+import PriceGrid from '../../home/product/price/priceGrid';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 class CreateItem extends React.PureComponent {
     constructor(props) {
@@ -19,16 +19,15 @@ class CreateItem extends React.PureComponent {
         var {width, height} = Dimensions.get('window');
         this.state = {
             width,
-            itemName: "",
-            itemPrice: 0,
-            itemSKU: "",
-            description: "",
+            itemName: this.props.hasOwnProperty("item") ? this.props.item.name : "",
+            itemPrice: this.props.hasOwnProperty("item") ? this.props.item.prices[0].value : "",
+            itemSKU: this.props.hasOwnProperty("item") ? this.props.item.prices[0].SKU : "",
+            description: this.props.hasOwnProperty("item") ? this.props.item.description : "",
             newItemName: "",
             newItemPrice: 0,
             newItemSKU: "",
-            category: '',
+            category: this.props.hasOwnProperty("item") ? this.props.item.category : '',
             currentView: 'Thêm mặt hàng',
-            modalWidth: 0
         };
     }
 
@@ -37,11 +36,7 @@ class CreateItem extends React.PureComponent {
         this.props.closePopup();
     }
 
-    measureView(event) {
-        this.setState({
-            modalWidth: event.nativeEvent.layout.width
-        })
-    }
+
 
     ChangeItem(name, text) {
         switch (name) {
@@ -68,34 +63,6 @@ class CreateItem extends React.PureComponent {
 
     }
 
-    async getNumberInput(name, num) {
-        let newNum =await num.replace(/\./g, '');
-        if (isNaN(newNum) !== true) {
-            switch (name) {
-                case "itemPrice" :
-                    this.setState({itemPrice: newNum});
-                    return;
-                case "newItemPrice" :
-                    this.setState({newItemPrice: newNum});
-                    return;
-            }
-        }
-    }
-
-    renderScene(route, navigator) {
-        switch (route.id) {
-            case "AddItem":
-                return <AddItem navigator={navigator} {...this.state} instant={this}/>;
-            case "Category":
-                return <Category modalWidth={this.state.modalWidth} category={this.state.category}
-                                 changeCategory={(category) => this.setState({category})}/>
-
-        }
-    }
-
-    onWillFocus(route) {
-
-    }
 
     async create() {
         // console.warn(JSON.stringify(this.props.account.access_token));
@@ -105,16 +72,9 @@ class CreateItem extends React.PureComponent {
         console.warn('api', JSON.stringify(response))
     }
 
-    configureScene(route, navigator) {
-        if (route.id === "POS") {
-            return Navigator.SceneConfigs.FadeAndroid
-        }
-        return Navigator.SceneConfigs.PushFromRight
-    }
-
     render() {
         return (
-            <View style={[styleBase.container, styleBase.background4,]} onLayout={(event) => this.measureView(event)}>
+            <View style={[styleBase.container, styleBase.background4,]}>
                 {/*-----------Header_____________------*/}
                 <View style={[styleHome.heightHeader, styleBase.centerHorizontal, styleHome.borderBottom, {
                     flexDirection: 'row'
@@ -130,10 +90,9 @@ class CreateItem extends React.PureComponent {
                         </TouchableWithoutFeedback>
                     }
                     {
-                        this.state.currentView === 'Loại hàng' &&
+                        this.state.currentView !== 'Thêm mặt hàng' &&
                         <TouchableWithoutFeedback onPress={() => {
                             this.setState({currentView: 'Thêm mặt hàng'});
-                            this.navigator.pop()
                         }}>
                             <View style={[styleHome.menuButton, styleHome.heightHeader]}>
                                 <Ionicons name={"md-arrow-back"} style={[styleBase.vector26]}/>
@@ -145,28 +104,44 @@ class CreateItem extends React.PureComponent {
                         <TextLarge>{this.state.currentView}</TextLarge>
                     </View>
                     {this.state.currentView === 'Thêm mặt hàng' &&
-                    <TouchableWithoutFeedback onPress={() => {
-                        this.create()
-                    }}>
-                        <View
-                            style={[styleBase.center, styleBase.background2, styleHome.heightHeader, styleHome.boxTitle]}>
+                    (this.props.hasOwnProperty("item") ?
+                            <TouchableWithoutFeedback onPress={() => {
+                                this.create()
+                            }}>
+                                <View
+                                    style={[styleBase.center, styleBase.background2, styleHome.heightHeader, styleHome.boxTitle]}>
 
-                            <TextLarge style={[styleBase.color5]}>Thêm</TextLarge>
-                        </View>
-                    </TouchableWithoutFeedback>
+                                    <TextLarge style={[styleBase.color5]}>Sửa</TextLarge>
+                                </View>
+                            </TouchableWithoutFeedback> :
+                            <TouchableWithoutFeedback onPress={() => {
+                                this.create()
+                            }}>
+                                <View
+                                    style={[styleBase.center, styleBase.background2, styleHome.heightHeader, styleHome.boxTitle]}>
+
+                                    <TextLarge style={[styleBase.color5]}>Thêm</TextLarge>
+                                </View>
+                            </TouchableWithoutFeedback>
+                    )
                     }
 
                 </View>
                 <View style={{flex: 1}}>
-                    <Navigator
-                        ref={(ref) => {
-                            this.navigator = ref;
-                        }}
-                        initialRoute={{id: 'AddItem', index: 0}}
-                        configureScene={this.configureScene.bind(this)}
-                        renderScene={this.renderScene.bind(this)}
 
-                    />
+                    {
+                        this.state.currentView === 'Thêm mặt hàng' &&
+                        <AddItem navigator={navigator} {...this.state} instant={this}/>
+                    }
+                    {
+                        this.state.currentView === 'Loại hàng' &&
+                        <Category category={this.state.category}
+                                  changeCategory={(category) => this.setState({category})}/>
+                    }
+                    {
+                        this.state.currentView === 'Thêm giá' &&
+                        <AddPrice listPrice={this.props.item.prices}/>
+                    }
                 </View>
 
 
@@ -188,24 +163,8 @@ class AddItem extends React.PureComponent {
     }
 
 
-    changeViewCategory() {
-        this.props.instant.setState({currentView: 'Loại hàng'});
-        this.props.navigator.push({
-            id: 'Category',
-        })
-    }
-
-    numberwithThousandsSeparator(x) {
-        try{
-            let parts = x.toString().split(",");
-            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-            return parts.join(".");
-        }catch(e)
-        {
-            console.warn(e);
-            return x + "đ";
-        }
-
+    changeView(id, name) {
+        this.props.instant.setState({currentView: name});
 
     }
 
@@ -241,7 +200,7 @@ class AddItem extends React.PureComponent {
                         />
                         {/*------------------category-------------*/}
                         <TouchableWithoutFeedback onPress={() => {
-                            this.changeViewCategory()
+                            this.changeView('Category', "Loại hàng")
                         }}>
                             <View style={[styleHome.boxPadding, styleBase.centerVertical, {
                                 flexDirection: 'row',
@@ -254,12 +213,12 @@ class AddItem extends React.PureComponent {
                         {/*----------------price and SKU-------------------*/}
                         <View style={[styleModalItems.modalItem, {flexDirection: 'row'}]}>
                             <TextInputPriceMask placeholder={"0đ"}
-                                             value={instant.state.itemPrice.toString()}
-                                             keyboardType={'numeric'}
-                                             onChangeText={(num) => {
-                                                instant.setState({itemPrice: num})
-                                             }}
-                                             style={[styleModalItems.modalTextInput, {flex: 1}]}
+                                                value={instant.state.itemPrice.toString()}
+                                                keyboardType={'numeric'}
+                                                onChangeText={(num) => {
+                                                    instant.setState({itemPrice: num})
+                                                }}
+                                                style={[styleModalItems.modalTextInput, {flex: 1}]}
                             />
                             <TextInputNormal placeholder={"Mã SKU"}
                                              value={instant.state.itemSKU}
@@ -273,46 +232,16 @@ class AddItem extends React.PureComponent {
                         {/*--------------------add price --------------------*/}
                         <View style={[styleModalItems.modalItem,]}>
                             <TouchableWithoutFeedback onPress={() => {
-                                this.setState({isAddItem: !this.state.isAddItem})
+                                this.changeView('AddPrice', "Thêm giá")
                             }}>
                                 <View style={[styleHome.boxPadding, styleBase.centerVertical, {
                                     flexDirection: 'row',
                                     paddingHorizontal: 0
                                 }]}>
                                     <TextLarge style={{flex: 1}}>Thêm giá</TextLarge>
-                                    <EvilIcons name="chevron-down" style={[styleBase.vector32, this.state.isAddItem && {
-                                        transform: [{rotate: '180 deg'}]
-                                    }]}/>
+                                    <EvilIcons name="chevron-right" style={[styleBase.vector32]}/>
                                 </View>
                             </TouchableWithoutFeedback>
-                            {
-                                this.state.isAddItem &&
-                                <View>
-                                    <TextInputNormal placeholder={"Tên"} value={instant.state.newItemName}
-                                                     onChangeText={(text) => instant.ChangeItem("newItemName", text)}
-                                                     style={[styleModalItems.modalTextInput, {flex: 1}]}
-                                    />
-                                    <View style={[{flexDirection: 'row', marginTop: 20}]}>
-                                        <TextInputPriceMask placeholder={"0đ"}
-                                                            value={instant.state.newItemPrice.toString()}
-                                                            keyboardType={'numeric'}
-                                                            onChangeText={(num) => {
-                                                                    instant.setState({newItemPrice: num})
-                                                            }}
-                                                            style={[styleModalItems.modalTextInput, {flex: 1}]}
-                                        />
-                                        <TextInputNormal placeholder={"Mã SKU"}
-                                                         value={instant.state.newItemSKU}
-                                                         onChangeText={(text) => {
-                                                             instant.ChangeItem("newItemSKU", text)
-                                                         }}
-                                                         style={[styleModalItems.modalTextInput, {flex: 1}]}
-                                        />
-
-                                    </View>
-                                </View>
-
-                            }
 
                         </View>
                         <View style={[styleModalItems.modalItem]}>
@@ -389,6 +318,83 @@ class Category extends React.PureComponent {
                 <View style={styleHome.paddingModal}>
                     {listCategory}
                 </View>
+            </View>
+        )
+    }
+}
+
+class RowComponent extends React.Component {
+    render() {
+        let data = this.props.data;
+        return (
+            <View style={[styleHome.borderBottom, styleHome.borderTop, styleBase.center, {
+                flexDirection: 'row',
+                flex: 1
+            }]}>
+                <View style={{flex: 1, alignItems: 'center'}}>
+                    <TouchableWithoutFeedback
+                        underlayColor={'#eee'}
+                        style={{
+                            padding: 25,
+                            backgroundColor: '#F8F8F8',
+                            borderBottomWidth: 1,
+                            borderColor: '#eee',
+
+                        }}
+                        {...this.props.sortHandlers}
+                        delayLongPress={0}
+                    >
+                        <View>
+                            <Entypo name="menu" style={[styleHome.iconHeader, styleBase.color3]}/>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </View>
+                <View style={{flex: 15}}>
+                    <TextInputNormal placeholder={"Tên"}
+                                     value={this.props.listPrice[this.props.listPrice.indexOf(data)].type}
+                                     onChangeText={(text) => this.props.listPrice[this.props.listPrice.indexOf(data)].type = text}
+                                     style={[styleModalItems.modalTextInput, {flex: 1}]}
+                    />
+                    <View style={[styleHome.borderTop, {flexDirection: 'row'}]}>
+                        <TextInputPriceMask placeholder={"0đ"}
+                                            value={this.props.data.value}
+                                            keyboardType={'numeric'}
+                            // onChangeText={(num) => {
+                            //     instant.setState({newItemPrice: num})
+                            // }}
+                                            style={[styleModalItems.modalTextInput, {flex: 1}]}
+                        />
+                        <TextInputNormal placeholder={"Mã SKU"}
+                            // onChangeText={(text) => {
+                            //     instant.ChangeItem("newItemSKU", text)
+                            // }}
+                                         style={[styleModalItems.modalTextInput, {flex: 1}]}
+                        />
+
+                    </View>
+                </View>
+                <View style={{flex: 1, alignItems: 'center'}}>
+                    <Ionicons name={"md-close"} style={[styleBase.vector26, styleBase.color1]}/>
+                </View>
+            </View>
+        )
+    }
+}
+
+class AddPrice extends React.PureComponent {
+    render() {
+
+        let order = Object.keys(this.props.listPrice) //Array of keys
+        return (
+            <View style={[styleHome.paddingModal, {flex: 1}]}>
+
+                <PriceGrid data={this.props.listPrice} style={{flex: 1}}
+                           order={order}
+                           onRowMoved={e => {
+                               this.props.listPrice.splice(e.from, 1);
+                               this.props.listPrice.splice(e.to, 0, e.row.data);
+                           }}
+                           renderRow={row => <RowComponent data={row} listPrice={this.props.listPrice}/>}/>
             </View>
         )
     }

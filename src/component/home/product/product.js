@@ -7,15 +7,20 @@ import {connect} from 'react-redux';
 import Entypo from 'react-native-vector-icons/Entypo';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
-class Item extends PureComponent {
+
+import {openPopup, renderPopup} from '../../../action/popup';
+import CreateModifyProductPopup from '../../popup/product/createModifyProduct';
+import CreateCategory from '../../popup/product/createCategory';
+
+class Product extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            list: [{id: 'allItem', name: 'Mặt hàng'}, {id: 'category', name: 'Loại hàng'}, {
+            list: [{id: 'allProduct', name: 'Mặt hàng'}, {id: 'category', name: 'Loại hàng'}, {
                 id: 'discount',
-                name: 'Khuyết mãi'
+                name: 'Khuyến mãi'
             }],
-            selected: {id: 'allItem', name: 'Mặt hàng'},
+            selected: {id: 'category', name: 'Loại hàng'},
         }
     }
 
@@ -86,7 +91,7 @@ class Item extends PureComponent {
                                            style={[styleBase.vector26, styleBase.background4, {alignSelf: 'center'}]}/>
                             </View>
                             <View style={[styleHome.boxTitle, styleHome.boxTitle, {flex: 1}]}>
-                                <TextInput value={this.state.searchText} placeholder={"Tìm kiếm ..."}
+                                <TextInput value={this.state.searchText} placeholder={`Tìm kiếm ${this.state.selected.name.toLowerCase()}...`}
                                            onChangeText={(text) => {
                                                this.setState({searchText: text})
                                            }} style={[styleBase.font16, {flex: 1}]}/>
@@ -101,12 +106,14 @@ class Item extends PureComponent {
 
                         {/*content*/}
                         {
-                            this.state.selected.id === 'allItem' &&
-                            <AllItem allItem={this.props.allItem}/>
+                            this.state.selected.id === 'allProduct' &&
+                            <AllProduct allItem={this.props.allItem} openPopup={() => this.props.openPopup()}
+                                        renderPopup={(renderContent) => this.props.renderPopup(renderContent)}/>
                         }
                         {
                             this.state.selected.id === 'category' &&
-                            <Category category={this.props.category}/>
+                            <Category allProduct={this.props.allItem} category={this.props.category} openPopup={() => this.props.openPopup()}
+                                      renderPopup={(renderContent) => this.props.renderPopup(renderContent)}/>
                         }
                         {
                             this.state.selected.id === 'discount' &&
@@ -120,12 +127,23 @@ class Item extends PureComponent {
     }
 }
 
-class AllItem extends React.PureComponent {
+class AllProduct extends React.PureComponent {
+
+    createItem() {
+        this.props.renderPopup(<CreateModifyProductPopup/>);
+        this.props.openPopup();
+    }
+
+    modifyItem(item) {
+        this.props.renderPopup(<CreateModifyProductPopup item={item}/>);
+        this.props.openPopup();
+    }
+
     render() {
         try {
             var listAllItem = this.props.allItem.map(data => {
                 return (
-                    <TouchableWithoutFeedback key={data.name} onPress={() => this.onPressItem(data)}>
+                    <TouchableWithoutFeedback key={data.name} onPress={() => this.modifyItem(data)}>
                         <View style={[styleHome.borderBottom, styleHome.itemBar, {
                             flexDirection: 'row',
                             flex: 1
@@ -156,7 +174,7 @@ class AllItem extends React.PureComponent {
 
             <ScrollView>
                 <View style={[styleHome.paddingModal]}>
-                    <TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback onPress={() => this.createItem()}>
                         <View style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
                             <TextNormal style={[styleBase.color2]}>Thêm hàng</TextNormal>
                         </View>
@@ -172,6 +190,16 @@ class AllItem extends React.PureComponent {
 }
 
 class Category extends React.PureComponent {
+
+    createCategory() {
+        this.props.renderPopup(<CreateCategory allProduct={this.props.allProduct}/>);
+        this.props.openPopup();
+    }
+
+    modifyCategory(item) {
+        this.props.renderPopup(<CreateModifyProductPopup item={item}/>);
+        this.props.openPopup();
+    }
     render() {
         try {
             var listCategory = this.props.category.map(data => {
@@ -181,7 +209,7 @@ class Category extends React.PureComponent {
                             flexDirection: 'row',
                             flex: 1
                         }]}>
-                            <TextNormal style={{flex:1}}>{data.name}</TextNormal>
+                            <TextNormal style={{flex: 1}}>{data.name}</TextNormal>
                             <EvilIcons name="chevron-right" style={styleBase.vector32}/>
                         </View>
                     </TouchableWithoutFeedback>
@@ -197,7 +225,7 @@ class Category extends React.PureComponent {
 
             <ScrollView>
                 <View style={[styleHome.paddingModal]}>
-                    <TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback onPress={()=>this.createCategory()}>
                         <View style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
                             <TextNormal style={[styleBase.color2]}>Thêm loại</TextNormal>
                         </View>
@@ -211,12 +239,13 @@ class Category extends React.PureComponent {
         )
     }
 }
+
 class Discount extends React.PureComponent {
     render() {
         try {
             var listDiscount = this.props.allDiscount.map(data => {
                 return (
-                    <TouchableWithoutFeedback key={data.name} onPress={() => this.onPressItem(data)}>
+                    <TouchableWithoutFeedback key={data.name} onPress={() => this.modifyItem(data)}>
                         <View style={[styleHome.borderBottom, styleHome.itemBar, {
                             flexDirection: 'row',
                             flex: 1
@@ -227,14 +256,15 @@ class Discount extends React.PureComponent {
                                 alignItems: 'center'
                             }]}>
 
-                               <Octicons name={"tag"} style={[styleBase.vector26]}/>
+                                <Octicons name={"tag"} style={[styleBase.vector26]}/>
                             </View>
-                            <View style={[styleHome.boxTitle, styleBase.background4, {flex: 1}]}>
+                            <View style={[styleHome.boxTitle, styleBase.background4, styleHome.itemBar, {flex: 1}]}>
                                 <TextSmall style={{flex: 1}}>{data.name}</TextSmall>
                                 <TextSmall>{data.value}</TextSmall>
                             </View>
                         </View>
                     </TouchableWithoutFeedback>
+
                 )
             });
         }
@@ -245,29 +275,34 @@ class Discount extends React.PureComponent {
 
         return (
 
-            <ScrollView>
+            <View>
                 <View style={[styleHome.paddingModal]}>
                     <TouchableWithoutFeedback>
                         <View style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
                             <TextNormal style={[styleBase.color2]}>Thêm khuyến mãi</TextNormal>
                         </View>
                     </TouchableWithoutFeedback>
-                    <View style={[styleHome.listItem,styleHome.borderTop]}>
+                    <View style={[styleHome.listItem, styleHome.borderTop]}>
                         {listDiscount}
                     </View>
                 </View>
 
-            </ScrollView>
+            </View>
         )
     }
 }
+
 const mapStateToProps = (state) => {
     return {
         account: state.account,
-        allItem: state.item.allItem,
-        category: state.item.category,
-        allDiscount : state.item.allDiscount,
+        allItem: state.product.allItem,
+        category: state.product.category,
+        allDiscount: state.product.allDiscount,
 
     }
 };
-export default connect(mapStateToProps, null)(Item);
+const mapDispatchToProps = {
+    openPopup,
+    renderPopup
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Product);

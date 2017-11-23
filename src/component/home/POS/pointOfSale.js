@@ -6,7 +6,7 @@ import styleHome from "../../style/home";
 import style from '../../style/POS';
 import * as Animate from "react-native-animatable";
 import Entypo from 'react-native-vector-icons/Entypo';
-import ProductGrid from "../item/product/productGrid";
+import ProductGrid from "../product/product/productGrid";
 import CustomAmount from './customAmount';
 import Library from './library';
 import {TextLarge, TextNormal} from '../../reusable/text';
