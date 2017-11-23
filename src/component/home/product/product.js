@@ -20,7 +20,7 @@ class Product extends PureComponent {
                 id: 'discount',
                 name: 'Khuyến mãi'
             }],
-            selected: {id: 'category', name: 'Loại hàng'},
+            selected: {id: 'allProduct', name: 'Mặt hàng'},
         }
     }
 

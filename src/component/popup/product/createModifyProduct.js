@@ -140,7 +140,7 @@ class CreateItem extends React.PureComponent {
                     }
                     {
                         this.state.currentView === 'Thêm giá' &&
-                        <AddPrice listPrice={this.props.item.prices}/>
+                        <AddPrice listPrice={this.props.hasOwnProperty("item")?this.props.item.prices: []}/>
                     }
                 </View>
 
@@ -382,6 +382,12 @@ class RowComponent extends React.Component {
 }
 
 class AddPrice extends React.PureComponent {
+    constructor(props){
+        super(props);
+        this.state = {
+            data : this.props.listPrice.push({name:"", value:0, SKU:""})
+        }
+    }
     render() {
 
         let order = Object.keys(this.props.listPrice) //Array of keys
