@@ -50,7 +50,7 @@ class Product extends PureComponent {
                         this.onSelection(data)
                     }}>
                         <View
-                            style={[styleHome.boxPadding, this.state.selected.id === data.id && styleBase.background3, styleHome.heightHeader, styleBase.centerVertical]}>
+                            style={[styleHome.boxPadding, this.state.selected.id === data.id && styleBase.background3, styleBase.centerVertical]}>
                             <TextNormal
                                 style={[this.state.selected.id === data.id && styleBase.color4]}>{data.name}</TextNormal>
                         </View>

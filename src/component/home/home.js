@@ -45,9 +45,9 @@ class Home extends PureComponent {
                 }
                 {
                     this.state.route === "setting" &&
-                    <Setting openMenu={()=>{this.openMenu()}}/>
+                    <Setting openMenu={()=>{this.openMenu()}} title="Cài Đặt"
+                             navigator={this.props.navigator}/>
                 }
-
             </View>
         )
     }

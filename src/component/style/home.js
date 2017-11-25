@@ -45,7 +45,14 @@ const styleHome = EStyleSheet.create({
         flexDirection: 'row',
         backgroundColor: '#a3a3a3',
         height: '$widthSize',
-        alignItems: 'center'
+        alignItems: 'center',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 1.5,
     },
     menuButton: {
         alignItems: 'center',

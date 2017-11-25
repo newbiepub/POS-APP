@@ -1,13 +1,17 @@
 import React from "react";
-import * as _ from "lodash";
 import {connect} from "react-redux";
 import {
-    Modal, View, Text, Dimensions, TouchableOpacity,
-    TouchableWithoutFeedback, Animated, FlatList
+    Animated,
+    Dimensions,
+    FlatList,
+    Modal,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
 } from "react-native";
 import styleBase from "../style/base";
 import styleHome from "../style/home";
-import Entypo from 'react-native-vector-icons/Entypo';
 import {goToRoute} from "../../action/route";
 
 class Menu extends React.PureComponent {
@@ -41,7 +45,6 @@ class Menu extends React.PureComponent {
             this.state.marginLeft,    // The value to drive
             {
                 toValue: -this.state.width * 30 / 100,
-
             },           // Configuration
         ).start(() => {
             instant.setState({
@@ -57,7 +60,6 @@ class Menu extends React.PureComponent {
                 this.state.marginLeft,    // The value to drive
                 {
                     toValue: 0,
-
                 },           // Configuration
             ).start();
         }

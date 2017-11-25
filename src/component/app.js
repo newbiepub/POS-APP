@@ -20,7 +20,7 @@ class App extends PureComponent {
         switch (route.id) {
             case "login":
                 return <Login navigator={navigator}/>;
-            case "Home":
+            case "home":
                 return <Home navigator={navigator}/>
 
         }
@@ -31,7 +31,7 @@ class App extends PureComponent {
     }
 
     configureScene(route, navigator) {
-        if(route.id === "POS") {
+        if(route.id === "home") {
             return Navigator.SceneConfigs.FadeAndroid
         }
         return Navigator.SceneConfigs.PushFromRight
@@ -50,7 +50,7 @@ class App extends PureComponent {
                     ref={(ref) => {
                         this.navigator = ref;
                     }}
-                    initialRoute={{id: 'Home', index: 0}}
+                    initialRoute={{id: 'login', index: 0}}
                     configureScene={this.configureScene.bind(this)}
                     renderScene={this.renderScene.bind(this)}
                     onWillFocus={this.onWillFocus.bind(this)}

@@ -95,7 +95,7 @@ class LoginForm extends PureComponent {
                 this.refs["loginBtn"].transitionTo({transform: [{scale: 40}]}, 1000);
                InteractionManager.runAfterInteractions(() => {
                    this.props.navigator.resetTo({
-                       id: "POS"
+                       id: "home"
                    });
                    getCurrentUser();
                })

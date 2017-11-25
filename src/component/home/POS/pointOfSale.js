@@ -189,7 +189,6 @@ class POS extends React.PureComponent {
                                 this.addToList(title, price)
                             }}/>
                         }
-
                     </View>
                     {/*----------------------------------------Right-View-------------------------------------*/}
                     <View style={[styleHome.box, {flex: 0.4}]}>

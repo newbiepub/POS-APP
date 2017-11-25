@@ -1,6 +1,6 @@
 import EStyleSheet from "react-native-extended-stylesheet";
 
-const styles = EStyleSheet.create({
+const styleBase = EStyleSheet.create({
 
     // Orange
     color1: {
@@ -63,6 +63,10 @@ const styles = EStyleSheet.create({
     },
     grow: {
         flexGrow: 1
+    },
+    wrappedText: {
+        flexGrow: 1,
+        width: 0
     },
     row: {
         flexDirection: "row"
@@ -208,4 +212,4 @@ const styles = EStyleSheet.create({
     }
 });
 
-export default styles;
+export default styleBase;
