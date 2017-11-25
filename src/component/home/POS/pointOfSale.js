@@ -38,7 +38,7 @@ class POS extends React.PureComponent {
     }
 
     openMenu() {
-      this.props.openMenu();
+        this.props.openMenu();
     }
 
     changeView(view) {
@@ -140,11 +140,11 @@ class POS extends React.PureComponent {
 
                 {/*----------------------------------------Header-------------------------------------*/}
 
-                <View style={[styleHome.header, styleHome.heightHeader]}>
+                <View style={[styleHome.header]}>
                     <View>
                         <TouchableWithoutFeedback onPress={this.openMenu.bind(this)}>
-                            <View style={[styleHome.menuButton, styleHome.heightHeader]}>
-                                <Entypo name="menu" style={[styleHome.iconHeader, styleBase.color4]}/>
+                            <View style={[styleHome.menuButton]}>
+                                <Entypo name="menu" style={[styleBase.vector26, styleBase.color4]}/>
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
@@ -152,20 +152,20 @@ class POS extends React.PureComponent {
 
                         <TouchableWithoutFeedback onPress={() => this.changeView('GridItems')}>
                             <View
-                                style={[styleHome.itemHeader, styleHome.heightHeader, currentView === "GridItems" && styleBase.background2]}>
-                                <Entypo name="shop" style={[styleHome.iconHeader, styleBase.color4]}/>
+                                style={[styleHome.itemHeader, currentView === "GridItems" && styleBase.background2]}>
+                                <Entypo name="shop" style={[styleBase.vector26, styleBase.color4]}/>
                             </View>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={() => this.changeView('Library')}>
                             <View
-                                style={[styleHome.itemHeader, styleHome.heightHeader, currentView === "Library" && styleBase.background2]}>
-                                <Entypo name="list" style={[styleHome.iconHeader, styleBase.color4]}/>
+                                style={[styleHome.itemHeader, currentView === "Library" && styleBase.background2]}>
+                                <Entypo name="list" style={[styleBase.vector26, styleBase.color4]}/>
                             </View>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={() => this.changeView('CustomAmount')}>
                             <View
-                                style={[styleHome.itemHeader, styleHome.heightHeader, currentView === "CustomAmount" && styleBase.background2]}>
-                                <Entypo name="calculator" style={[styleHome.iconHeader, styleBase.color4]}/>
+                                style={[styleHome.itemHeader,currentView === "CustomAmount" && styleBase.background2]}>
+                                <Entypo name="calculator" style={[styleBase.vector26, styleBase.color4]}/>
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
@@ -196,14 +196,14 @@ class POS extends React.PureComponent {
                         <TouchableWithoutFeedback onLayout={(event) => this.getTitleBoxSize(event)}
                                                   onPress={this.openClearSales.bind(this)}>
                             <View
-                                style={[styleHome.boxTitle, styleHome.borderBottom, style.itemHeight, styleBase.background4, {
+                                style={[styleHome.titleBar, {
                                     zIndex: 6,
                                 }]}>
-                                <Text style={[styleBase.font18, {flex: 1}]}>
+                                <TextLarge style={[{flex: 1}]}>
                                     Đang mua
-                                </Text>
+                                </TextLarge>
                                 <Entypo name="chevron-thin-down" rotate={90}
-                                        style={[styleHome.iconHeader, styleBase.color3,
+                                        style={[styleBase.vector26, styleBase.color3,
                                             this.state.clearSalesVisible && {
                                                 transform: [{rotate: '180 deg'}]
                                             }]}/>
@@ -229,12 +229,8 @@ class POS extends React.PureComponent {
                         <ScrollView style={{flex: 1}}>
                             {listCurrentSale}
                         </ScrollView>
-                        <View style={[styleBase.background1, style.itemHeight, {
-                            justifyContent: 'center',
-                            alignItems: 'center'
-                        }]}>
-                            <Text numberOfLines={1} style={[styleBase.font18, {}]}> Thanh
-                                toán {this.getTotalPrice()}đ </Text>
+                        <View style={styleHome.buttonCharge}>
+                            <TextLarge numberOfLines={1}> Thanh toán {this.getTotalPrice()}đ </TextLarge>
                         </View>
                     </View>
                 </View>

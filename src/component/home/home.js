@@ -2,7 +2,8 @@ import React, { PureComponent } from "react";
 import { View} from "react-native";
 import styleBase from "../style/base";
 import POS from './POS/pointOfSale';
-import Item from './product/product';
+import Transaction from './transaction/transaction';
+import Product from './product/product';
 import Setting from './setting/setting';
 import {connect}from 'react-redux';
 import * as _ from "lodash";
@@ -35,8 +36,12 @@ class Home extends PureComponent {
                     <POS openMenu={()=>{this.openMenu()}}/>
                 }
                 {
+                    this.state.route === "transaction" &&
+                    <Transaction openMenu={()=>{this.openMenu()}}/>
+                }
+                {
                     this.state.route === "item" &&
-                    <Item openMenu={()=>{this.openMenu()}}/>
+                    <Product openMenu={()=>{this.openMenu()}}/>
                 }
                 {
                     this.state.route === "setting" &&

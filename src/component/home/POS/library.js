@@ -7,7 +7,8 @@ import style from '../../style/POS';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import ViewItem from '../../popup/product/viewProduct';
 import {connect} from "react-redux";
-import {openPopup,renderPopup} from '../../../action/popup';
+import {openPopup, renderPopup} from '../../../action/popup';
+
 class Library extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -58,12 +59,12 @@ class Library extends React.PureComponent {
                 <TouchableWithoutFeedback onPress={() => {
                     this.setState({currentViewLibrary: 'Danh sách'})
                 }}>
-                    <View style={[styleHome.boxTitle, style.itemHeight, styleHome.borderBottom]}>
+                    <View style={styleHome.titleBar}>
 
                         {
                             this.state.currentViewLibrary !== 'Danh sách' &&
                             <EvilIcons name="arrow-left"
-                                       style={[styleBase.vector26, {alignSelf: 'center'}]}/>
+                                       style={[styleHome.titleBarIconBack]}/>
                         }
 
                         <TextLarge>
@@ -76,17 +77,11 @@ class Library extends React.PureComponent {
                 <View style={{flex: 1}}>
                     {/*------Search------------*/}
 
-                    <View style={[styleHome.borderBottom, style.itemHeight, {
-                        flexDirection: 'row'
-                    }]}>
-                        <View style={[styleBase.background4, style.backgroundIconWidth, {
-                            flexDirection: 'row',
-                            justifyContent: 'center'
-                        }]}>
-                            <EvilIcons name="search"
-                                       style={[styleBase.vector26, styleBase.background4, {alignSelf: 'center'}]}/>
+                    <View style={styleHome.itemBar}>
+                        <View style={[styleHome.itemBarIcon,styleBase.background4]}>
+                            <EvilIcons name="search" style={[styleBase.vector26]}/>
                         </View>
-                        <View style={[styleHome.boxTitle, styleHome.boxTitle, {flex: 1}]}>
+                        <View style={[styleHome.itemBarTitle]}>
                             <TextInput value={this.state.searchText} placeholder={"Tìm kiếm ..."}
                                        onChangeText={(text) => {
                                            this.setState({searchText: text})
@@ -110,8 +105,8 @@ class Library extends React.PureComponent {
                         this.state.currentViewLibrary === 'Mặt hàng' &&
                         (
                             <LibraryItems instant={this}
-                                          openPopup={()=>this.props.openPopup()}
-                                          renderPopup={(item)=>this.props.renderPopup(item)}
+                                          openPopup={() => this.props.openPopup()}
+                                          renderPopup={(item) => this.props.renderPopup(item)}
                                           data={this.state.searchText === '' ? this.props.dataItems : this.getDataSearch()}/>
                         )
                     }
@@ -149,21 +144,15 @@ class LibraryHome extends React.PureComponent {
                             <TouchableWithoutFeedback onPress={() => {
                                 this.changeView('Mặt hàng')
                             }}>
-                                <View style={[styleHome.borderBottom, style.itemHeight, {
-                                    flexDirection: 'row'
-                                }]}>
-                                    <View style={[styleBase.background2, style.backgroundIconWidth, styleHome.box, {
-                                        flexDirection: 'row',
-                                        justifyContent: 'center'
-                                    }]}>
-                                        <EvilIcons name="archive"
-                                                   style={[styleBase.vector26, styleBase.background2, {alignSelf: 'center'}]}/>
+                                <View style={styleHome.itemBar}>
+                                    <View style={styleHome.itemBarIcon}>
+                                        <EvilIcons name="archive" style={[styleBase.vector26]}/>
                                     </View>
-                                    <View style={[styleHome.boxTitle, {flex: 1}]}>
-                                        <Text style={[styleBase.font14, {flex: 1}]}>
+                                    <View style={styleHome.itemBarTitle}>
+                                        <TextSmall style={{flex: 1}}>
                                             Mặt hàng
-                                        </Text>
-                                        <EvilIcons name="chevron-right" style={styleBase.vector26}/>
+                                        </TextSmall>
+                                        <EvilIcons name="chevron-right" style={styleBase.vector32}/>
                                     </View>
                                 </View>
                             </TouchableWithoutFeedback>
@@ -171,21 +160,16 @@ class LibraryHome extends React.PureComponent {
                             <TouchableWithoutFeedback onPress={() => {
                                 this.changeView('Khuyến mãi')
                             }}>
-                                <View style={[styleHome.borderBottom, style.itemHeight, {
-                                    flexDirection: 'row'
-                                }]}>
-                                    <View style={[styleBase.background2, style.backgroundIconWidth, styleHome.box, {
-                                        flexDirection: 'row',
-                                        justifyContent: 'center'
-                                    }]}>
+                                <View style={styleHome.itemBar}>
+                                    <View style={styleHome.itemBarIcon}>
                                         <EvilIcons name="tag"
-                                                   style={[styleHome.boxTitle, styleBase.vector26, styleBase.background2, {alignSelf: 'center'}]}/>
+                                                   style={styleBase.vector26}/>
                                     </View>
-                                    <View style={[styleHome.boxTitle, {flex: 1}]}>
-                                        <Text style={[styleBase.font14, {flex: 1}]}>
+                                    <View style={[styleHome.itemBarTitle]}>
+                                        <TextSmall style={[{flex: 1}]}>
                                             Khuyến mãi
-                                        </Text>
-                                        <EvilIcons name="chevron-right" style={styleBase.vector26}/>
+                                        </TextSmall>
+                                        <EvilIcons name="chevron-right" style={styleBase.vector32}/>
                                     </View>
                                 </View>
                             </TouchableWithoutFeedback>
@@ -201,7 +185,7 @@ class LibraryHome extends React.PureComponent {
 
 class LibraryItems extends React.PureComponent {
 
-    onPressItem(item){
+    onPressItem(item) {
         this.props.renderPopup(
             <ViewItem itemData={item}/>
         );
@@ -213,20 +197,12 @@ class LibraryItems extends React.PureComponent {
             var listAllItems = this.props.data.map((data) => {
                 if (data.hasOwnProperty("name"))
                     return (
-                        <TouchableWithoutFeedback key={data.name} onPress={()=> this.onPressItem(data)}>
-                            <View style={[styleHome.borderBottom, styleBase.background2, style.itemHeight, {
-                                flexDirection: 'row',
-                                flex: 1
-                            }]}>
-                                <View style={[styleBase.background2, style.backgroundIconWidth, {
-                                    flexDirection: 'row',
-                                    justifyContent: 'center',
-                                    alignItems: 'center'
-                                }]}>
-
+                        <TouchableWithoutFeedback key={data.name} onPress={() => this.onPressItem(data)}>
+                            <View style={[styleHome.itemBar]}>
+                                <View style={[styleHome.itemBarIcon]}>
                                     <TextNormal style={styleBase.background2}>{data.name.substr(0, 2)}</TextNormal>
                                 </View>
-                                <View style={[styleHome.boxTitle, styleBase.background4, {flex: 1}]}>
+                                <View style={[styleHome.itemBarTitle]}>
                                     <TextSmall style={{flex: 1}}>{data.name}</TextSmall>
                                     <TextSmall> {Object.keys(data.prices).length} giá</TextSmall>
                                 </View>
@@ -275,4 +251,4 @@ const mapDispatchToProps = {
     openPopup,
     renderPopup
 };
-export default connect(null,mapDispatchToProps)(Library);
+export default connect(null, mapDispatchToProps)(Library);

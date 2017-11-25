@@ -27,3 +27,7 @@ export const ITEM = {
     CREATE_ITEM: "CREATE_ITEM",
     ADD_TO_DISCOUNT: "ADD_TO_DISCOUNT",
 };
+//transaction
+export const TRANSACTION = {
+    CREATE_TRANSACTION: "CREATE_ITEM",
+};

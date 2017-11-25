@@ -3,7 +3,12 @@ import EStyleSheet from "react-native-extended-stylesheet";
 const styleHome = EStyleSheet.create({
     $widthSize: 70,
     $marginTopInModalEachItem: 40,
-    $color2:"#6893d8",
+    $font16: 16,
+    $color1: '#f4ad42',
+    $color2: "#6893d8",
+    $color4: '#ffffff',
+    $color6: '#a3a3a3',
+    $color5: '#e5e5e5',
     container: {
         flex: 1,
         margin: 20
@@ -27,21 +32,26 @@ const styleHome = EStyleSheet.create({
         shadowOpacity: 0,
         shadowRadius: 2
     },
+    boxTitle: {
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        flexDirection: 'row',
+    },
+    boxPadding: {
+        padding: 15
+    },
+    //-------------------------------
     header: {
         flexDirection: 'row',
         backgroundColor: '#a3a3a3',
-        padding: 0
-    },
-    iconHeader: {
-        fontSize: 30,
+        height: '$widthSize',
+        alignItems: 'center'
     },
     menuButton: {
         alignItems: 'center',
         justifyContent: 'center',
-        width: '$widthSize'
-    },
-    heightHeader: {
-        height: '$widthSize',
+        width: '$widthSize',
+        height: '$widthSize'
     },
     box: {
         borderWidth: 1,
@@ -65,27 +75,12 @@ const styleHome = EStyleSheet.create({
     },
     paddingModal: {
         padding: '$widthSize'
-    }
-    , boxTitle: {
-        alignItems: 'center',
-        paddingHorizontal: 15,
-        flexDirection: 'row',
-    },
-    boxPadding: {
-        padding: 15
     },
     itemHeader: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center'
-    },
-    borderButtonCustomAmount: {
-        borderWidth: 1,
-        borderColor: '#e5e5e5',
-    },
-    textCenterOfTheBox: {
         justifyContent: 'center',
-        alignItems: 'center'
+        height: '$widthSize'
     },
     menuItem: {
         paddingVertical: 20
@@ -103,23 +98,147 @@ const styleHome = EStyleSheet.create({
         height: 20
     },
     listItem: {
-        marginTop: "$widthSize"
+        marginTop: "$widthSize",
+    },
+    //POS--------------------
+    titleBar: {
+        height: '$widthSize',
+        flexDirection: 'row',
+        backgroundColor: '$color4',
+        borderBottomWidth: 1,
+        borderBottomColor: '#e5e5e5',
+        paddingHorizontal: 15,
+        alignItems: "center"
+    },
+    titleBarIconBack: {
+        fontSize: '$font16',
+        height: 10,
+    },
+    buttonCharge: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '$widthSize',
+        backgroundColor: '$color1'
+    },
+//    Modal
+    modalHeader: {
+        flexDirection: 'row',
+        backgroundColor: "$color4",
+        height: '$widthSize',
+        alignItems: 'center',
+        borderBottomWidth: 1,
+        borderBottomColor: '#e5e5e5'
+    },
+    modalButtonSubmit: {
+        height: '$widthSize',
+        justifyContent: 'center',
+        paddingHorizontal: 10,
+        backgroundColor: '$color2'
+    },
+    modalButtonSubmitFont: {
+        color: "$color4"
+    },
+//    transaction
+    transactionSearch:{
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal:5
+    },
+    transactionSearchText:{
+        alignItems: 'center',
+        paddingHorizontal: 5,
+        flexDirection: 'row',
+        backgroundColor: '$color4',
+        flex: 1
+    },
+    listTransactionHeader: {
+        paddingHorizontal: 10,
+        backgroundColor: '$color5',
+        paddingVertical: 10
+    },
+    listTransactionItem: {
+        paddingHorizontal: 10,
+        flexDirection: 'row',
+        backgroundColor: '$color4',
+        height: '$widthSize',
+        borderBottomColor: '#e5e5e5',
+        borderBottomWidth: 1,
+        alignItems: 'center'
+    },
+    listTransactionItemTitle: {
+        flex: 1,
+        paddingHorizontal:10,
+        height:'$widthSize',
+        justifyContent:'center'
+    },
+    listTransactionItemIcon:{
+        fontSize: '$font16',
+        height: 16,
     },
 //    product
+    categoryBar: {
+        height: '$widthSize',
+        flexDirection: 'row',
+        backgroundColor: '$color4',
+        alignItems: 'center'
+    },
     itemBar: {
-        height:'$widthSize',
+        height: '$widthSize',
+        flexDirection: 'row',
+        backgroundColor: '$color4',
+        borderBottomWidth: 1,
+        borderBottomColor: '#e5e5e5',
 
     },
-    itemIcon:{
-        height:'$widthSize',
-        width:'$widthSize',
-        backgroundColor:'$color2'
+    itemBarIcon: {
+        backgroundColor: '$color2',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '$widthSize'
     },
-    categoryBar:{
-        height:'$widthSize',
+    itemBarTitle: {
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        flexDirection: 'row',
+        backgroundColor: '$color4',
+        flex: 1
     },
-    modalItem:{
+    buttonDelete: {
+        paddingVertical: 15,
+        alignItems: 'center',
+        backgroundColor: 'red',
+        marginTop: '$marginTopInModalEachItem'
+    },
+    itemIcon: {
+        height: '$widthSize',
+        width: '$widthSize',
+        backgroundColor: '$color2'
+    },
+    modalItem: {
         marginTop: "$marginTopInModalEachItem"
+    }
+    ,
+    '@media (min-width: 768) and (max-width: 1024)': {
+        $font16: 30,
+        titleBarIconBack: {
+            fontSize: '$font16',
+            height: 24,
+        },
+        listTransactionItemIcon:{
+            fontSize: '$font16',
+            height: 30,
+        },
+    },
+    '@media (min-width: 1024)': {
+        $font16: 40,
+        titleBarIconBack: {
+            fontSize: '$font16',
+            height: 30,
+        },
+        listTransactionItemIcon:{
+            fontSize: '$font16',
+            height: 40,
+        },
     }
 });
 

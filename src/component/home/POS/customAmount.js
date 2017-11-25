@@ -56,7 +56,7 @@ class CustomAmount extends React.PureComponent {
                     flex: 1,
                     flexDirection: 'row',
                     alignItems: 'center'
-                }, styleHome.borderButtonCustomAmount, style.paddingContent]}>
+                }, styleHome.box, style.paddingContent]}>
                     <View style={{flex: 4, paddingHorizontal: 10}}>
                         <TextInputNormal placeholder={"ghi chú"}
                                          value={this.state.title}
@@ -85,21 +85,21 @@ class CustomAmount extends React.PureComponent {
                         <View style={[{flex: 1, flexDirection: 'row'}]}>
                             <TouchableWithoutFeedback onPress={() => this.changeCustomAmount(1)}>
                                 <View
-                                    style={[{flex: 1,}, styleHome.borderButtonCustomAmount, styleHome.textCenterOfTheBox]}>
+                                    style={[{flex: 1,}, styleHome.box, styleBase.center]}>
                                     <Text style={styleBase.font32}>1</Text>
                                 </View>
                             </TouchableWithoutFeedback>
 
                             <TouchableWithoutFeedback onPress={() => this.changeCustomAmount(2)}>
                                 <View
-                                    style={[{flex: 1,}, styleHome.borderButtonCustomAmount, styleHome.textCenterOfTheBox]}>
+                                    style={[{flex: 1,}, styleHome.box, styleBase.center]}>
                                     <Text style={styleBase.font32}>2</Text>
                                 </View>
                             </TouchableWithoutFeedback>
 
                             <TouchableWithoutFeedback onPress={() => this.changeCustomAmount(3)}>
                                 <View
-                                    style={[{flex: 1,}, styleHome.borderButtonCustomAmount, styleHome.textCenterOfTheBox]}>
+                                    style={[{flex: 1,}, styleHome.box, styleBase.center]}>
                                     <Text style={styleBase.font32}>3</Text>
                                 </View>
                             </TouchableWithoutFeedback>
@@ -107,21 +107,21 @@ class CustomAmount extends React.PureComponent {
                         <View style={[{flex: 1, flexDirection: 'row'},]}>
                             <TouchableWithoutFeedback onPress={() => this.changeCustomAmount(4)}>
                                 <View
-                                    style={[{flex: 1,}, styleHome.borderButtonCustomAmount, styleHome.textCenterOfTheBox]}>
+                                    style={[{flex: 1,}, styleHome.box, styleBase.center]}>
                                     <Text style={styleBase.font32}>4</Text>
                                 </View>
                             </TouchableWithoutFeedback>
 
                             <TouchableWithoutFeedback onPress={() => this.changeCustomAmount(5)}>
                                 <View
-                                    style={[{flex: 1,}, styleHome.borderButtonCustomAmount, styleHome.textCenterOfTheBox]}>
+                                    style={[{flex: 1,}, styleHome.box, styleBase.center]}>
                                     <Text style={styleBase.font32}>5</Text>
                                 </View>
                             </TouchableWithoutFeedback>
 
                             <TouchableWithoutFeedback onPress={() => this.changeCustomAmount(6)}>
                                 <View
-                                    style={[{flex: 1,}, styleHome.borderButtonCustomAmount, styleHome.textCenterOfTheBox]}>
+                                    style={[{flex: 1,}, styleHome.box, styleBase.center]}>
                                     <Text style={styleBase.font32}>6</Text>
                                 </View>
                             </TouchableWithoutFeedback>
@@ -130,7 +130,7 @@ class CustomAmount extends React.PureComponent {
                     <TouchableWithoutFeedback onPress={() => {
                         this.state.customAmount > 0 && this.changeCustomAmount(11)
                     }}>
-                        <View style={[{flex: 1}, styleHome.borderButtonCustomAmount, styleHome.textCenterOfTheBox]}>
+                        <View style={[{flex: 1}, styleHome.box, styleBase.center]}>
                             <Ionicons name={"md-arrow-back"}
                                       style={[styleBase.font32, this.state.customAmount == 0 && style.colorWhenNull]}/>
                         </View>
@@ -141,21 +141,21 @@ class CustomAmount extends React.PureComponent {
                         <View style={[{flex: 1, flexDirection: 'row'}]}>
                             <TouchableWithoutFeedback onPress={() => this.changeCustomAmount(7)}>
                                 <View
-                                    style={[{flex: 1,}, styleHome.borderButtonCustomAmount, styleHome.textCenterOfTheBox]}>
+                                    style={[{flex: 1,}, styleHome.box, styleBase.center]}>
                                     <Text style={styleBase.font32}>7</Text>
                                 </View>
                             </TouchableWithoutFeedback>
 
                             <TouchableWithoutFeedback onPress={() => this.changeCustomAmount(8)}>
                                 <View
-                                    style={[{flex: 1,}, styleHome.borderButtonCustomAmount, styleHome.textCenterOfTheBox]}>
+                                    style={[{flex: 1,}, styleHome.box, styleBase.center]}>
                                     <Text style={styleBase.font32}>8</Text>
                                 </View>
                             </TouchableWithoutFeedback>
 
                             <TouchableWithoutFeedback onPress={() => this.changeCustomAmount(9)}>
                                 <View
-                                    style={[{flex: 1,}, styleHome.borderButtonCustomAmount, styleHome.textCenterOfTheBox]}>
+                                    style={[{flex: 1,}, styleHome.box, styleBase.center]}>
                                     <Text style={styleBase.font32}>9</Text>
                                 </View>
                             </TouchableWithoutFeedback>
@@ -163,20 +163,20 @@ class CustomAmount extends React.PureComponent {
                         <View style={[{flex: 1, flexDirection: 'row'},]}>
                             <TouchableWithoutFeedback onPress={() => this.changeCustomAmount(100)}>
                                 <View
-                                    style={[{flex: 2,}, styleHome.borderButtonCustomAmount, styleHome.textCenterOfTheBox]}>
+                                    style={[{flex: 2,}, styleHome.box, styleBase.center]}>
                                     <Text style={styleBase.font32}>00</Text>
                                 </View>
                             </TouchableWithoutFeedback>
                             <TouchableWithoutFeedback onPress={() => this.changeCustomAmount(0)}>
                                 <View
-                                    style={[{flex: 1,}, styleHome.borderButtonCustomAmount, styleHome.textCenterOfTheBox]}>
+                                    style={[{flex: 1,}, styleHome.box, styleBase.center]}>
                                     <Text style={styleBase.font32}>0</Text>
                                 </View>
                             </TouchableWithoutFeedback>
                         </View>
                     </View>
                     <TouchableWithoutFeedback onPress={() => this.state.customAmount !== 0 && this.addToCategories()}>
-                        <View style={[{flex: 1}, styleHome.borderButtonCustomAmount, styleHome.textCenterOfTheBox]}>
+                        <View style={[{flex: 1}, styleHome.box, styleBase.center]}>
                             <Text style={[styleBase.font32, styleBase.color2]}> + </Text>
                         </View>
                     </TouchableWithoutFeedback>

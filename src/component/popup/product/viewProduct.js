@@ -33,14 +33,12 @@ class ViewItem extends React.PureComponent {
         return (
             <View style={[styleBase.container, styleBase.background4,]}>
                 {/*-----------------------Header_____________------*/}
-                <View style={[styleHome.heightHeader, styleBase.centerHorizontal, styleHome.borderBottom, {
-                    flexDirection: 'row'
-                }]}>
+                <View style={styleHome.modalHeader}>
 
                     <TouchableWithoutFeedback onPress={() => {
                         this.closePopup()
                     }}>
-                        <View style={[styleHome.menuButton, styleHome.heightHeader]}>
+                        <View style={[styleHome.menuButton]}>
                             <Ionicons name={"md-close"} style={[styleBase.vector26]}/>
                         </View>
                     </TouchableWithoutFeedback>
@@ -54,9 +52,9 @@ class ViewItem extends React.PureComponent {
                         this.create()
                     }}>
                         <View
-                            style={[styleBase.center, styleBase.background2, styleHome.heightHeader, styleHome.boxTitle]}>
+                            style={styleHome.modalButtonSubmit}>
 
-                            <TextLarge style={[styleBase.color5]}>Thêm vào giỏ</TextLarge>
+                            <TextLarge style={styleHome.modalButtonSubmitFont}>Thêm vào giỏ</TextLarge>
                         </View>
                     </TouchableWithoutFeedback>
                 </View>

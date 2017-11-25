@@ -25,9 +25,9 @@ const initialState = {
     ]
 };
 
-export default routeReducer(initialState);
+export default productReducer(initialState);
 
-function routeReducer(initialState) {
+function productReducer(initialState) {
     return function (state = initialState, action = {}) {
         switch (action.type) {
             case ITEM.CREATE_ITEM: {
