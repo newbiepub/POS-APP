@@ -1,22 +1,8 @@
-import {ITEM} from "../constant/constant";
+import {PRODUCT} from "../constant/constant";
 
 const initialState = {
-    allItem: [{name: 'Cồn', prices: [{type: "Bình thường", value: 100, SKU: 'helo'}]}, {
-        name: 'Nước rửa chén',
-        prices: [{type: "Bình thường", value: 1323, SKU: 'helo'}, {
-            type: "Đặc biệt",
-            value: 4534, SKU: 'helo'
-        }, {
-            type: "Bìnhassadfsafsfsafsafsafsfsadfsafsafsdfsafasdfsadfasfsadfsafsadf",
-            value: 1323
-        }, {type: "Đặc sdaf", value: 4534, SKU: 'helo'}, {
-            type: "Đặc sdaf",
-            value: 4534,
-            SKU: 'helo'
-        }
-
-        ]
-    }],
+    allProduct: [],
+    variantProduct:[],
     allDiscount:
         [{name: 'Cồn', prices: [{type: "Bình thường", value: 100, SKU: 'helo'}]}],
     category: [
@@ -30,9 +16,16 @@ export default productReducer(initialState);
 function productReducer(initialState) {
     return function (state = initialState, action = {}) {
         switch (action.type) {
-            case ITEM.CREATE_ITEM: {
+            case PRODUCT.CREATE_PRODUCT: {
                 return {
                     ...state,
+                }
+            }
+            case PRODUCT.GET_PRODUCT : {
+                return {
+                    ...state,
+                    allProduct: action.payload.product,
+                    variantProduct:action.payload.variant,
                 }
             }
             default: {

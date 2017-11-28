@@ -23,8 +23,9 @@ export const ROUTE = {
     GO_TO_ROUTE: "GO_TO_ROUTE"
 };
 //product
-export const ITEM = {
-    CREATE_ITEM: "CREATE_ITEM",
+export const PRODUCT = {
+    GET_PRODUCT: "GET_PRODUCT",
+    CREATE_PRODUCT: "CREATE_PRODUCT",
     ADD_TO_DISCOUNT: "ADD_TO_DISCOUNT",
 };
 //transaction

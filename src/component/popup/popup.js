@@ -30,11 +30,6 @@ class Popup extends React.PureComponent {
     measureWidth(event){
         this.setState({
             width: event.nativeEvent.layout.width,
-        })
-    }
-
-    measureDeviceSize(event) {
-        this.setState({
             height: event.nativeEvent.layout.height
         })
     }
@@ -53,7 +48,7 @@ class Popup extends React.PureComponent {
                 >
                     <TouchableWithoutFeedback onPress={() => {
                         this.closePopup()
-                    }} onLayout={(event) => this.measureDeviceSize(event)}>
+                    }} >
                         <View
                             style={[styleBase.overlay, {position: 'absolute'}]}/>
                     </TouchableWithoutFeedback>

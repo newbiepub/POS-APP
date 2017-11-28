@@ -11,12 +11,14 @@ import {closePopup} from '../../../action/popup';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import {numberwithThousandsSeparator} from '../../reusable/function';
-class ViewItem extends React.PureComponent {
+
+class ViewItem extends React.Component {
     constructor(props) {
         super(props);
         var {width, height} = Dimensions.get('window');
         this.state = {
-            currentPrice: this.props.itemData.prices[0].value,
+            currentPrice: this.props.productData[0].price,
+            currentName: this.props.productData[0].name,
             itemQuatity: 1,
             note: ""
         };
@@ -26,7 +28,6 @@ class ViewItem extends React.PureComponent {
     closePopup() {
         this.props.closePopup();
     }
-
 
 
     render() {
@@ -44,8 +45,9 @@ class ViewItem extends React.PureComponent {
                     </TouchableWithoutFeedback>
 
                     <View style={[{flex: 1, flexDirection: 'row'}]}>
-                        <TextLarge>{this.props.itemData.name || ""}</TextLarge>
-                        <TextLarge>  { numberwithThousandsSeparator(this.state.currentPrice * this.state.itemQuatity) || ""} đ</TextLarge>
+                        <TextLarge>{this.state.currentName || ""}</TextLarge>
+                        <TextLarge>  {numberwithThousandsSeparator(this.state.currentPrice * this.state.itemQuatity) || ""}
+                            đ</TextLarge>
                     </View>
 
                     <TouchableWithoutFeedback onPress={() => {
@@ -60,7 +62,7 @@ class ViewItem extends React.PureComponent {
                 </View>
                 <View style={[styleHome.paddingModal, {flex: 1}]}>
                     {/*-----------------List---------------------------*/}
-                    <ListPrice itemData={this.props.itemData} instant={this}/>
+                    <ListPrice productData={this.props.productData} instant={this} {...this.state}/>
 
 
                     {/*-----------------Note and Quatity---------------------------*/}
@@ -81,7 +83,7 @@ class ViewItem extends React.PureComponent {
                                              style={{textAlign: 'center', width: 100}}
                                              placeholder={this.state.itemQuatity.toString()} onChangeText={(text) => {
 
-                                this.setState({itemQuatity: text>0? text: 1})
+                                this.setState({itemQuatity: text > 0 ? text : 1})
                             }}/>
                         </View>
                         <TouchableWithoutFeedback
@@ -104,7 +106,6 @@ class ListPrice extends React.PureComponent {
         super(props);
         this.state = {
             width: 0,
-            currentType: this.props.itemData.prices[0].type
         }
     }
 
@@ -114,11 +115,11 @@ class ListPrice extends React.PureComponent {
         })
     }
 
-    changeType(type, price) {
-        this.props.instant.setState({currentPrice: price});
-        this.setState({
-            currentType: type
-        })
+    changeType(name, price) {
+        this.props.instant.setState({
+            currentPrice: price,
+            currentName:name
+        });
 
     }
 
@@ -126,18 +127,18 @@ class ListPrice extends React.PureComponent {
         let margin = 20;
         let priceItemWidth = (this.state.width - 20) / 2;
         try {
-            var listPrice = this.props.itemData.prices.map((data) => {
+            var listPrice = this.props.productData.map((data) => {
                 return (
-                    <TouchableWithoutFeedback key={data.type} onPress={() => this.changeType(data.type, data.value)}>
+                    <TouchableWithoutFeedback key={data._id} onPress={() => this.changeType(data.name, data.price)}>
                         <View
                             style={[styleHome.box, styleHome.boxPadding, styleModalItems.marginVertical, styleModalItems.choosePriceItem, {
                                 flexDirection: 'row',
                                 width: priceItemWidth
-                            }, this.props.itemData.prices.indexOf(data) % 2 === 0 && {marginRight: margin}, this.state.currentType === data.type && styleBase.background3]}>
+                            }, this.props.productData.indexOf(data) % 2 === 0 && {marginRight: margin}, this.props.instant.state.currentName === data.name && styleBase.background3]}>
                             <TextSmall numberOfLines={2}
-                                       style={[styleBase.bold, this.state.currentType === data.type && styleBase.color4, {flex: 1}]}>{data.type}</TextSmall>
+                                       style={[styleBase.bold, this.props.instant.state.currentName === data.name && styleBase.color4, {flex: 1}]}>{data.name}</TextSmall>
                             <TextSmall numberOfLines={2}
-                                       style={this.state.currentType === data.type && styleBase.color4}>{numberwithThousandsSeparator(data.value)}đ</TextSmall>
+                                       style={this.props.instant.state.currentName === data.name && styleBase.color4}>{numberwithThousandsSeparator(data.price)}đ</TextSmall>
                         </View>
                     </TouchableWithoutFeedback>
                 )
@@ -154,11 +155,14 @@ class ListPrice extends React.PureComponent {
                 <View onLayout={(event) => {
                     this.measureView(event)
                 }} style={{flexDirection: 'row'}}>
-                    <TextNormal style={[styleBase.bold]}>{this.props.itemData.name.toUpperCase()}</TextNormal>
+                    <TextNormal style={[styleBase.bold]}>{this.props.instant.state.currentName.toUpperCase()}</TextNormal>
                     <TextNormal> CHỌN GIÁ</TextNormal>
                 </View>
                 <View style={[styleModalItems.marginVertical, {flexDirection: 'row', flexWrap: "wrap"}]}>
-                    {listPrice}
+                    {
+                        this.state.width !== 0 &&
+                        listPrice
+                    }
                 </View>
             </View>
         )

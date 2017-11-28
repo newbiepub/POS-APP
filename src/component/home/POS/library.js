@@ -15,7 +15,8 @@ class Library extends React.PureComponent {
         this.state = {
             currentViewLibrary: 'Danh sách',
             searchText: '',
-
+            allProduct: this.props.dataProducts,
+            allDiscount: this.props.dataDiscounts
         }
     }
 
@@ -24,7 +25,7 @@ class Library extends React.PureComponent {
             let data = [];
             if (this.state.searchText !== '') {
                 if (this.state.currentViewLibrary === 'Danh sách' || this.state.currentViewLibrary === 'Mặt hàng') {
-                    this.props.dataItems.forEach((item) => {
+                    this.state.allProduct.forEach((item) => {
                         if (item.hasOwnProperty("name") && item.name.includes(this.state.searchText)) {
                             data.push(item)
                         }
@@ -32,7 +33,7 @@ class Library extends React.PureComponent {
                 }
 
                 if (this.state.currentViewLibrary === 'Danh sách' || this.state.currentViewLibrary === 'Khuyến mãi') {
-                    this.props.dataDiscounts.forEach((item) => {
+                    this.state.allDiscount.forEach((item) => {
                         if (item.hasOwnProperty("name") && item.name.includes(this.state.searchText)) {
                             data.push(item)
                         }
@@ -107,14 +108,14 @@ class Library extends React.PureComponent {
                             <LibraryItems instant={this}
                                           openPopup={() => this.props.openPopup()}
                                           renderPopup={(item) => this.props.renderPopup(item)}
-                                          data={this.state.searchText === '' ? this.props.dataItems : this.getDataSearch()}/>
+                                          data={this.state.searchText === '' ? this.state.allProduct : this.getDataSearch()}/>
                         )
                     }
                     {
                         this.state.currentViewLibrary === 'Khuyến mãi' &&
                         (
                             <LibraryItems instant={this}
-                                          data={this.state.searchText === '' ? this.props.dataDiscounts : this.getDataSearch()}/>
+                                          data={this.state.searchText === '' ? this.state.allDiscount : this.getDataSearch()}/>
                         )
                     }
                 </View>
@@ -197,14 +198,14 @@ class LibraryItems extends React.PureComponent {
             var listAllItems = this.props.data.map((data) => {
                 if (data.hasOwnProperty("name"))
                     return (
-                        <TouchableWithoutFeedback key={data.name} onPress={() => this.onPressItem(data)}>
+                        <TouchableWithoutFeedback key={data._id} onPress={() => this.onPressItem(data)}>
                             <View style={[styleHome.itemBar]}>
                                 <View style={[styleHome.itemBarIcon]}>
                                     <TextNormal style={styleBase.background2}>{data.name.substr(0, 2)}</TextNormal>
                                 </View>
                                 <View style={[styleHome.itemBarTitle]}>
                                     <TextSmall style={{flex: 1}}>{data.name}</TextSmall>
-                                    <TextSmall> {Object.keys(data.prices).length} giá</TextSmall>
+                                    <TextSmall> {data.price} giá</TextSmall>
                                 </View>
                             </View>
                         </TouchableWithoutFeedback>

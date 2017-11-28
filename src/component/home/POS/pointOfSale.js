@@ -3,16 +3,15 @@ import {connect} from "react-redux";
 import {Text, View, TouchableWithoutFeedback, Animated, Dimensions, ScrollView} from "react-native";
 import styleBase from "../../style/base";
 import styleHome from "../../style/home";
-import style from '../../style/POS';
 import * as Animate from "react-native-animatable";
 import Entypo from 'react-native-vector-icons/Entypo';
 import ProductGrid from "../product/product/productGrid";
 import CustomAmount from './customAmount';
 import Library from './library';
 import {TextLarge, TextNormal} from '../../reusable/text';
+import {numberwithThousandsSeparator} from '../../reusable/function';
 
-
-class POS extends React.PureComponent {
+class POS extends React.Component {
     constructor(props) {
         super(props);
         let {width, height} = Dimensions.get('window');
@@ -23,19 +22,21 @@ class POS extends React.PureComponent {
             window: {w: width, h: height},
             clearBoxTop: new Animated.Value(0),
             listCurrentSale: [],
-            allItems: [{name: 'Cồn', prices: [{type: "Bình thường", value: 100}]}, {
-                name: 'Nước rửa chén',
-                prices: [{type: "Bình thường", value: 1323}, {
-                    type: "Đặc biệt",
-                    value: 4534
-                }, {
-                    type: "Bìnhassadfsafsfsafsafsafsfsadfsafsafsdfsafasdfsadfasfsadfsafsadf",
-                    value: 1323
-                }, {type: "Đặc sdaf", value: 4534}]
-            }],
-            allDiscounts: []
+
+            allDiscounts: [],
+            allProduct: []
         }
+
     }
+
+    // componentWillReceiveProps(nextProps) {
+    //     if(nextProps.hasOwnProperty("allProduct"))
+    //     {
+    //         this.setState({
+    //             allProduct: nextProps.allProduct
+    //         })
+    //     }
+    // }
 
     openMenu() {
         this.props.openMenu();
@@ -60,7 +61,11 @@ class POS extends React.PureComponent {
             listCurrentSale: [...this.state.listCurrentSale, newItem]
         })
     }
-
+    shouldComponentUpdate(nextProps,nextState) {
+        const differentAllProduct = this.props.allProduct !== nextProps.allProduct;
+        const differentCurrentView = this.state.currentView !== nextState.currentView;
+        return differentAllProduct ||differentCurrentView ;
+    }
 
     async openClearSales() {
 
@@ -98,7 +103,7 @@ class POS extends React.PureComponent {
         this.state.listCurrentSale.forEach((item) => {
             totalPrice = totalPrice + item.price
         });
-        return this.numberwithThousandsSeparator(totalPrice)
+        return numberwithThousandsSeparator(totalPrice)
     }
 
     getWindowSize(evt) {
@@ -109,11 +114,6 @@ class POS extends React.PureComponent {
         })
     }
 
-    numberwithThousandsSeparator(x) {
-        let parts = x.toString().split(",");
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        return parts.join(".");
-    }
 
     getTitleBoxSize(evt) {
         let height = evt.nativeEvent.layout.height;
@@ -124,13 +124,14 @@ class POS extends React.PureComponent {
     }
 
     render() {
+        console.warn("POS")
         let currentView = this.state.currentView;
 
         let listCurrentSale = this.state.listCurrentSale.map((data) => {
             return (
                 <View key={data.index} style={{flexDirection: 'row', padding: 10}}>
                     <TextNormal numberOfLines={1} style={[{flex: 1}]}>{data.title}</TextNormal>
-                    <TextNormal numberOfLines={1}>{this.numberwithThousandsSeparator(data.price)}đ</TextNormal>
+                    <TextNormal numberOfLines={1}>{numberwithThousandsSeparator(data.price)}đ</TextNormal>
                 </View>
             )
         });
@@ -164,7 +165,7 @@ class POS extends React.PureComponent {
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={() => this.changeView('CustomAmount')}>
                             <View
-                                style={[styleHome.itemHeader,currentView === "CustomAmount" && styleBase.background2]}>
+                                style={[styleHome.itemHeader, currentView === "CustomAmount" && styleBase.background2]}>
                                 <Entypo name="calculator" style={[styleBase.vector26, styleBase.color4]}/>
                             </View>
                         </TouchableWithoutFeedback>
@@ -177,11 +178,11 @@ class POS extends React.PureComponent {
                     <View style={[styleBase.background5, {flex: 0.6}]}>
                         {
                             this.state.currentView === 'GridItems' &&
-                            <ProductGrid data={this.state.allItems}/>
+                            <ProductGrid data={this.props.allProduct}/>
                         }
                         {
                             this.state.currentView === 'Library' &&
-                            <Library dataItems={this.state.allItems} dataDiscounts={this.state.allDiscounts}/>
+                            <Library dataProducts={this.props.allProduct} dataDiscounts={this.state.allDiscounts}/>
                         }
                         {
                             this.state.currentView === 'CustomAmount' &&
@@ -241,6 +242,7 @@ class POS extends React.PureComponent {
 const mapStateToProps = (state) => {
     return {
         account: state.account,
+        allProduct: state.product.allProduct
     }
 };
 

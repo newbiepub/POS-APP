@@ -13,12 +13,13 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
 import PriceGrid from '../../home/product/price/priceGrid';
 import Entypo from 'react-native-vector-icons/Entypo';
 
-class CreateItem extends React.PureComponent {
+class CreateItem extends React.Component {
     constructor(props) {
         super(props);
         var {width, height} = Dimensions.get('window');
         this.state = {
             width,
+            productData:this.props.hasOwnProperty("productData") ? this.props.productData : {},
             itemName: this.props.hasOwnProperty("item") ? this.props.item.name : "",
             itemPrice: this.props.hasOwnProperty("item") ? this.props.item.prices[0].value : "",
             itemSKU: this.props.hasOwnProperty("item") ? this.props.item.prices[0].SKU : "",
@@ -174,7 +175,7 @@ class AddItem extends React.PureComponent {
                         <View style={[styleProduct.productItem]}>
                             <View style={[styleBase.center, {flex: 3}]}>
                                 <TextLarge style={[styleBase.textE5]}>
-                                    {instant.state.itemName.substr(0, 2)}
+                                    {this.state.productData.name.substr(0, 2)}
                                 </TextLarge>
                             </View>
                             <View
