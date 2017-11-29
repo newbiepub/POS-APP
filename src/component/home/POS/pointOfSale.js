@@ -8,9 +8,10 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import ProductGrid from "../product/product/productGrid";
 import CustomAmount from './customAmount';
 import Library from './library';
-import {TextLarge, TextNormal} from '../../reusable/text';
+import {TextLarge, TextNormal, TextSmall} from '../../reusable/text';
 import {numberwithThousandsSeparator} from '../../reusable/function';
 
+//import ProductGrid from '../product/product/listProduct';
 class POS extends React.Component {
     constructor(props) {
         super(props);
@@ -29,15 +30,12 @@ class POS extends React.Component {
 
     }
 
-    // componentWillReceiveProps(nextProps) {
-    //     if(nextProps.hasOwnProperty("allProduct"))
-    //     {
-    //         this.setState({
-    //             allProduct: nextProps.allProduct
-    //         })
-    //     }
-    // }
-
+    shouldComponentUpdate(nextProps, nextState) {
+        const differentAllProduct = this.props.allProduct !== nextProps.allProduct;
+        const differentCurrentView = this.state.currentView !== nextState.currentView;
+        const differentListCart = this.props.cart !== nextProps.cart;
+        return differentAllProduct || differentCurrentView || differentListCart;
+    }
     openMenu() {
         this.props.openMenu();
     }
@@ -55,17 +53,7 @@ class POS extends React.Component {
         this.openClearSales();
     }
 
-    addToList(itemName, itemPrice) {
-        let newItem = {index: this.state.listCurrentSale.length, title: itemName, price: itemPrice};
-        this.setState({
-            listCurrentSale: [...this.state.listCurrentSale, newItem]
-        })
-    }
-    shouldComponentUpdate(nextProps,nextState) {
-        const differentAllProduct = this.props.allProduct !== nextProps.allProduct;
-        const differentCurrentView = this.state.currentView !== nextState.currentView;
-        return differentAllProduct ||differentCurrentView ;
-    }
+
 
     async openClearSales() {
 
@@ -100,8 +88,8 @@ class POS extends React.Component {
 
     getTotalPrice() {
         var totalPrice = 0;
-        this.state.listCurrentSale.forEach((item) => {
-            totalPrice = totalPrice + item.price
+        this.props.cart.forEach((item) => {
+            totalPrice = totalPrice + item.totalPrice
         });
         return numberwithThousandsSeparator(totalPrice)
     }
@@ -124,17 +112,28 @@ class POS extends React.Component {
     }
 
     render() {
-        console.warn("POS")
         let currentView = this.state.currentView;
+        try {
+            var listCurrentSale = this.props.cart.map((data, index) => {
+                return (
+                    <View key={index} style={{flexDirection: 'row', padding: 10, alignItems: "center"}}>
+                        <View style={{flex: 1}}>
+                            <TextNormal numberOfLines={2}>{data.name}</TextNormal>
+                            {
+                                data.quatity > 1 &&
+                                <TextSmall style={styleBase.color6}>x{data.quatity}</TextSmall>
+                            }
 
-        let listCurrentSale = this.state.listCurrentSale.map((data) => {
-            return (
-                <View key={data.index} style={{flexDirection: 'row', padding: 10}}>
-                    <TextNormal numberOfLines={1} style={[{flex: 1}]}>{data.title}</TextNormal>
-                    <TextNormal numberOfLines={1}>{numberwithThousandsSeparator(data.price)}đ</TextNormal>
-                </View>
-            )
-        });
+                        </View>
+                        <TextNormal numberOfLines={1}>{numberwithThousandsSeparator(data.totalPrice)}đ</TextNormal>
+                    </View>
+                )
+            });
+        } catch (e) {
+            console.warn(e)
+            return <View></View>
+        }
+
         return (
             <Animate.View animation={"fadeIn"} duration={750} style={[styleBase.container]}
                           onLayout={(event => this.getWindowSize(event))}>
@@ -242,7 +241,8 @@ class POS extends React.Component {
 const mapStateToProps = (state) => {
     return {
         account: state.account,
-        allProduct: state.product.allProduct
+        allProduct: state.product.allProduct,
+        cart: state.cart.currentCart
     }
 };
 

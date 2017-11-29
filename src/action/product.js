@@ -25,9 +25,11 @@ export function getProduct(access_token) {
                         await variant.push(item)
                     }
                 });
-                dispatch(getProductAction({product, variant}))
+                dispatch(getProductAction({product, variant}));
+                resolve(true)
             } catch (e) {
-                console.warn(e)
+                console.warn(e);
+                reject(false)
             }
 
         })

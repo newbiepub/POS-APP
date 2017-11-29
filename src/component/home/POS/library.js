@@ -1,11 +1,11 @@
 import React from "react";
-import {Text, View, TouchableWithoutFeedback, TextInput, ScrollView} from "react-native";
+import {FlatList, View, TouchableWithoutFeedback, TextInput, ScrollView} from "react-native";
 import {TextLarge, TextSmall, TextNormal} from '../../reusable/text';
 import styleBase from "../../style/base";
 import styleHome from "../../style/home";
 import style from '../../style/POS';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import ViewItem from '../../popup/product/viewProduct';
+import ViewProduct from '../../popup/product/viewProduct';
 import {connect} from "react-redux";
 import {openPopup, renderPopup} from '../../../action/popup';
 
@@ -79,7 +79,7 @@ class Library extends React.PureComponent {
                     {/*------Search------------*/}
 
                     <View style={styleHome.itemBar}>
-                        <View style={[styleHome.itemBarIcon,styleBase.background4]}>
+                        <View style={[styleHome.itemBarIcon, styleBase.background4]}>
                             <EvilIcons name="search" style={[styleBase.vector26]}/>
                         </View>
                         <View style={[styleHome.itemBarTitle]}>
@@ -186,44 +186,60 @@ class LibraryHome extends React.PureComponent {
 
 class LibraryItems extends React.PureComponent {
 
-    onPressItem(item) {
+    onPressItem(product) {
         this.props.renderPopup(
-            <ViewItem itemData={item}/>
+            <ViewProduct productData={product}/>
         );
         this.props.openPopup();
     }
-
+    _renderItem = ({item}) => (
+        <TouchableWithoutFeedback  onPress={() => this.onPressItem(item)}>
+            <View style={[styleHome.itemBar]}>
+                <View style={[styleHome.itemBarIcon]}>
+                    <TextNormal style={styleBase.background2}>{item.name.substr(0, 2)}</TextNormal>
+                </View>
+                <View style={[styleHome.itemBarTitle]}>
+                    <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
+                    <TextSmall> {item.price} giá</TextSmall>
+                </View>
+            </View>
+        </TouchableWithoutFeedback>
+    );
     render() {
-        try {
-            var listAllItems = this.props.data.map((data) => {
-                if (data.hasOwnProperty("name"))
-                    return (
-                        <TouchableWithoutFeedback key={data._id} onPress={() => this.onPressItem(data)}>
-                            <View style={[styleHome.itemBar]}>
-                                <View style={[styleHome.itemBarIcon]}>
-                                    <TextNormal style={styleBase.background2}>{data.name.substr(0, 2)}</TextNormal>
-                                </View>
-                                <View style={[styleHome.itemBarTitle]}>
-                                    <TextSmall style={{flex: 1}}>{data.name}</TextSmall>
-                                    <TextSmall> {data.price} giá</TextSmall>
-                                </View>
-                            </View>
-                        </TouchableWithoutFeedback>
-                    )
-            })
-        } catch (e) {
-            console.warn(e);
-            return <NotFound/>
-        }
+        // try {
+        //     var listAllItems = this.props.data.map((data) => {
+        //         if (data.hasOwnProperty("name"))
+        //             return (
+        //                 <TouchableWithoutFeedback key={data._id} onPress={() => this.onPressItem(data)}>
+        //                     <View style={[styleHome.itemBar]}>
+        //                         <View style={[styleHome.itemBarIcon]}>
+        //                             <TextNormal style={styleBase.background2}>{data.name.substr(0, 2)}</TextNormal>
+        //                         </View>
+        //                         <View style={[styleHome.itemBarTitle]}>
+        //                             <TextSmall style={{flex: 1}}>{data.name}</TextSmall>
+        //                             <TextSmall> {data.price} giá</TextSmall>
+        //                         </View>
+        //                     </View>
+        //                 </TouchableWithoutFeedback>
+        //             )
+        //     })
+        // } catch (e) {
+        //     console.warn(e);
+        //     return <NotFound/>
+        // }
 
         return (
             <View style={{flex: 1}}>
                 {/*------Items------------*/}
                 {
                     this.props.data.length > 0 && this.props.data !== undefined ?
-                        <ScrollView>
-                            {listAllItems}
-                        </ScrollView> :
+                        <FlatList
+                            data={this.props.data}
+                            extraData={this.state}
+                            initialNumToRender={15}
+                            keyExtractor={(item) => item._id}
+                            renderItem={this._renderItem}
+                        /> :
                         <NotFound/>
                 }
 

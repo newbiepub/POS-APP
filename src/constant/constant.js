@@ -32,3 +32,7 @@ export const PRODUCT = {
 export const TRANSACTION = {
     CREATE_TRANSACTION: "CREATE_ITEM",
 };
+//cart
+export const CART = {
+    ADD_TO_CART: "ADD_TO_CART",
+};

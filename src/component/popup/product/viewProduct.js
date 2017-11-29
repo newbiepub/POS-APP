@@ -9,7 +9,7 @@ import styleModalItems from '../../style/modalItem';
 import {connect} from "react-redux";
 import {closePopup} from '../../../action/popup';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import {addToCart} from '../../../action/cart';
 import {numberwithThousandsSeparator} from '../../reusable/function';
 
 class ViewItem extends React.Component {
@@ -17,13 +17,39 @@ class ViewItem extends React.Component {
         super(props);
         var {width, height} = Dimensions.get('window');
         this.state = {
-            currentPrice: this.props.productData[0].price,
-            currentName: this.props.productData[0].name,
+            currentPrice: this.props.productData.price,
+            currentName: this.props.productData.name,
             itemQuatity: 1,
             note: ""
         };
     }
 
+    getVariantProduct(product, allVariant) {
+        product = [product];
+        allVariant.forEach(async (item) => {
+            if (product[0]._id === item.productVariantParent) {
+                await product.push(item);
+            }
+        });
+        return product;
+    }
+
+    componentWillMount() {
+        this.setState({
+            product: this.getVariantProduct(this.props.productData, this.props.variant)
+        })
+
+    }
+
+    async addToCart() {
+        let a = await  this.props.addToCart({
+            name: this.state.currentName,
+            price: this.state.currentPrice,
+            quatity: this.state.itemQuatity,
+            totalPrice: this.state.currentPrice * this.state.itemQuatity
+        });
+        this.closePopup()
+    }
 
     closePopup() {
         this.props.closePopup();
@@ -51,7 +77,7 @@ class ViewItem extends React.Component {
                     </View>
 
                     <TouchableWithoutFeedback onPress={() => {
-                        this.create()
+                        this.addToCart()
                     }}>
                         <View
                             style={styleHome.modalButtonSubmit}>
@@ -62,7 +88,7 @@ class ViewItem extends React.Component {
                 </View>
                 <View style={[styleHome.paddingModal, {flex: 1}]}>
                     {/*-----------------List---------------------------*/}
-                    <ListPrice productData={this.props.productData} instant={this} {...this.state}/>
+                    <ListPrice productData={this.state.product} instant={this} {...this.state}/>
 
 
                     {/*-----------------Note and Quatity---------------------------*/}
@@ -118,7 +144,7 @@ class ListPrice extends React.PureComponent {
     changeType(name, price) {
         this.props.instant.setState({
             currentPrice: price,
-            currentName:name
+            currentName: name
         });
 
     }
@@ -155,7 +181,8 @@ class ListPrice extends React.PureComponent {
                 <View onLayout={(event) => {
                     this.measureView(event)
                 }} style={{flexDirection: 'row'}}>
-                    <TextNormal style={[styleBase.bold]}>{this.props.instant.state.currentName.toUpperCase()}</TextNormal>
+                    <TextNormal
+                        style={[styleBase.bold]}>{this.props.instant.state.currentName.toUpperCase()}</TextNormal>
                     <TextNormal> CHỌN GIÁ</TextNormal>
                 </View>
                 <View style={[styleModalItems.marginVertical, {flexDirection: 'row', flexWrap: "wrap"}]}>
@@ -170,11 +197,13 @@ class ListPrice extends React.PureComponent {
 }
 
 const mapDispatchToProps = {
-    closePopup
+    closePopup,
+    addToCart
 };
 const mapStateToProps = (state) => {
     return {
-        account: state.account
+        account: state.account,
+        variant: state.product.variantProduct
     }
 };
 

@@ -16,28 +16,23 @@ import {openPopup, renderPopup} from '../../../../action/popup';
 class ProductGrid extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            limit: 8
+        }
     }
 
-    itemPress(product, allVariant) {
+    itemPress(product) {
         this.props.openPopup();
         this.props.renderPopup(
-            <ViewProduct productData={this.getVariantProduct(product, allVariant)}/>
+            <ViewProduct productData={product}/>
         );
 
     }
-    shouldComponentUpdate(nextProps,nextState) {
-        const differentData = this.props.data !== nextProps.data;
-        return differentData ;
-    }
 
-    getVariantProduct(product, allVariant) {
-        product = [product];
-        allVariant.forEach(async (item) => {
-            if (product[0]._id === item.productVariantParent) {
-                await product.push(item);
-            }
-        });
-        return product;
+    shouldComponentUpdate(nextProps, nextState) {
+        const differentData = this.props.data !== nextProps.data;
+        const differentLimit = this.state.limit !== nextState.limit;
+        return differentData || differentLimit;
     }
 
 
@@ -50,11 +45,11 @@ class ProductGrid extends React.Component {
                     itemsPerRow={4}
                     dragActivationTreshold={500}
                 >
-                    {this.props.data.map(item => {
-                        if (item.hasOwnProperty("name"))
-                            return <ProductItem key={item.name} data={item} itemPress={() => {
-                                this.itemPress(item, this.props.variant)
-                            }}/>
+                    {this.props.data.map((item) => {
+                        return <ProductItem key={item._id} data={item} itemPress={() => {
+                            this.itemPress(item)
+                        }}/>
+
 
                     })}
 
@@ -76,7 +71,6 @@ ProductGrid.defaultProps = {
 const mapStateToProps = (state) => {
     return {
         account: state.account,
-        variant: state.product.variantProduct
     }
 };
 const mapDispatchToProps = {
