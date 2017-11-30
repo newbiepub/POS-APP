@@ -2,8 +2,6 @@ import EStyleSheet from "react-native-extended-stylesheet";
 
 const styleProduct = EStyleSheet.create({
     productItem: {
-        height: 140,
-        width: 140,
         borderRadius: 15,
         margin:10,
         backgroundColor: "#999"

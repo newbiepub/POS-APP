@@ -10,7 +10,8 @@ const initialState = {
         {id: "item", name: "Mặt hàng"},
         {id: "setting", name: "Cài đặt"},
         {id: "help", name: "Trợ giúp"}
-    ]
+    ],
+    menuVisible: false
 };
 
 export default routeReducer(initialState);
@@ -22,6 +23,18 @@ function routeReducer(initialState) {
                 return {
                     ...state,
                     currentRoute: action.payload
+                }
+            }
+            case ROUTE.OPEN_MENU: {
+                return {
+                    ...state,
+                    menuVisible: true
+                }
+            }
+            case ROUTE.CLOSE_MENU: {
+                return {
+                    ...state,
+                    menuVisible: false
                 }
             }
             default: {

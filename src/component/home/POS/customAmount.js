@@ -41,7 +41,8 @@ class CustomAmount extends React.PureComponent {
         this.props.addToCart({name: this.state.title !== "" ? this.state.title : "ghi chú",quatity: 1 ,price: this.state.customAmount, totalPrice: this.state.customAmount});
         this.setState(
             {
-                customAmount: 0
+                customAmount: 0,
+                title: ''
             }
         )
     }

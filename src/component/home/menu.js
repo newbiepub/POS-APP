@@ -8,11 +8,14 @@ import {
     Text,
     TouchableOpacity,
     TouchableWithoutFeedback,
-    View
+    View,
+    Platform
 } from "react-native";
 import styleBase from "../style/base";
 import styleHome from "../style/home";
 import {goToRoute} from "../../action/route";
+import {closeMenu} from '../../action/route';
+import ModalWrapper from '../modalWrapper';
 
 class Menu extends React.Component {
     constructor(props) {
@@ -23,7 +26,8 @@ class Menu extends React.Component {
             currentRoute: this.props.currentRoute,
             height,
             width,
-            marginLeft: new Animated.Value(-width * 30 / 100)
+            marginLeft: new Animated.Value(-width * 30 / 100),
+            visible: false
         }
     }
 
@@ -32,61 +36,51 @@ class Menu extends React.Component {
         let width = evt.nativeEvent.layout.width;
         this.setState({
             width,
-            height
+            height,
+
         })
 
 
     }
 
-    shouldComponentUpdate(nextProps) {
+    shouldComponentUpdate(nextProps, nextState) {
         const changeVisible = this.props.visible !== nextProps.visible;
-        return changeVisible
+        const stateVisible = this.state.visible !== nextState.visible;
+        return changeVisible || stateVisible
     }
 
-    closeMenu() {
-        let instant = this.props.instant;
+    // closeMenu() {
+    //     let instant = this.props.instant;
+    //
+    //     Animated.timing(          // Uses easing functions
+    //         this.state.marginLeft,    // The value to drive
+    //         {
+    //             toValue: -this.state.width * 30 / 100,
+    //         },           // Configuration
+    //     ).start(() => {
+    //
+    //     });
+    //
+    //
+    // }
 
-        Animated.timing(          // Uses easing functions
-            this.state.marginLeft,    // The value to drive
-            {
-                toValue: -this.state.width * 30 / 100,
-            },           // Configuration
-        ).start(() => {
-            instant.setState({
-                menuVisible: false
-            })
-        });
-
-
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.visible == true) {
-
-            Animated.timing(          // Uses easing functions
-                this.state.marginLeft,    // The value to drive
-                {
-                    toValue: 0,
-                },           // Configuration
-            ).start();
-        }
-    }
+    // componentWillReceiveProps(nextProps) {
+    //     if (nextProps.visible == true) {
+    //         this.setState({
+    //             visible: true
+    //         })
+    //         Animated.timing(          // Uses easing functions
+    //             this.state.marginLeft,    // The value to drive
+    //             {
+    //                 toValue: 0,
+    //             },           // Configuration
+    //         ).start();
+    //     }
+    // }
 
     onChangeRoute(routeId) {
-
-        let instant = this.props.instant;
-
-        Animated.timing(          // Uses easing functions
-            this.state.marginLeft,    // The value to drive
-            {
-                toValue: -this.state.width * 30 / 100,
-            },           // Configuration
-        ).start(() => {
-            instant.setState({
-                menuVisible: false
-            });
-            goToRoute(routeId);
-        });
+        this.props.closeMenu();
+        goToRoute(routeId);
 
     }
 
@@ -99,27 +93,23 @@ class Menu extends React.Component {
 
     render() {
         return (
-            <Modal
-                // animationType="none"
-                transparent={true}
-                visible={this.props.visible}
-                onRequestClose={() => {
-                    this.closeMenu();
-                }}
+            <ModalWrapper
+                containerStyle={{flexDirection: 'row', justifyContent: 'flex-start'}}
+                onRequestClose={() => this.props.closeMenu()}
+                position="left"
+                shouldAnimateOnRequestClose={true}
                 supportedOrientations={['portrait', 'landscape']}
-            >
-                <View style={styleBase.container} onLayout={(event) => this.onLayout(event)}>
-                    <TouchableWithoutFeedback onPress={() => this.closeMenu()}>
-                        <View style={{flex: 1, backgroundColor: "rgba(60, 60, 61,0.7)"}}/>
-                    </TouchableWithoutFeedback>
-                    <Animated.View
+                onLayout={(event) => this.onLayout(event)}
+                visible={this.props.visible}>
+
+                <View style={styleBase.container}>
+                    <View
                         style={{
-                            width: this.state.width * 30 / 100,
+                            width: 500,
                             backgroundColor: 'rgb(60, 60, 61)',
                             position: 'absolute',
                             height: this.state.height,
                             padding: 40,
-                            marginLeft: this.state.marginLeft
                         }}>
 
                         <FlatList
@@ -129,9 +119,10 @@ class Menu extends React.Component {
                             renderItem={this._MenuItem}
                         />
 
-                    </Animated.View>
+                    </View>
                 </View>
-            </Modal>
+            </ModalWrapper>
+
         )
     }
 }
@@ -151,8 +142,12 @@ const mapStateToProps = (state) => {
         account: state.account,
         route: state.route,
         routeMap: state.route.routeMap,
-        currentRoute: state.route.currentRoute
+        currentRoute: state.route.currentRoute,
+        visible: state.route.menuVisible
     }
 };
+const mapDispatchToProps = {
+    closeMenu
+}
 
-export default connect(mapStateToProps, null)(Menu);
+export default connect(mapStateToProps, mapDispatchToProps)(Menu);

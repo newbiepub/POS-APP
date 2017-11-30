@@ -137,7 +137,7 @@ class POS extends React.Component {
         }
 
         return (
-            <Animate.View animation={"fadeIn"} duration={750} style={[styleBase.container]}
+            <View style={[styleBase.container]}
                           onLayout={(event => this.getWindowSize(event))}>
 
                 {/*----------------------------------------Header-------------------------------------*/}
@@ -239,7 +239,7 @@ class POS extends React.Component {
                         </View>
                     </View>
                 </View>
-            </Animate.View>
+            </View>
         )
     }
 }
@@ -253,7 +253,7 @@ const mapStateToProps = (state) => {
     }
 };
 const mapDispatchToProps = {
-    clearCart
+    clearCart,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(POS);

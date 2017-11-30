@@ -20,7 +20,9 @@ export const POPUP = {
 
 //Main routes
 export const ROUTE = {
-    GO_TO_ROUTE: "GO_TO_ROUTE"
+    GO_TO_ROUTE: "GO_TO_ROUTE",
+    OPEN_MENU: "OPEN_MENU",
+    CLOSE_MENU:"CLOSE_MENU"
 };
 //product
 export const PRODUCT = {

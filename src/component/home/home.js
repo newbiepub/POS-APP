@@ -5,6 +5,7 @@ import POS from './POS/pointOfSale';
 import Transaction from './transaction/transaction';
 import Product from './product/product';
 import Setting from './setting/setting';
+import Main from './main';
 import {connect} from 'react-redux';
 import * as _ from "lodash";
 import Menu from './menu';
@@ -31,7 +32,8 @@ class Home extends React.Component {
         // console.warn(JSON.stringify(this.props.account.access_token));
 
     }
-    shouldComponentUpdate(nextProps,nextState) {
+
+    shouldComponentUpdate(nextProps, nextState) {
         const changeRoute = this.props.currentRoute !== nextProps.currentRoute;
         const changeMenu = this.state.menuVisible !== nextState.menuVisible;
         return changeRoute || changeMenu
@@ -54,31 +56,7 @@ class Home extends React.Component {
         return (
             <View style={[styleBase.container]}>
                 <Menu visible={this.state.menuVisible} instant={this}/>
-                {
-                    this.state.route === "POS" &&
-                    <POS openMenu={() => {
-                        this.openMenu()
-                    }}/>
-                }
-                {
-                    this.state.route === "transaction" &&
-                    <Transaction openMenu={() => {
-                        this.openMenu()
-                    }}/>
-                }
-                {
-                    this.state.route === "item" &&
-                    <Product openMenu={() => {
-                        this.openMenu()
-                    }}/>
-                }
-                {
-                    this.state.route === "setting" &&
-                    <Setting openMenu={() => {
-                        this.openMenu()
-                    }} title="Cài Đặt"
-                             navigator={this.props.navigator}/>
-                }
+                <Main/>
             </View>
         )
     }
