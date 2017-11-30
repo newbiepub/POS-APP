@@ -11,7 +11,7 @@ import Menu from './menu';
 
 import {getProduct} from '../../action/product';
 
-class Home extends PureComponent {
+class Home extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -31,6 +31,11 @@ class Home extends PureComponent {
         // console.warn(JSON.stringify(this.props.account.access_token));
 
     }
+    shouldComponentUpdate(nextProps,nextState) {
+        const changeRoute = this.props.currentRoute !== nextProps.currentRoute;
+        const changeMenu = this.state.menuVisible !== nextState.menuVisible;
+        return changeRoute || changeMenu
+    }
 
     componentWillReceiveProps(nextProps) {
         if (!_.isEqual(this.props.currentRoute, nextProps.currentRoute)) {
@@ -45,6 +50,7 @@ class Home extends PureComponent {
     }
 
     render() {
+
         return (
             <View style={[styleBase.container]}>
                 <Menu visible={this.state.menuVisible} instant={this}/>

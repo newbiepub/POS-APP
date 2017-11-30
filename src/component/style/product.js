@@ -5,6 +5,7 @@ const styleProduct = EStyleSheet.create({
         height: 140,
         width: 140,
         borderRadius: 15,
+        margin:10,
         backgroundColor: "#999"
     },
     productName:{

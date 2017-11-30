@@ -14,7 +14,7 @@ import styleBase from "../style/base";
 import styleHome from "../style/home";
 import {goToRoute} from "../../action/route";
 
-class Menu extends React.PureComponent {
+class Menu extends React.Component {
     constructor(props) {
         super(props);
         const {height, width} = Dimensions.get('window');
@@ -38,6 +38,11 @@ class Menu extends React.PureComponent {
 
     }
 
+    shouldComponentUpdate(nextProps) {
+        const changeVisible = this.props.visible !== nextProps.visible;
+        return changeVisible
+    }
+
     closeMenu() {
         let instant = this.props.instant;
 
@@ -52,10 +57,12 @@ class Menu extends React.PureComponent {
             })
         });
 
+
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.visible == true) {
+
             Animated.timing(          // Uses easing functions
                 this.state.marginLeft,    // The value to drive
                 {
@@ -66,8 +73,21 @@ class Menu extends React.PureComponent {
     }
 
     onChangeRoute(routeId) {
-        goToRoute(routeId);
-        this.closeMenu();
+
+        let instant = this.props.instant;
+
+        Animated.timing(          // Uses easing functions
+            this.state.marginLeft,    // The value to drive
+            {
+                toValue: -this.state.width * 30 / 100,
+            },           // Configuration
+        ).start(() => {
+            instant.setState({
+                menuVisible: false
+            });
+            goToRoute(routeId);
+        });
+
     }
 
     _MenuItem = ({item}) => (

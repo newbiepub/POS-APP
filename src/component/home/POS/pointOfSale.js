@@ -1,15 +1,16 @@
 import React from "react";
 import {connect} from "react-redux";
-import {Text, View, TouchableWithoutFeedback, Animated, Dimensions, ScrollView} from "react-native";
+import {Text, View, TouchableWithoutFeedback, Animated, Dimensions, ScrollView, ActivityIndicator} from "react-native";
 import styleBase from "../../style/base";
 import styleHome from "../../style/home";
 import * as Animate from "react-native-animatable";
 import Entypo from 'react-native-vector-icons/Entypo';
-import ProductGrid from "../product/product/productGrid";
+import ProductFlatList from "../product/product/productFlatList";
 import CustomAmount from './customAmount';
 import Library from './library';
 import {TextLarge, TextNormal, TextSmall} from '../../reusable/text';
 import {numberwithThousandsSeparator} from '../../reusable/function';
+import {clearCart} from '../../../action/cart';
 
 //import ProductGrid from '../product/product/listProduct';
 class POS extends React.Component {
@@ -34,8 +35,10 @@ class POS extends React.Component {
         const differentAllProduct = this.props.allProduct !== nextProps.allProduct;
         const differentCurrentView = this.state.currentView !== nextState.currentView;
         const differentListCart = this.props.cart !== nextProps.cart;
-        return differentAllProduct || differentCurrentView || differentListCart;
+        const productLoading = this.props.productLoading !== nextProps.productLoading;
+        return differentAllProduct || differentCurrentView || differentListCart || productLoading;
     }
+
     openMenu() {
         this.props.openMenu();
     }
@@ -47,17 +50,15 @@ class POS extends React.Component {
     }
 
     clearSale() {
-        this.setState({
-            listCurrentSale: []
-        })
+
+        this.props.clearCart();
         this.openClearSales();
     }
 
 
-
     async openClearSales() {
 
-        if (this.state.listCurrentSale.length > 0) {
+        if (this.props.cart.length > 0) {
             await this.setState({
                 clearSalesVisible: !this.state.clearSalesVisible
             });
@@ -112,6 +113,7 @@ class POS extends React.Component {
     }
 
     render() {
+
         let currentView = this.state.currentView;
         try {
             var listCurrentSale = this.props.cart.map((data, index) => {
@@ -177,7 +179,13 @@ class POS extends React.Component {
                     <View style={[styleBase.background5, {flex: 0.6}]}>
                         {
                             this.state.currentView === 'GridItems' &&
-                            <ProductGrid data={this.props.allProduct}/>
+                            (this.props.productLoading ?
+                                    <View style={[styleBase.center, {flex:1}]}>
+                                        <ActivityIndicator size={"large"}/>
+                                    </View> :
+                                    <ProductFlatList data={this.props.allProduct}/>
+                            )
+
                         }
                         {
                             this.state.currentView === 'Library' &&
@@ -185,9 +193,7 @@ class POS extends React.Component {
                         }
                         {
                             this.state.currentView === 'CustomAmount' &&
-                            <CustomAmount addToList={(title, price) => {
-                                this.addToList(title, price)
-                            }}/>
+                            <CustomAmount/>
                         }
                     </View>
                     {/*----------------------------------------Right-View-------------------------------------*/}
@@ -210,7 +216,7 @@ class POS extends React.Component {
                             </View>
 
                         </TouchableWithoutFeedback>
-                        <TouchableWithoutFeedback onPress={this.clearSale.bind(this)}>
+                        <TouchableWithoutFeedback onPress={() => this.clearSale()}>
                             <Animated.View style={[styleHome.boxTitle, styleBase.background3, {
                                 position: 'absolute',
                                 zIndex: 5,
@@ -242,8 +248,12 @@ const mapStateToProps = (state) => {
     return {
         account: state.account,
         allProduct: state.product.allProduct,
-        cart: state.cart.currentCart
+        cart: state.cart.currentCart,
+        productLoading: state.product.loading
     }
 };
+const mapDispatchToProps = {
+    clearCart
+};
 
-export default connect(mapStateToProps, null)(POS);
+export default connect(mapStateToProps, mapDispatchToProps)(POS);

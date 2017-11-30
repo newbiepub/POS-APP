@@ -19,7 +19,13 @@ class CreateItem extends React.Component {
         var {width, height} = Dimensions.get('window');
         this.state = {
             width,
-            productData:this.props.hasOwnProperty("productData") ? this.props.productData : {},
+            productData: this.props.hasOwnProperty("productData") ? this.props.productData : {
+                name: "",
+                price: 0,
+                categoryId: '',
+                categoryName: '',
+                description: ""
+            },
             itemName: this.props.hasOwnProperty("item") ? this.props.item.name : "",
             itemPrice: this.props.hasOwnProperty("item") ? this.props.item.prices[0].value : "",
             itemSKU: this.props.hasOwnProperty("item") ? this.props.item.prices[0].SKU : "",
@@ -39,31 +45,52 @@ class CreateItem extends React.Component {
 
 
     ChangeItem(name, text) {
-        switch (name) {
-            case "itemName" :
-                this.setState({itemName: text});
-                return;
-            case "itemSKU" :
-                this.setState({itemSKU: text});
-                return;
-            case "description" :
-                this.setState({description: text});
-                return;
-            case "newItemName" :
-                this.setState({newItemName: text});
-                return;
-            case "category" :
-                this.setState({category: text});
-                return;
-            case "newItemSKU" :
-                this.setState({newItemSKU: text});
-                return;
+        if (name === "name") {
+            this.setState({
+                productData: {
+                    ...this.state.productData,
+                    name: text
+                }
+            })
+        }
+        if (name === "category") {
+            this.setState({
+                productData: {
+                    ...this.state.productData,
+                    categoryId: text.id,
+                    categoryName: text.name
+                }
+            })
+        }
+        if (name === "price") {
+            this.setState({
+                productData: {
+                    ...this.state.productData,
+                    price: text
+                }
+            })
+        }
+        if (name === "description") {
+            this.setState({
+                productData: {
+                    ...this.state.productData,
+                    description: text
+                }
+            })
         }
 
 
     }
 
-
+    getVariantProduct(id, allVariant) {
+        let variant = []
+        allVariant.forEach(async (item) => {
+            if (id === item.productVariantParent) {
+                await variant.push(item);
+            }
+        });
+        return variant;
+    }
     async create() {
         // console.warn(JSON.stringify(this.props.account.access_token));
         let {access_token} = this.props.account;
@@ -123,20 +150,21 @@ class CreateItem extends React.Component {
                     }
 
                 </View>
-                <View style={{flex: 1}}>
+                <View style={{flex: 1,}}>
 
                     {
                         this.state.currentView === 'Thêm mặt hàng' &&
-                        <AddItem navigator={navigator} {...this.state} instant={this}/>
+                        <AddItem navigator={navigator} instant={this} productData={this.state.productData}
+                                 ChangeItem={(name, text) => this.ChangeItem(name, text)}/>
                     }
                     {
                         this.state.currentView === 'Loại hàng' &&
-                        <Category category={this.state.category}
-                                  changeCategory={(category) => this.setState({category})}/>
+                        <Category category={this.props.category} checkedCategory={this.state.productData.categoryId}
+                                  changeCategory={(name, text) => this.ChangeItem(name, text)}/>
                     }
                     {
-                        this.state.currentView === 'Thêm giá' &&
-                        <AddPrice listPrice={this.props.hasOwnProperty("item") ? this.props.item.prices : []}/>
+                    this.state.currentView === 'Thêm giá' &&
+                    <AddPrice listPrice={ this.getVariantProduct(this.state.productData._id || "",this.props.variantProduct) }/>
                     }
                 </View>
 
@@ -165,6 +193,7 @@ class AddItem extends React.PureComponent {
     }
 
     render() {
+
         let instant = this.props.instant;
         return (
             <View style={[styleBase.container]}>
@@ -175,21 +204,21 @@ class AddItem extends React.PureComponent {
                         <View style={[styleProduct.productItem]}>
                             <View style={[styleBase.center, {flex: 3}]}>
                                 <TextLarge style={[styleBase.textE5]}>
-                                    {this.state.productData.name.substr(0, 2)}
+                                    {this.props.productData.name.substr(0, 2) || ""}
                                 </TextLarge>
                             </View>
                             <View
                                 style={[styleProduct.productName, styleBase.background4, styleBase.center, {flex: 1}]}>
-                                <TextSmall numberOfLines={1}>{instant.state.itemName}</TextSmall>
+                                <TextSmall numberOfLines={1}>{this.props.productData.name || ""}</TextSmall>
                             </View>
                         </View>
                     </View>
                     <View style={styleHome.paddingModal}>
                         {/*--------------Name item-----------------*/}
                         <TextInputNormal placeholder={"Tên"}
-                                         value={instant.state.itemName}
+                                         value={this.props.productData.name || ""}
                                          onChangeText={(text) => {
-                                             instant.ChangeItem("itemName", text)
+                                             this.props.ChangeItem("name", text)
                                          }}
 
                                          style={[styleModalItems.modalTextInput, {flex: 1}]}
@@ -202,26 +231,20 @@ class AddItem extends React.PureComponent {
                                 flexDirection: 'row',
                                 paddingHorizontal: 0
                             }]}>
-                                <TextLarge style={{flex: 1}}>{instant.state.category || 'Chọn loại hàng'}</TextLarge>
+                                <TextLarge
+                                    style={{flex: 1}}>{this.props.productData.categoryName || 'Chọn loại hàng'}</TextLarge>
                                 <EvilIcons name="chevron-right" style={styleBase.vector32}/>
                             </View>
                         </TouchableWithoutFeedback>
                         {/*----------------price and SKU-------------------*/}
                         <View style={[styleModalItems.modalItem, {flexDirection: 'row'}]}>
                             <TextInputPriceMask placeholder={"0đ"}
-                                                value={instant.state.itemPrice.toString()}
+                                                value={this.props.productData.price.toString() || ""}
                                                 keyboardType={'numeric'}
                                                 onChangeText={(num) => {
-                                                    instant.setState({itemPrice: num})
+                                                    this.props.ChangeItem("price", num)
                                                 }}
                                                 style={[styleModalItems.modalTextInput, {flex: 1}]}
-                            />
-                            <TextInputNormal placeholder={"Mã SKU"}
-                                             value={instant.state.itemSKU}
-                                             onChangeText={(text) => {
-                                                 instant.ChangeItem("itemSKU", text)
-                                             }}
-                                             style={[styleModalItems.modalTextInput, {flex: 1}]}
                             />
 
                         </View>
@@ -242,9 +265,9 @@ class AddItem extends React.PureComponent {
                         </View>
                         <View style={[styleModalItems.modalItem]}>
                             <TextInputNormal placeholder={"Mô tả"}
-                                             value={instant.state.description}
+                                             value={this.props.productData.description || ""}
                                              onChangeText={(text) => {
-                                                 instant.ChangeItem("description", text)
+                                                 this.props.ChangeItem("description", text)
                                              }}
                                              style={[styleModalItems.modalTextInput, {flex: 1}]}
                             />
@@ -266,25 +289,24 @@ class Category extends React.PureComponent {
         }
     }
 
-    changeCategory(name) {
-        this.setState({checkedCategory: name});
-        this.props.changeCategory(name)
+    changeCategory(name, id) {
+        this.props.changeCategory("category", {id: id, name: name})
     }
 
     render() {
         try {
-            var listCategory = this.state.listCategory.map((data) => {
+            var listCategory = this.props.category.map((data) => {
                 if (data.hasOwnProperty("name"))
                     return (
-                        <TouchableWithoutFeedback key={data.name} onPress={() => {
-                            this.changeCategory(data.name)
+                        <TouchableWithoutFeedback key={data._id} onPress={() => {
+                            this.changeCategory(data.name, data._id)
                         }}>
                             <View style={[styleHome.menuItem, {flexDirection: 'row'}]}>
                                 <TextLarge
-                                    style={[this.state.checkedCategory === data.name ? styleBase.color2 : styleBase.color3, {flex: 1}]}>{data.name}</TextLarge>
+                                    style={[this.props.checkedCategory === data._id ? styleBase.color2 : styleBase.color3, {flex: 1}]}>{data.name}</TextLarge>
                                 <View style={[styleBase.center, styleHome.borderRadioButton]}>
                                     {
-                                        this.state.checkedCategory === data.name &&
+                                        this.props.checkedCategory === data._id &&
                                         <View style={[styleBase.background2, styleHome.checkedRadioButton]}/>
                                     }
 
@@ -311,9 +333,12 @@ class Category extends React.PureComponent {
                     />
                 </View>
                 {/*List Category*/}
-                <View style={styleHome.paddingModal}>
-                    {listCategory}
-                </View>
+                <ScrollView >
+                    <View style={styleHome.scrollView}>
+                        {listCategory}
+                    </View>
+
+                </ScrollView>
             </View>
         )
     }
@@ -347,25 +372,25 @@ class RowComponent extends React.Component {
                 </View>
                 <View style={{flex: 15}}>
                     <TextInputNormal placeholder={"Tên"}
-                                     value={this.props.listPrice[this.props.listPrice.indexOf(data)].type}
+                                     value={this.props.data.name}
                                      onChangeText={(text) => this.props.listPrice[this.props.listPrice.indexOf(data)].type = text}
                                      style={[styleModalItems.modalTextInput, {flex: 1}]}
                     />
                     <View style={[styleHome.borderTop, {flexDirection: 'row'}]}>
                         <TextInputPriceMask placeholder={"0đ"}
-                                            value={this.props.data.value}
+                                            value={this.props.data.price}
                                             keyboardType={'numeric'}
                             // onChangeText={(num) => {
                             //     instant.setState({newItemPrice: num})
                             // }}
                                             style={[styleModalItems.modalTextInput, {flex: 1}]}
                         />
-                        <TextInputNormal placeholder={"Mã SKU"}
-                            // onChangeText={(text) => {
-                            //     instant.ChangeItem("newItemSKU", text)
-                            // }}
-                                         style={[styleModalItems.modalTextInput, {flex: 1}]}
-                        />
+                        {/*<TextInputNormal placeholder={"Mã SKU"}*/}
+                            {/*// onChangeText={(text) => {*/}
+                            {/*//     instant.ChangeItem("newItemSKU", text)*/}
+                            {/*// }}*/}
+                                         {/*style={[styleModalItems.modalTextInput, {flex: 1}]}*/}
+                        {/*/>*/}
 
                     </View>
                 </View>
@@ -381,7 +406,7 @@ class AddPrice extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            data: this.props.listPrice.push({name: "", value: 0, SKU: ""})
+            data: this.props.listPrice.push({name: "", price: 0})
         }
     }
 
@@ -408,7 +433,9 @@ const mapDispatchToProps = {
 };
 const mapStateToProps = (state) => {
     return {
-        account: state.account
+        account: state.account,
+        category: state.product.category,
+        variantProduct: state.product.variantProduct
     }
 };
 

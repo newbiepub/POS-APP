@@ -5,6 +5,7 @@ import styleBase from "../../style/base";
 import styleHome from "../../style/home";
 import style from '../../style/POS';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import Entypo from 'react-native-vector-icons/Entypo';
 import ViewProduct from '../../popup/product/viewProduct';
 import {connect} from "react-redux";
 import {openPopup, renderPopup} from '../../../action/popup';
@@ -157,6 +158,23 @@ class LibraryHome extends React.PureComponent {
                                     </View>
                                 </View>
                             </TouchableWithoutFeedback>
+                            {/*------category------------*/}
+                            <TouchableWithoutFeedback onPress={() => {
+                                this.changeView('Loại hàng')
+                            }}>
+                                <View style={styleHome.itemBar}>
+                                    <View style={styleHome.itemBarIcon}>
+                                        <EvilIcons name="credit-card"
+                                                   style={styleBase.vector26}/>
+                                    </View>
+                                    <View style={[styleHome.itemBarTitle]}>
+                                        <TextSmall style={[{flex: 1}]}>
+                                            Loại hàng
+                                        </TextSmall>
+                                        <EvilIcons name="chevron-right" style={styleBase.vector32}/>
+                                    </View>
+                                </View>
+                            </TouchableWithoutFeedback>
                             {/*------discount------------*/}
                             <TouchableWithoutFeedback onPress={() => {
                                 this.changeView('Khuyến mãi')
@@ -206,27 +224,7 @@ class LibraryItems extends React.PureComponent {
         </TouchableWithoutFeedback>
     );
     render() {
-        // try {
-        //     var listAllItems = this.props.data.map((data) => {
-        //         if (data.hasOwnProperty("name"))
-        //             return (
-        //                 <TouchableWithoutFeedback key={data._id} onPress={() => this.onPressItem(data)}>
-        //                     <View style={[styleHome.itemBar]}>
-        //                         <View style={[styleHome.itemBarIcon]}>
-        //                             <TextNormal style={styleBase.background2}>{data.name.substr(0, 2)}</TextNormal>
-        //                         </View>
-        //                         <View style={[styleHome.itemBarTitle]}>
-        //                             <TextSmall style={{flex: 1}}>{data.name}</TextSmall>
-        //                             <TextSmall> {data.price} giá</TextSmall>
-        //                         </View>
-        //                     </View>
-        //                 </TouchableWithoutFeedback>
-        //             )
-        //     })
-        // } catch (e) {
-        //     console.warn(e);
-        //     return <NotFound/>
-        // }
+
 
         return (
             <View style={{flex: 1}}>

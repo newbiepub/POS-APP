@@ -81,7 +81,7 @@ const styleHome = EStyleSheet.create({
         borderColor: '#e3e3e3'
     },
     paddingModal: {
-        padding: '$widthSize'
+        padding: '$widthSize',
     },
     itemHeader: {
         flex: 1,
@@ -106,6 +106,7 @@ const styleHome = EStyleSheet.create({
     },
     listItem: {
         marginTop: "$widthSize",
+
     },
     //POS--------------------
     titleBar: {
@@ -120,6 +121,10 @@ const styleHome = EStyleSheet.create({
     titleBarIconBack: {
         fontSize: '$font16',
         height: 10,
+    },
+    scrollView: {
+        padding: '$widthSize',
+        marginBottom:'$widthSize'
     },
     buttonCharge: {
         justifyContent: 'center',
@@ -146,12 +151,12 @@ const styleHome = EStyleSheet.create({
         color: "$color4"
     },
 //    transaction
-    transactionSearch:{
+    transactionSearch: {
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal:5
+        paddingHorizontal: 5
     },
-    transactionSearchText:{
+    transactionSearchText: {
         alignItems: 'center',
         paddingHorizontal: 5,
         flexDirection: 'row',
@@ -174,11 +179,11 @@ const styleHome = EStyleSheet.create({
     },
     listTransactionItemTitle: {
         flex: 1,
-        paddingHorizontal:10,
-        height:'$widthSize',
-        justifyContent:'center'
+        paddingHorizontal: 10,
+        height: '$widthSize',
+        justifyContent: 'center'
     },
-    listTransactionItemIcon:{
+    listTransactionItemIcon: {
         fontSize: '$font16',
         height: 16,
     },
@@ -231,7 +236,7 @@ const styleHome = EStyleSheet.create({
             fontSize: '$font16',
             height: 24,
         },
-        listTransactionItemIcon:{
+        listTransactionItemIcon: {
             fontSize: '$font16',
             height: 30,
         },
@@ -242,7 +247,7 @@ const styleHome = EStyleSheet.create({
             fontSize: '$font16',
             height: 30,
         },
-        listTransactionItemIcon:{
+        listTransactionItemIcon: {
             fontSize: '$font16',
             height: 40,
         },

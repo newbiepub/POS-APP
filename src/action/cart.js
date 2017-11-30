@@ -8,6 +8,12 @@ function addToCartAction(payload) {
     }
 }
 
+function clearCartAction() {
+    return {
+        type: CART.CLEAR_CART,
+    }
+}
+
 export function addToCart(item) {
     return async (dispatch, getState) => {
         return new Promise(async (resolve, reject) => {
@@ -21,5 +27,16 @@ export function addToCart(item) {
             }
 
         })
+    }
+}
+
+export function clearCart() {
+    return async (dispatch, getState) => {
+        try {
+
+            dispatch(clearCartAction());
+        } catch (e) {
+            console.warn(e);
+        }
     }
 }

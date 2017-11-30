@@ -27,6 +27,7 @@ export const PRODUCT = {
     GET_PRODUCT: "GET_PRODUCT",
     CREATE_PRODUCT: "CREATE_PRODUCT",
     ADD_TO_DISCOUNT: "ADD_TO_DISCOUNT",
+    GET_CATEGORY: "GET_CATEGORY"
 };
 //transaction
 export const TRANSACTION = {
@@ -35,4 +36,5 @@ export const TRANSACTION = {
 //cart
 export const CART = {
     ADD_TO_CART: "ADD_TO_CART",
+    CLEAR_CART: "CLEAR_CART",
 };

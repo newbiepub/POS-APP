@@ -1,14 +1,12 @@
 import {PRODUCT} from "../constant/constant";
 
 const initialState = {
+    loading: true,
     allProduct: [],
-    variantProduct:[],
+    variantProduct: [],
     allDiscount:
         [{name: 'Cồn', prices: [{type: "Bình thường", value: 100, SKU: 'helo'}]}],
-    category: [
-        {name: 'lẻ'},
-        {name: 'sỉ'}
-    ]
+    category: []
 };
 
 export default productReducer(initialState);
@@ -25,7 +23,15 @@ function productReducer(initialState) {
                 return {
                     ...state,
                     allProduct: action.payload.product,
-                    variantProduct:action.payload.variant,
+                    variantProduct: action.payload.variant,
+                    loading: false
+                }
+            }
+            case PRODUCT.GET_CATEGORY : {
+                return {
+                    ...state,
+                    category: action.payload,
+                    loading: false
                 }
             }
             default: {
