@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import {Text, View, TouchableWithoutFeedback, Animated, Dimensions, ScrollView, ActivityIndicator} from "react-native";
 import styleBase from "../../style/base";
 import styleHome from "../../style/home";
-import * as Animate from "react-native-animatable";
+import {openPopup,renderPopup} from '../../../action/popup';
 import Entypo from 'react-native-vector-icons/Entypo';
 import ProductFlatList from "../product/product/productFlatList";
 import CustomAmount from './customAmount';
@@ -11,7 +11,7 @@ import Library from './library';
 import {TextLarge, TextNormal, TextSmall} from '../../reusable/text';
 import {numberwithThousandsSeparator} from '../../reusable/function';
 import {clearCart} from '../../../action/cart';
-
+import ViewProduct from '../../popup/product/viewProduct';
 //import ProductGrid from '../product/product/listProduct';
 class POS extends React.Component {
     constructor(props) {
@@ -34,9 +34,10 @@ class POS extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         const differentAllProduct = this.props.allProduct !== nextProps.allProduct;
         const differentCurrentView = this.state.currentView !== nextState.currentView;
+        const differentClear = this.state.clearSalesVisible !== nextState.clearSalesVisible;
         const differentListCart = this.props.cart !== nextProps.cart;
         const productLoading = this.props.productLoading !== nextProps.productLoading;
-        return differentAllProduct || differentCurrentView || differentListCart || productLoading;
+        return differentAllProduct || differentCurrentView || differentListCart || productLoading || differentClear;
     }
 
     openMenu() {
@@ -112,37 +113,46 @@ class POS extends React.Component {
         })
     }
 
+    adjustItemInCart(data) {
+    this.props.openPopup();
+    this.props.renderPopup(
+        <ViewProduct existData={data}/>
+    )
+    }
+
     render() {
 
         let currentView = this.state.currentView;
         try {
             var listCurrentSale = this.props.cart.map((data, index) => {
                 return (
-                    <View key={index} style={{flexDirection: 'row', padding: 10, alignItems: "center"}}>
-                        <View style={{flex: 1}}>
-                            <TextNormal numberOfLines={2}>{data.name}</TextNormal>
-                            {
-                                data.quatity > 1 &&
-                                <TextSmall style={styleBase.color6}>x{data.quatity}</TextSmall>
-                            }
+                    <TouchableWithoutFeedback key={index} onPress={()=>this.adjustItemInCart(data)}>
+                        <View  style={{flexDirection: 'row', padding: 10, alignItems: "center"}}>
+                            <View style={{flex: 1}}>
+                                <TextNormal numberOfLines={2}>{data.name}</TextNormal>
+                                {
+                                    data.quatity > 1 &&
+                                    <TextSmall style={styleBase.color6}>x{data.quatity}</TextSmall>
+                                }
 
+                            </View>
+                            <TextNormal numberOfLines={1}>{numberwithThousandsSeparator(data.totalPrice)}đ</TextNormal>
                         </View>
-                        <TextNormal numberOfLines={1}>{numberwithThousandsSeparator(data.totalPrice)}đ</TextNormal>
-                    </View>
+                    </TouchableWithoutFeedback>
                 )
             });
         } catch (e) {
             console.warn(e)
             return <View></View>
         }
-
         return (
+
             <View style={[styleBase.container]}
-                          onLayout={(event => this.getWindowSize(event))}>
+                  onLayout={(event => this.getWindowSize(event))}>
 
                 {/*----------------------------------------Header-------------------------------------*/}
 
-                <View style={[styleHome.header]}>
+                <View style={[styleHome.header, {zIndex: 0}]}>
                     <View>
                         <TouchableWithoutFeedback onPress={this.openMenu.bind(this)}>
                             <View style={[styleHome.menuButton]}>
@@ -174,13 +184,13 @@ class POS extends React.Component {
 
                 </View>
 
-                <View style={[{flex: 1, flexDirection: 'row'}]}>
+                <View style={[{flex: 1, flexDirection: 'row', zIndex: 3}]}>
                     {/*----------------------------------------Left-View-------------------------------------*/}
                     <View style={[styleBase.background5, {flex: 0.6}]}>
                         {
                             this.state.currentView === 'GridItems' &&
                             (this.props.productLoading ?
-                                    <View style={[styleBase.center, {flex:1}]}>
+                                    <View style={[styleBase.center, {flex: 1}]}>
                                         <ActivityIndicator size={"large"}/>
                                     </View> :
                                     <ProductFlatList data={this.props.allProduct}/>
@@ -197,7 +207,7 @@ class POS extends React.Component {
                         }
                     </View>
                     {/*----------------------------------------Right-View-------------------------------------*/}
-                    <View style={[styleHome.box, {flex: 0.4}]}>
+                    <View style={[styleHome.box, {flex: 0.4, zIndex: 3}]}>
                         <TouchableWithoutFeedback onLayout={(event) => this.getTitleBoxSize(event)}
                                                   onPress={this.openClearSales.bind(this)}>
                             <View
@@ -222,8 +232,9 @@ class POS extends React.Component {
                                 zIndex: 5,
                                 top: this.state.clearBoxTop,
                                 height: this.state.titleSize.h,
-                                width: this.state.titleSize.w
-                            }]}>
+                                width: this.state.titleSize.w,
+                            }
+                            ]}>
 
                                 <Text style={[styleBase.font18, styleBase.color4, {flex: 1}]}>
                                     Xoá
@@ -237,8 +248,41 @@ class POS extends React.Component {
                         <View style={styleHome.buttonCharge}>
                             <TextLarge numberOfLines={1}> Thanh toán {this.getTotalPrice()}đ </TextLarge>
                         </View>
+                        {
+                            this.state.clearSalesVisible &&
+                            <TouchableWithoutFeedback onPress={() => this.openClearSales()}>
+                                <View style={{
+                                    position: 'absolute',
+                                    width: this.state.window.w,
+                                    height: this.state.window.h,
+                                    zIndex: 4
+                                }}/>
+                            </TouchableWithoutFeedback>
+                        }
                     </View>
+                    {
+                        this.state.clearSalesVisible &&
+                        <TouchableWithoutFeedback onPress={() => this.openClearSales()}>
+                            <View style={{
+                                position: 'absolute',
+                                width: this.state.window.w,
+                                height: this.state.window.h,
+                                zIndex: 2
+                            }}/>
+                        </TouchableWithoutFeedback>
+                    }
                 </View>
+                {
+                    this.state.clearSalesVisible &&
+                    <TouchableWithoutFeedback onPress={() => this.openClearSales()}>
+                        <View style={{
+                            position: 'absolute',
+                            width: this.state.window.w,
+                            height: this.state.window.h,
+                            zIndex: 2
+                        }}/>
+                    </TouchableWithoutFeedback>
+                }
             </View>
         )
     }
@@ -254,6 +298,8 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = {
     clearCart,
+    openPopup,
+    renderPopup
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(POS);

@@ -8,6 +8,7 @@ import {numberwithThousandsSeparator} from '../../reusable/function';
 import {TextInputNormal} from '../../reusable/text';
 import {connect} from "react-redux";
 import {addToCart} from '../../../action/cart';
+
 class CustomAmount extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -38,7 +39,12 @@ class CustomAmount extends React.PureComponent {
     }
 
     addToCategories() {
-        this.props.addToCart({name: this.state.title !== "" ? this.state.title : "ghi chú",quatity: 1 ,price: this.state.customAmount, totalPrice: this.state.customAmount});
+        this.props.addToCart({
+            name: this.state.title !== "" ? this.state.title : "ghi chú",
+            quatity: 1,
+            price: this.state.customAmount,
+            totalPrice: this.state.customAmount
+        });
         this.setState(
             {
                 customAmount: 0,
@@ -66,7 +72,7 @@ class CustomAmount extends React.PureComponent {
                                              this.setState({title: text})
                                          }}
                                          multiline={true}
-                                         style={{justifyContent:'center'}}
+                                         style={{justifyContent: 'center'}}
                         />
                     </View>
                     <View style={[{
@@ -191,4 +197,4 @@ class CustomAmount extends React.PureComponent {
 const mapDispatchToProps = {
     addToCart
 }
-export default connect(null,mapDispatchToProps)(CustomAmount);
+export default connect(null, mapDispatchToProps)(CustomAmount);

@@ -79,7 +79,11 @@ class Menu extends React.Component {
     // }
 
     onChangeRoute(routeId) {
-        this.props.closeMenu();
+
+
+        setTimeout(function () {
+            this.props.closeMenu();
+        }.bind(this), 150);
         goToRoute(routeId);
 
     }
@@ -95,7 +99,7 @@ class Menu extends React.Component {
         return (
             <ModalWrapper
                 containerStyle={{flexDirection: 'row', justifyContent: 'flex-start'}}
-                onRequestClose={() => this.props.closeMenu()}
+                onRequestClose={() => {this.props.closeMenu();}}
                 position="left"
                 shouldAnimateOnRequestClose={true}
                 supportedOrientations={['portrait', 'landscape']}
@@ -139,8 +143,6 @@ Menu.defaultProps = {
 
 const mapStateToProps = (state) => {
     return {
-        account: state.account,
-        route: state.route,
         routeMap: state.route.routeMap,
         currentRoute: state.route.currentRoute,
         visible: state.route.menuVisible

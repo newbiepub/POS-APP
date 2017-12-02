@@ -117,7 +117,7 @@ class Product extends Component {
                         <TextLarge style={[styleBase.color3]}>{this.state.selected.name}</TextLarge>
                     </View>
 
-                    <View style={{flex:1}}>
+                    <View style={{flex: 1}}>
                         {/*------Search------------*/}
 
                         <View style={styleHome.itemBar}>
@@ -167,7 +167,6 @@ class Product extends Component {
                         }
 
 
-
                     </View>
                 </View>
             </View>
@@ -212,7 +211,7 @@ class AllProduct extends React.PureComponent {
                             <TextNormal style={[styleBase.color2]}>Thêm hàng</TextNormal>
                         </View>
                     </TouchableWithoutFeedback>
-                    <View style={[styleHome.listItem, styleHome.borderTop, ]}>
+                    <View style={[styleHome.listItem, styleHome.borderTop,]}>
                         {
                             this.props.loading ?
                                 <View style={[styleBase.center, {flex: 1}]}>

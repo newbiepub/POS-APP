@@ -9,7 +9,7 @@ import styleModalItems from '../../style/modalItem';
 import {connect} from "react-redux";
 import {closePopup} from '../../../action/popup';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {addToCart} from '../../../action/cart';
+import {addToCart, removeCart} from '../../../action/cart';
 import {numberwithThousandsSeparator} from '../../reusable/function';
 
 class ViewItem extends React.Component {
@@ -17,9 +17,10 @@ class ViewItem extends React.Component {
         super(props);
         var {width, height} = Dimensions.get('window');
         this.state = {
-            currentPrice: this.props.productData.price,
-            currentName: this.props.productData.name,
-            itemQuatity: 1,
+            currentId: this.props.hasOwnProperty("existData") ? this.props.existData._id : this.props.productData._id,
+            currentPrice: this.props.hasOwnProperty("existData") ? this.props.existData.price : this.props.productData.price,
+            currentName: this.props.hasOwnProperty("existData") ? this.props.existData.name : this.props.productData.name,
+            itemQuatity: this.props.hasOwnProperty("existData") ? this.props.existData.quatity : 1,
             note: ""
         };
     }
@@ -35,18 +36,46 @@ class ViewItem extends React.Component {
     }
 
     componentWillMount() {
-        this.setState({
-            product: this.getVariantProduct(this.props.productData, this.props.variant)
-        })
+        if (this.props.hasOwnProperty("existData")) {
+            this.setState({
+                product: this.getVariantProduct(this.props.existData.productData, this.props.variant)
+            })
+        } else {
+            this.setState({
+                product: this.getVariantProduct(this.props.productData, this.props.variant)
+            })
+        }
+
 
     }
 
     async addToCart() {
         let a = await  this.props.addToCart({
+            _id: this.state.currentId,
             name: this.state.currentName,
             price: this.state.currentPrice,
             quatity: this.state.itemQuatity,
-            totalPrice: this.state.currentPrice * this.state.itemQuatity
+            totalPrice: this.state.currentPrice * this.state.itemQuatity,
+            productData: this.props.productData
+        });
+        this.closePopup()
+    }
+
+    removeItemInCart(id) {
+
+        this.props.removeCart(id);
+        this.closePopup()
+    }
+
+    async adjustItemInCart() {
+        let a = await  this.props.addToCart({
+            _id: this.state.currentId,
+            oldId: this.props.existData._id,
+            name: this.state.currentName,
+            price: this.state.currentPrice,
+            quatity: this.state.itemQuatity,
+            totalPrice: this.state.currentPrice * this.state.itemQuatity,
+            productData: this.props.productData
         });
         this.closePopup()
     }
@@ -75,16 +104,28 @@ class ViewItem extends React.Component {
                         <TextLarge>  {numberwithThousandsSeparator(this.state.currentPrice * this.state.itemQuatity) || ""}
                             đ</TextLarge>
                     </View>
+                    {
+                        this.props.hasOwnProperty("existData") ?
+                            <TouchableWithoutFeedback onPress={() => {
+                                this.adjustItemInCart()
+                            }}>
+                                <View
+                                    style={styleHome.modalButtonSubmit}>
 
-                    <TouchableWithoutFeedback onPress={() => {
-                        this.addToCart()
-                    }}>
-                        <View
-                            style={styleHome.modalButtonSubmit}>
+                                    <TextLarge style={styleHome.modalButtonSubmitFont}>Sửa</TextLarge>
+                                </View>
+                            </TouchableWithoutFeedback> :
+                            <TouchableWithoutFeedback onPress={() => {
+                                this.addToCart()
+                            }}>
+                                <View
+                                    style={styleHome.modalButtonSubmit}>
 
-                            <TextLarge style={styleHome.modalButtonSubmitFont}>Thêm vào giỏ</TextLarge>
-                        </View>
-                    </TouchableWithoutFeedback>
+                                    <TextLarge style={styleHome.modalButtonSubmitFont}>Thêm vào giỏ</TextLarge>
+                                </View>
+                            </TouchableWithoutFeedback>
+                    }
+
                 </View>
                 <View style={[styleHome.paddingModal, {flex: 1}]}>
                     {/*-----------------List---------------------------*/}
@@ -119,6 +160,17 @@ class ViewItem extends React.Component {
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
+                    {
+                        this.props.hasOwnProperty("existData") &&
+                        <TouchableWithoutFeedback onPress={() => {
+                            this.removeItemInCart(this.props.existData._id)
+                        }}>
+                            <View style={styleHome.buttonDelete}>
+                                <TextNormal style={styleBase.color4}>Xoá</TextNormal>
+                            </View>
+                        </TouchableWithoutFeedback>
+
+                    }
                 </View>
 
 
@@ -141,10 +193,11 @@ class ListPrice extends React.PureComponent {
         })
     }
 
-    changeType(name, price) {
+    changeType(name, price, id) {
         this.props.instant.setState({
             currentPrice: price,
-            currentName: name
+            currentName: name,
+            currentId: id
         });
 
     }
@@ -155,16 +208,17 @@ class ListPrice extends React.PureComponent {
         try {
             var listPrice = this.props.productData.map((data) => {
                 return (
-                    <TouchableWithoutFeedback key={data._id} onPress={() => this.changeType(data.name, data.price)}>
+                    <TouchableWithoutFeedback key={data._id}
+                                              onPress={() => this.changeType(data.name, data.price, data._id)}>
                         <View
                             style={[styleHome.box, styleHome.boxPadding, styleModalItems.marginVertical, styleModalItems.choosePriceItem, {
                                 flexDirection: 'row',
                                 width: priceItemWidth
-                            }, this.props.productData.indexOf(data) % 2 === 0 && {marginRight: margin}, this.props.instant.state.currentName === data.name && styleBase.background3]}>
+                            }, this.props.productData.indexOf(data) % 2 === 0 && {marginRight: margin}, this.props.instant.state.currentId === data._id && styleBase.background3]}>
                             <TextSmall numberOfLines={2}
-                                       style={[styleBase.bold, this.props.instant.state.currentName === data.name && styleBase.color4, {flex: 1}]}>{data.name}</TextSmall>
+                                       style={[styleBase.bold, this.props.instant.state.currentId === data._id && styleBase.color4, {flex: 1}]}>{data.name}</TextSmall>
                             <TextSmall numberOfLines={2}
-                                       style={this.props.instant.state.currentName === data.name && styleBase.color4}>{numberwithThousandsSeparator(data.price)}đ</TextSmall>
+                                       style={this.props.instant.state.currentId === data._id && styleBase.color4}>{numberwithThousandsSeparator(data.price)}đ</TextSmall>
                         </View>
                     </TouchableWithoutFeedback>
                 )
@@ -198,7 +252,8 @@ class ListPrice extends React.PureComponent {
 
 const mapDispatchToProps = {
     closePopup,
-    addToCart
+    addToCart,
+    removeCart
 };
 const mapStateToProps = (state) => {
     return {

@@ -3,7 +3,7 @@ import {Modal, View, Dimensions, TouchableWithoutFeedback} from "react-native";
 import styleBase from "../style/base";
 import {connect} from "react-redux";
 import {closePopup} from '../../action/popup';
-
+import * as Animate from "react-native-animatable";
 class Popup extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -52,14 +52,14 @@ class Popup extends React.PureComponent {
                         <View
                             style={[styleBase.overlay, {position: 'absolute'}]}/>
                     </TouchableWithoutFeedback>
-                    <View style={[styleBase.container, styleBase.background4, {
+                    <Animate.View animation={"bounceIn"} duration={300} style={[styleBase.container, styleBase.background4, {
                         width: this.state.width > this.state.height ? this.state.width * 85 / 100 : this.state.width,
                         alignSelf: 'center'
                     }]}>
                         {Object.keys(this.props.renderModal).length > 0 &&
                         this.renderContent()
                         }
-                    </View>
+                    </Animate.View>
                 </Modal>
             </View>
         )

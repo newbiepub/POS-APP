@@ -13,7 +13,12 @@ function clearCartAction() {
         type: CART.CLEAR_CART,
     }
 }
-
+function removeCartAction(payload) {
+    return {
+        type: CART.REMOVE_CART,
+        payload
+    }
+}
 export function addToCart(item) {
     return async (dispatch, getState) => {
         return new Promise(async (resolve, reject) => {
@@ -29,7 +34,16 @@ export function addToCart(item) {
         })
     }
 }
+export function removeCart(id) {
+    return async (dispatch, getState) => {
+        try {
 
+            dispatch(removeCartAction(id));
+        } catch (e) {
+            console.warn(e);
+        }
+    }
+}
 export function clearCart() {
     return async (dispatch, getState) => {
         try {

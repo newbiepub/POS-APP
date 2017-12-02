@@ -5,8 +5,7 @@ import POS from './POS/pointOfSale';
 import Transaction from './transaction/transaction';
 import Product from './product/product';
 import Setting from './setting/setting';
-import {connect} from 'react-redux';
-import * as _ from "lodash";
+import {connect} from 'react-redux';;
 import * as Animate from "react-native-animatable";
 import {openMenu} from '../../action/route';
 
@@ -25,7 +24,7 @@ class Main extends React.Component {
 
                 {
                     this.props.currentRoute === "POS" &&
-                    <Animate.View animation={"fadeIn"} duration={750} style={{flex: 1}}>
+                    <Animate.View  style={{flex: 1}}>
                         <POS openMenu={() => {
                             this.props.openMenu()
                         }}/>
@@ -43,7 +42,7 @@ class Main extends React.Component {
                 }
                 {
                     this.props.currentRoute === "item" &&
-                    <Animate.View animation={"fadeIn"} duration={750} style={{flex: 1}}>
+                    <Animate.View  style={{flex: 1}}>
                         <Product openMenu={() => {
                             this.props.openMenu()
                         }}/>
@@ -52,7 +51,7 @@ class Main extends React.Component {
                 }
                 {
                     this.props.currentRoute === "setting" &&
-                    <Animate.View animation={"fadeIn"} duration={750} style={{flex: 1}}>
+                    <Animate.View style={{flex: 1}}>
                         <Setting openMenu={() => {
                             this.props.openMenu()
                         }} title="Cài Đặt"
