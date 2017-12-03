@@ -19,7 +19,8 @@ const styleProduct = EStyleSheet.create({
         width: 140,
         borderRadius: 15,
         backgroundColor: "#444"
-    }
+    },
+    swiperDeleteButton: {backgroundColor: "#D64242", height: 70, width: 70}
 });
 
 export default styleProduct;

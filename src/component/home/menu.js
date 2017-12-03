@@ -1,20 +1,9 @@
 import React from "react";
 import {connect} from "react-redux";
-import {
-    Animated,
-    Dimensions,
-    FlatList,
-    Modal,
-    Text,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
-    Platform
-} from "react-native";
+import {Animated, Dimensions, FlatList, Text, TouchableOpacity, View} from "react-native";
 import styleBase from "../style/base";
 import styleHome from "../style/home";
-import {goToRoute} from "../../action/route";
-import {closeMenu} from '../../action/route';
+import {closeMenu, goToRoute} from "../../action/route";
 import ModalWrapper from '../modalWrapper';
 import {size} from '../style/home';
 

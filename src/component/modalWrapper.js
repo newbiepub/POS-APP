@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { Animated, Dimensions, Modal, Platform, TouchableWithoutFeedback, StyleSheet, View } from 'react-native';
+import { Animated, Dimensions, Modal, Platform, TouchableWithoutFeedback, StyleSheet, View, InteractionManager} from 'react-native';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import PropTypes from 'prop-types';
 
@@ -84,23 +84,24 @@ export default class ModalWrapper extends Component {
 
     animateOpen = () => {
         const { animationDuration, onAnimateOpen } = this.props;
-
-        Animated.timing(
-            this.state.overlayOpacity, {
-                toValue: this.getOverlayOpacity(),
-                duration: animationDuration
-            }
-        ).start();
-        Animated.timing(
-            this.state.currentPosition, {
-                toValue: 0,
-                duration: animationDuration
-            }
-        ).start(() => {
-            this.setState({ isAnimating: false });
-            onAnimateOpen();
-        });
-        this.setState({ isAnimating: true });
+        InteractionManager.runAfterInteractions(() => {
+            Animated.timing(
+                this.state.overlayOpacity, {
+                    toValue: this.getOverlayOpacity(),
+                    duration: animationDuration
+                }
+            ).start();
+            Animated.timing(
+                this.state.currentPosition, {
+                    toValue: 0,
+                    duration: animationDuration
+                }
+            ).start(() => {
+                this.setState({ isAnimating: false });
+                onAnimateOpen();
+            });
+            this.setState({ isAnimating: true });
+        })
     };
 
     animateClose = () => {

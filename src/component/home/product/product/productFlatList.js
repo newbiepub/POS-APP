@@ -1,16 +1,21 @@
 import React from "react";
 import {connect} from "react-redux";
-import {ActivityIndicator, Text, FlatList, View, TouchableWithoutFeedback} from "react-native";
+import {FlatList, Text, TouchableWithoutFeedback, View} from "react-native";
 import ViewProduct from '../../../popup/product/viewProduct';
 
 import styleBase from "../../../style/base";
 import styleProduct from "../../../style/product";
-import {size} from '../../../style/home';
+
 import {openPopup, renderPopup} from '../../../../action/popup';
 
 class ProductFlatList extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            limit: 8,
+            width: 0,
+        }
+
     }
 
     itemPress(product) {
@@ -23,48 +28,46 @@ class ProductFlatList extends React.Component {
 
     shouldComponentUpdate(nextProps, nextState) {
         const differentData = this.props.data !== nextProps.data;
-        const changedLoading = this.props.loading !== nextProps.loading;
-        return differentData || changedLoading;
+        const changeWidth= this.state.width !== nextState.width;
+        return differentData || changeWidth;
     }
 
     _renderItem = ({item}) => (
         <TouchableWithoutFeedback onPress={() => this.itemPress(item)}>
-            <View style={[styleProduct.productItem, {width: size.gridItemWidth, height: size.gridItemWidth}]}>
+            <View style={[styleProduct.productItem, {width: this.state.width, height: this.state.width}]}>
                 <View style={[styleBase.center, {flex: 3}]}>
                     <Text style={[styleBase.font26, styleBase.textE5]}>
                         {item.name.substr(0, 2)}
                     </Text>
                 </View>
-                <View style={[styleProduct.productName, styleBase.background4, styleBase.center, {
-                    flex: 1,
-                    paddingHorizontal: 3
-                }]}>
-                    <Text style={[styleBase.font14, styleBase.color3, {backgroundColor: 'transparent'}]}
-                          numberOfLines={1}>{item.name}</Text>
+                <View style={[styleProduct.productName, styleBase.background4, styleBase.center, {flex: 1,paddingHorizontal:3}]}>
+                    <Text style={[styleBase.font14, styleBase.color3,{backgroundColor:'transparent'}]} numberOfLines={1}>{item.name}</Text>
                 </View>
             </View>
         </TouchableWithoutFeedback>
     );
 
+    getSize(evt) {
+        var {width} = evt.nativeEvent.layout;
+        this.setState({
+            width: (width -30)/ 4- 20
+        })
+    }
 
     render() {
         return (
-            <View style={[styleBase.grow, styleProduct.productWrapper, styleBase.background5]}>
+            <View onLayout={(event) => this.getSize(event)}
+                  style={[styleBase.grow, styleProduct.productWrapper, styleBase.background5]}>
                 {
-                    this.props.loading ?
-                        <View style={[styleBase.center, {flex: 1}]}>
-                            <ActivityIndicator size={"large"}/>
-                        </View> :
-
-                        <FlatList
-                            data={this.props.data}
-                            numColumns={4}
-                            extraData={this.state}
-                            initialNumToRender={5}
-                            keyExtractor={(item) => item._id}
-                            renderItem={this._renderItem}
-                        />
-
+                    this.state.width >0 &&
+                    <FlatList
+                        data={this.props.data}
+                        numColumns={4}
+                        extraData={this.state}
+                        initialNumToRender={5}
+                        keyExtractor={(item) => item._id}
+                        renderItem={this._renderItem}
+                    />
                 }
 
 
@@ -76,7 +79,7 @@ class ProductFlatList extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        loading: state.product.loading
+        account: state.account,
     }
 };
 const mapDispatchToProps = {

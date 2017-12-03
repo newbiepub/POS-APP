@@ -31,7 +31,7 @@ class Login extends PureComponent {
     }
 
     async componentDidMount() {
-        Dimensions.addEventListener('change', this.dimensionChanged);
+        Dimensions.addEventListener('change', this.dimensionChanged.bind(this));
         try {
             await auth()
         } catch(e) {
@@ -40,7 +40,7 @@ class Login extends PureComponent {
     }
 
     componentWillUnmount() {
-        Dimensions.removeEventListener('change', this.dimensionChanged)
+        Dimensions.removeEventListener('change', this.dimensionChanged.bind(this))
     }
 
 

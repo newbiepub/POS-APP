@@ -1,16 +1,31 @@
 import React, {Component} from "react";
-import {TextInput, View, TouchableWithoutFeedback, ActivityIndicator, FlatList, ScrollView} from "react-native";
-import {TextLarge, TextNormal, TextInputNormal, TextSmall} from '../../reusable/text';
+import {
+    ActivityIndicator,
+    FlatList,
+    InteractionManager,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
+    Animated
+} from "react-native";
+import {TextLarge, TextNormal, TextSmall} from '../../reusable/text';
 import styleHome from "../../style/home";
 import styleBase from "../../style/base";
 import {connect} from 'react-redux';
 import Entypo from 'react-native-vector-icons/Entypo';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
-
 import {openPopup, renderPopup} from '../../../action/popup';
 import CreateModifyProductPopup from '../../popup/product/createModifyProduct';
 import CreateCategory from '../../popup/product/createCategory';
+import styleProduct from "../../style/product";
+import * as Animate from "react-native-animatable";
+import Swipeable from "../../swipeableList/swipeableList";
+
+const TouchableOpacityAnimate = Animate.createAnimatableComponent(TouchableOpacity);
 
 class Product extends Component {
     constructor(props) {
@@ -141,29 +156,37 @@ class Product extends Component {
                         {/*content*/}
                         {
                             this.state.selected.id === 'allProduct' &&
-                            <AllProduct allProduct={this.props.allProduct} openPopup={() => this.props.openPopup()}
-                                        renderPopup={(renderContent) => this.props.renderPopup(renderContent)}
-                                        loading={this.props.loading}/>
+                            <AllProduct
+                                {...this.props}
+                                allProduct={this.props.allProduct} openPopup={() => this.props.openPopup()}
+                                renderPopup={(renderContent) => this.props.renderPopup(renderContent)}
+                                loading={this.props.loading}/>
                         }
                         {
                             this.state.selected.id === 'category' &&
-                            <Category allProduct={this.props.allProduct} category={this.props.category}
-                                      openPopup={() => this.props.openPopup()}
-                                      previewCategory={(category) => {
-                                          this.previewCategory(category)
-                                      }}
-                                      loading={this.props.loading}
-                                      renderPopup={(renderContent) => this.props.renderPopup(renderContent)}/>
+                            <Category
+                                {...this.props}
+                                allProduct={this.props.allProduct} category={this.props.category}
+                                openPopup={() => this.props.openPopup()}
+                                previewCategory={(category) => {
+                                    this.previewCategory(category)
+                                }}
+                                loading={this.props.loading}
+                                renderPopup={(renderContent) => this.props.renderPopup(renderContent)}/>
                         }
                         {
                             this.state.selected.id === 'previewCategory' &&
-                            <CategoryPreview category={this.state.selected.data}
-                                             allProduct={this.props.allProduct} openPopup={() => this.props.openPopup()}
-                                             renderPopup={(renderContent) => this.props.renderPopup(renderContent)}/>
+                            <CategoryPreview
+                                {...this.props}
+                                category={this.state.selected.data}
+                                allProduct={this.props.allProduct} openPopup={() => this.props.openPopup()}
+                                renderPopup={(renderContent) => this.props.renderPopup(renderContent)}/>
                         }
                         {
                             this.state.selected.id === 'discount' &&
-                            <Discount allDiscount={this.props.allDiscount}/>
+                            <Discount
+                                {...this.props}
+                                allDiscount={this.props.allDiscount}/>
                         }
 
 
@@ -175,64 +198,127 @@ class Product extends Component {
 }
 
 class AllProduct extends React.PureComponent {
+    constructor(props) {
+        super(props);
+        this.listRow = [];
+        this.state = {
+            deleteVerification: false
+        }
+    }
 
     createItem() {
         this.props.renderPopup(<CreateModifyProductPopup/>);
         this.props.openPopup();
     }
 
-    modifyItem(item) {
+    _renderItem = ({item, index}) => <ProductItem {...this.props} item={item} index={index}/>
+
+    render() {
+        return (
+            <View style={[styleHome.scrollView]}>
+                <TouchableOpacity onPress={this.createItem.bind(this)} style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
+                    <TextNormal style={[styleBase.color2]}>Thêm hàng</TextNormal>
+                </TouchableOpacity>
+                <View style={[styleHome.listItem, styleHome.borderTop,]}>
+                    {
+                        this.props.loading ?
+                            <View style={[styleBase.center, {flex: 1}]}>
+                                <ActivityIndicator size={"large"}/>
+                            </View> :
+                            <FlatList
+                                data={this.props.allProduct}
+                                extraData={this.state}
+                                initialNumToRender={15}
+                                keyExtractor={(item) => item._id}
+                                renderItem={this._renderItem}
+                            />
+                    }
+                </View>
+            </View>
+        )
+    }
+}
+
+class ProductItem extends React.PureComponent {
+    constructor(props) {
+        super(props);
+        this.swipeableRef = null;
+        this.deleteButton = null;
+        this.state = {
+            deleteVerification: false
+        }
+    }
+
+    static propTypes = {
+        item: React.PropTypes.object,
+        index: React.PropTypes.number
+    };
+
+    modifyItem() {
+        let { item } = this.props;
         this.props.renderPopup(<CreateModifyProductPopup productData={item}/>);
         this.props.openPopup();
     }
 
-    _renderItem = ({item}) => (
-        <TouchableWithoutFeedback onPress={() => this.modifyItem(item)}>
-            <View style={[styleHome.itemBar]}>
-                <View style={[styleHome.itemBarIcon]}>
-                    <TextNormal style={styleBase.background2}>{item.name.substr(0, 2)}</TextNormal>
-                </View>
-                <View style={[styleHome.itemBarTitle]}>
-                    <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
-                    <TextSmall> {item.price} giá</TextSmall>
-                </View>
-            </View>
-        </TouchableWithoutFeedback>
-    );
+    onDeleteItem() {
+        let { item, index } = this.props;
+        if (this.state.deleteVerification) {
+        } else {
+            InteractionManager.runAfterInteractions(() => {
+                if (this.deleteButton != undefined) {
+                    this.deleteButton.transitionTo({width: 150}, 400);
+                }
+                if(this.swipeableRef != undefined) {
+                    Animated.spring(this.swipeableRef.state.pan.x, {
+                        toValue: -150,
+                        duration: 450,
+                        useNativeDriver: true
+                    }).start();
+                }
+                this.setState({deleteVerification: true});
+            });
+        }
+        setTimeout(() => {
+            this.setState({deleteVerification: false});
+            this.deleteButton.transitionTo({width: 70}, 400);
+            Animated.spring(this.swipeableRef.state.pan.x, {
+                toValue: 0,
+                duration: 450,
+                useNativeDriver: true
+            }).start();
+        }, 2000);
+    }
 
-    render() {
-
+    renderRightItem() {
         return (
+            <TouchableOpacityAnimate ref={(rowRef) => {this.deleteButton = rowRef;}}
+                                     onPress={this.onDeleteItem.bind(this)}
+                                     style={[styleBase.center, styleProduct.swiperDeleteButton]}>
+                <Text style={[styleBase.font16, styleBase.textE5]}>
+                    {this.state.deleteVerification ? "Xác Nhận" : "Xoá"}
+                </Text>
+            </TouchableOpacityAnimate>
+        )
+    }
 
-            <ScrollView>
-                <View style={[styleHome.scrollView]}>
-                    <TouchableWithoutFeedback onPress={() => this.createItem()}>
-                        <View style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
-                            <TextNormal style={[styleBase.color2]}>Thêm hàng</TextNormal>
+    render () {
+        let {item, index} = this.props;
+        return (
+            <Swipeable
+                ref={ref => this.swipeableRef = ref}
+                rightButtons={[this.renderRightItem({item, index})]}>
+                <TouchableWithoutFeedback onPress={() => this.modifyItem(item)} style={{height: 80}}>
+                    <View style={[styleHome.itemBar]}>
+                        <View style={[styleHome.itemBarIcon]}>
+                            <TextNormal style={styleBase.background2}>{item.name.substr(0, 2)}</TextNormal>
                         </View>
-                    </TouchableWithoutFeedback>
-                    <View style={[styleHome.listItem, styleHome.borderTop,]}>
-                        {
-                            this.props.loading ?
-                                <View style={[styleBase.center, {flex: 1}]}>
-                                    <ActivityIndicator size={"large"}/>
-                                </View> :
-                                <FlatList
-                                    data={this.props.allProduct}
-                                    extraData={this.state}
-                                    initialNumToRender={15}
-                                    keyExtractor={(item) => item._id}
-                                    renderItem={this._renderItem}
-                                />
-
-                        }
-
+                        <View style={[styleHome.itemBarTitle]}>
+                            <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
+                            <TextSmall> {item.price} giá</TextSmall>
+                        </View>
                     </View>
-
-
-                </View>
-
-            </ScrollView>
+                </TouchableWithoutFeedback>
+            </Swipeable>
         )
     }
 }
@@ -335,11 +421,9 @@ class CategoryPreview extends React.PureComponent {
         return (
             <ScrollView>
                 <View style={[styleHome.scrollView]}>
-                    <TouchableWithoutFeedback onPress={() => this.modifyCategory()}>
-                        <View style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
-                            <TextNormal style={[styleBase.color2]}>Thêm hàng</TextNormal>
-                        </View>
-                    </TouchableWithoutFeedback>
+                    <TouchableOpacity onPress={this.modifyCategory.bind(this)} style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
+                        <TextNormal style={[styleBase.color2]}>Thêm hàng</TextNormal>
+                    </TouchableOpacity>
                     <View style={[styleHome.listItem, styleHome.borderTop]}>
                         <FlatList
                             data={this.state.productInCategory}

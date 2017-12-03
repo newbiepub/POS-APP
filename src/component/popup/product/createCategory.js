@@ -1,6 +1,6 @@
 import React from "react";
-import {ScrollView, View, Dimensions, TouchableWithoutFeedback, Text, FlatList,} from "react-native";
-import {TextInputNormal, TextLarge, TextSmall, TextNormal} from '../../reusable/text';
+import {Dimensions, FlatList, ScrollView, TouchableOpacity, TouchableWithoutFeedback, View,} from "react-native";
+import {TextInputNormal, TextLarge, TextNormal, TextSmall} from '../../reusable/text';
 import styleBase from "../../style/base";
 import styleHome from '../../style/home';
 import styleModalItems from '../../style/modalItem';
@@ -8,10 +8,6 @@ import styleProduct from "../../style/product";
 import {connect} from "react-redux";
 import {closePopup} from '../../../action/popup';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
-import PriceGrid from '../../home/product/price/priceGrid';
-import Entypo from 'react-native-vector-icons/Entypo';
 
 class CreateModifyCategoryPopup extends React.Component {
     constructor(props) {
@@ -55,30 +51,28 @@ class CreateModifyCategoryPopup extends React.Component {
     }
 
     _renderItem = ({item}) => (
-        <TouchableWithoutFeedback onPress={() => this.pushNewProductInCategory(item)}>
-            <View style={[styleHome.borderBottom, styleHome.itemBar, {
+        <TouchableOpacity style={[styleHome.borderBottom, styleHome.itemBar, {
+            flexDirection: 'row',
+            flex: 1
+        }]}>
+            <View style={[styleHome.itemIcon, {
                 flexDirection: 'row',
-                flex: 1
+                justifyContent: 'center',
+                alignItems: 'center'
             }]}>
-                <View style={[styleHome.itemIcon, {
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }]}>
 
-                    <TextNormal style={styleBase.background2}>{item.name.substr(0, 2)}</TextNormal>
-                </View>
-                <View style={[styleHome.boxTitle, styleBase.background4, {flex: 1}]}>
-                    <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
-                    <View style={[styleBase.center, styleHome.borderRadioButton]}>
-                        {
-                            this.checkIfExistInCategory(item) === true &&
-                            <View style={[styleBase.background2, styleHome.checkedRadioButton]}/>
-                        }
-                    </View>
+                <TextNormal style={styleBase.background2}>{item.name.substr(0, 2)}</TextNormal>
+            </View>
+            <View style={[styleHome.boxTitle, styleBase.background4, {flex: 1}]}>
+                <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
+                <View style={[styleBase.center, styleHome.borderRadioButton]}>
+                    {
+                        this.checkIfExistInCategory(item) === true &&
+                        <View style={[styleBase.background2, styleHome.checkedRadioButton]}/>
+                    }
                 </View>
             </View>
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
     );
 
     render() {
