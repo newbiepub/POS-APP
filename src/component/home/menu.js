@@ -16,67 +16,24 @@ import styleHome from "../style/home";
 import {goToRoute} from "../../action/route";
 import {closeMenu} from '../../action/route';
 import ModalWrapper from '../modalWrapper';
+import {size} from '../style/home';
 
 class Menu extends React.Component {
     constructor(props) {
         super(props);
-        const {height, width} = Dimensions.get('window');
 
         this.state = {
             currentRoute: this.props.currentRoute,
-            height,
-            width,
-            marginLeft: new Animated.Value(-width * 30 / 100),
-            visible: false
+
         }
     }
 
-    onLayout(evt) {
-        let height = evt.nativeEvent.layout.height;
-        let width = evt.nativeEvent.layout.width;
-        this.setState({
-            width,
-            height,
-
-        })
-
-
-    }
 
     shouldComponentUpdate(nextProps, nextState) {
         const changeVisible = this.props.visible !== nextProps.visible;
-        const stateVisible = this.state.visible !== nextState.visible;
-        return changeVisible || stateVisible
+        return changeVisible
     }
 
-    // closeMenu() {
-    //     let instant = this.props.instant;
-    //
-    //     Animated.timing(          // Uses easing functions
-    //         this.state.marginLeft,    // The value to drive
-    //         {
-    //             toValue: -this.state.width * 30 / 100,
-    //         },           // Configuration
-    //     ).start(() => {
-    //
-    //     });
-    //
-    //
-    // }
-
-    // componentWillReceiveProps(nextProps) {
-    //     if (nextProps.visible == true) {
-    //         this.setState({
-    //             visible: true
-    //         })
-    //         Animated.timing(          // Uses easing functions
-    //             this.state.marginLeft,    // The value to drive
-    //             {
-    //                 toValue: 0,
-    //             },           // Configuration
-    //         ).start();
-    //     }
-    // }
 
     onChangeRoute(routeId) {
 
@@ -99,20 +56,21 @@ class Menu extends React.Component {
         return (
             <ModalWrapper
                 containerStyle={{flexDirection: 'row', justifyContent: 'flex-start'}}
-                onRequestClose={() => {this.props.closeMenu();}}
+                onRequestClose={() => {
+                    this.props.closeMenu();
+                }}
                 position="left"
                 shouldAnimateOnRequestClose={true}
                 supportedOrientations={['portrait', 'landscape']}
-                onLayout={(event) => this.onLayout(event)}
                 visible={this.props.visible}>
 
                 <View style={styleBase.container}>
                     <View
                         style={{
-                            width: 500,
+                            width: size.menuSize,
                             backgroundColor: 'rgb(60, 60, 61)',
                             position: 'absolute',
-                            height: this.state.height,
+                            height: size.window.height,
                             padding: 40,
                         }}>
 

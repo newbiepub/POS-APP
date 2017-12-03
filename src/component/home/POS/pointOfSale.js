@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import {Text, View, TouchableWithoutFeedback, Animated, Dimensions, ScrollView, ActivityIndicator} from "react-native";
 import styleBase from "../../style/base";
 import styleHome from "../../style/home";
-import {openPopup,renderPopup} from '../../../action/popup';
+import {openPopup, renderPopup} from '../../../action/popup';
 import Entypo from 'react-native-vector-icons/Entypo';
 import ProductFlatList from "../product/product/productFlatList";
 import CustomAmount from './customAmount';
@@ -12,6 +12,7 @@ import {TextLarge, TextNormal, TextSmall} from '../../reusable/text';
 import {numberwithThousandsSeparator} from '../../reusable/function';
 import {clearCart} from '../../../action/cart';
 import ViewProduct from '../../popup/product/viewProduct';
+
 //import ProductGrid from '../product/product/listProduct';
 class POS extends React.Component {
     constructor(props) {
@@ -36,8 +37,7 @@ class POS extends React.Component {
         const differentCurrentView = this.state.currentView !== nextState.currentView;
         const differentClear = this.state.clearSalesVisible !== nextState.clearSalesVisible;
         const differentListCart = this.props.cart !== nextProps.cart;
-        const productLoading = this.props.productLoading !== nextProps.productLoading;
-        return differentAllProduct || differentCurrentView || differentListCart || productLoading || differentClear;
+        return differentAllProduct || differentCurrentView || differentListCart || differentClear;
     }
 
     openMenu() {
@@ -114,20 +114,27 @@ class POS extends React.Component {
     }
 
     adjustItemInCart(data) {
-    this.props.openPopup();
-    this.props.renderPopup(
-        <ViewProduct existData={data}/>
-    )
+        this.props.openPopup();
+        if (data.hasOwnProperty("customAmount")) {
+            this.props.renderPopup(
+                <ViewProduct customAmount={true} existData={data}/>
+            )
+        } else {
+            this.props.renderPopup(
+                <ViewProduct existData={data}/>
+            )
+
+        }
     }
 
-    render() {
 
+    render() {
         let currentView = this.state.currentView;
         try {
             var listCurrentSale = this.props.cart.map((data, index) => {
                 return (
-                    <TouchableWithoutFeedback key={index} onPress={()=>this.adjustItemInCart(data)}>
-                        <View  style={{flexDirection: 'row', padding: 10, alignItems: "center"}}>
+                    <TouchableWithoutFeedback key={index} onPress={() => this.adjustItemInCart(data)}>
+                        <View style={{flexDirection: 'row', padding: 10, alignItems: "center"}}>
                             <View style={{flex: 1}}>
                                 <TextNormal numberOfLines={2}>{data.name}</TextNormal>
                                 {
@@ -189,13 +196,7 @@ class POS extends React.Component {
                     <View style={[styleBase.background5, {flex: 0.6}]}>
                         {
                             this.state.currentView === 'GridItems' &&
-                            (this.props.productLoading ?
-                                    <View style={[styleBase.center, {flex: 1}]}>
-                                        <ActivityIndicator size={"large"}/>
-                                    </View> :
-                                    <ProductFlatList data={this.props.allProduct}/>
-                            )
-
+                            <ProductFlatList data={this.props.allProduct}/>
                         }
                         {
                             this.state.currentView === 'Library' &&

@@ -7,42 +7,50 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {numberwithThousandsSeparator} from '../../reusable/function';
 import {TextInputNormal} from '../../reusable/text';
 import {connect} from "react-redux";
-import {addToCart} from '../../../action/cart';
-
+import {addToCart, removeCart} from '../../../action/cart';
+import {closePopup} from '../../../action/popup';
+import {size} from "../../style/product";
 class CustomAmount extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            title: '',
-            customAmount: 0
+            title: this.props.hasOwnProperty("existData") ? this.props.existData.name : '',
+            customAmount: this.props.hasOwnProperty("existData") ? this.props.existData.price : 0
         }
+
     }
 
-    changeCustomAmount(number) {
+    async changeCustomAmount(number) {
         if (number === 11) {
-            this.setState({
+            await this.setState({
                 customAmount: Math.floor(this.state.customAmount / 10)
             })
         }
 
         if (number === 100) {
-            this.setState({
+            await this.setState({
                 customAmount: this.state.customAmount * 100
             })
         }
         if (number >= 0 && number <= 9) {
-            this.setState({
+            await this.setState({
                 customAmount: this.state.customAmount * 10 + number
             })
+        }
+
+        if (this.props.hasOwnProperty("existData")) {
+            this.props.existData.price = this.state.customAmount
         }
 
     }
 
     addToCategories() {
         this.props.addToCart({
+            _id: this.state.title !== "" ? this.state.title : "ghi chú",
             name: this.state.title !== "" ? this.state.title : "ghi chú",
             quatity: 1,
             price: this.state.customAmount,
+            customAmount: true,
             totalPrice: this.state.customAmount
         });
         this.setState(
@@ -69,7 +77,11 @@ class CustomAmount extends React.PureComponent {
                         <TextInputNormal placeholder={"ghi chú"}
                                          value={this.state.title}
                                          onChangeText={(text) => {
-                                             this.setState({title: text})
+                                             this.setState({title: text});
+                                             if(this.props.hasOwnProperty("existData"))
+                                             {
+                                                 this.props.existData.name = text
+                                             }
                                          }}
                                          multiline={true}
                                          style={{justifyContent: 'center'}}
@@ -183,11 +195,20 @@ class CustomAmount extends React.PureComponent {
                             </TouchableWithoutFeedback>
                         </View>
                     </View>
-                    <TouchableWithoutFeedback onPress={() => this.state.customAmount !== 0 && this.addToCategories()}>
-                        <View style={[{flex: 1}, styleHome.box, styleBase.center]}>
-                            <Text style={[styleBase.font32, styleBase.color2]}> + </Text>
-                        </View>
-                    </TouchableWithoutFeedback>
+                    {
+                        this.props.hasOwnProperty("existData")?
+                            <TouchableWithoutFeedback onPress={() => {this.props.removeCart(this.props.existData._id); this.props.closePopup()}}>
+                                <View style={[{flex: 1}, styleHome.box, styleBase.center]}>
+                                    <Text style={[styleBase.font32, {color:'red'}]}> - </Text>
+                                </View>
+                            </TouchableWithoutFeedback>:
+                            <TouchableWithoutFeedback onPress={() => this.state.customAmount !== 0 && this.addToCategories()}>
+                                <View style={[{flex: 1}, styleHome.box, styleBase.center]}>
+                                    <Text style={[styleBase.font32, styleBase.color2]}> + </Text>
+                                </View>
+                            </TouchableWithoutFeedback>
+                    }
+
                 </View>
             </View>
         )
@@ -195,6 +216,8 @@ class CustomAmount extends React.PureComponent {
 }
 
 const mapDispatchToProps = {
-    addToCart
+    addToCart,
+    removeCart,
+    closePopup
 }
 export default connect(null, mapDispatchToProps)(CustomAmount);

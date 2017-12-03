@@ -1,5 +1,12 @@
 import EStyleSheet from "react-native-extended-stylesheet";
-
+export var size = {
+    gridItemWidth: 0,
+    menuSize: 0,
+    window:{
+        width: 0,
+        height: 0
+    }
+};
 const styleHome = EStyleSheet.create({
     $widthSize: 70,
     $marginTopInModalEachItem: 40,

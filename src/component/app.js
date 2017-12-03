@@ -1,6 +1,6 @@
-import React, { PureComponent } from "react";
+import React, {PureComponent} from "react";
 import {StatusBar, View, Platform} from "react-native";
-import { Navigator } from "react-native-deprecated-custom-components";
+import {Navigator} from "react-native-deprecated-custom-components";
 import styleBase from "./style/base";
 import Login from "./account/login";
 import Home from './home/home';
@@ -9,7 +9,7 @@ import EStyleSheet from "react-native-extended-stylesheet";
 import Popup from "./popup/popup";
 
 EStyleSheet.build(); // Build Extended StyleSheet
-
+import {size} from './style/home';
 class App extends PureComponent {
     constructor(props) {
         super(props);
@@ -31,15 +31,25 @@ class App extends PureComponent {
     }
 
     configureScene(route, navigator) {
-        if(route.id === "home") {
+        if (route.id === "home") {
             return Navigator.SceneConfigs.FadeAndroid
         }
         return Navigator.SceneConfigs.PushFromRight
     }
 
+    getSize(evt) {
+        var {width, height} = evt.nativeEvent.layout;
+        size.gridItemWidth = (width * 60 / 100 - 30) / 4 - 20;
+        size.menuSize = width *30 / 100;
+        size.window= {
+            width: width,
+            height: height
+        }
+    }
+
     render() {
         return (
-            <View style={[styleBase.container]}>
+            <View style={[styleBase.container]} onLayout={(event) => this.getSize(event)}>
                 {
                     Platform.OS === "ios" &&
                     <StatusBar

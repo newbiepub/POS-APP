@@ -1,5 +1,5 @@
 import React, {PureComponent} from "react";
-import {View} from "react-native";
+import {View,Dimensions} from "react-native";
 import styleBase from "../style/base";
 import POS from './POS/pointOfSale';
 import Transaction from './transaction/transaction';
@@ -17,8 +17,8 @@ class Home extends React.Component {
         super(props);
         this.state = {
             route: this.props.currentRoute,
-            menuVisible: false,
-        }
+        };
+
     }
 
     componentWillMount() {
@@ -35,8 +35,7 @@ class Home extends React.Component {
 
     shouldComponentUpdate(nextProps, nextState) {
         const changeRoute = this.props.currentRoute !== nextProps.currentRoute;
-        const changeMenu = this.state.menuVisible !== nextState.menuVisible;
-        return changeRoute || changeMenu
+        return changeRoute
     }
 
     componentWillReceiveProps(nextProps) {
@@ -50,6 +49,7 @@ class Home extends React.Component {
             menuVisible: true
         })
     }
+
 
     render() {
 

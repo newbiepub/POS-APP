@@ -11,6 +11,7 @@ import {closePopup} from '../../../action/popup';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {addToCart, removeCart} from '../../../action/cart';
 import {numberwithThousandsSeparator} from '../../reusable/function';
+import CustomAmount from '../../home/POS/customAmount';
 
 class ViewItem extends React.Component {
     constructor(props) {
@@ -37,9 +38,12 @@ class ViewItem extends React.Component {
 
     componentWillMount() {
         if (this.props.hasOwnProperty("existData")) {
-            this.setState({
-                product: this.getVariantProduct(this.props.existData.productData, this.props.variant)
-            })
+            if (this.props.existData.hasOwnProperty("customAmount") !== true) {
+                this.setState({
+                    product: this.getVariantProduct(this.props.existData.productData, this.props.variant)
+                })
+            }
+
         } else {
             this.setState({
                 product: this.getVariantProduct(this.props.productData, this.props.variant)
@@ -80,6 +84,20 @@ class ViewItem extends React.Component {
         this.closePopup()
     }
 
+    async adjustCustomAmountInCart() {
+        console.warn(this.props.existData.name);
+        let a = await  this.props.addToCart({
+            _id: this.props.existData.name,
+            oldId: this.props.existData._id,
+            name: this.props.existData.name,
+            price: this.props.existData.price,
+            quatity: 1,
+            customAmount: true,
+            totalPrice: this.props.existData.price,
+        });
+        this.closePopup()
+    }
+
     closePopup() {
         this.props.closePopup();
     }
@@ -106,15 +124,30 @@ class ViewItem extends React.Component {
                     </View>
                     {
                         this.props.hasOwnProperty("existData") ?
-                            <TouchableWithoutFeedback onPress={() => {
-                                this.adjustItemInCart()
-                            }}>
-                                <View
-                                    style={styleHome.modalButtonSubmit}>
+                            (
+                                this.props.existData.hasOwnProperty("customAmount") ?
+                                    <TouchableWithoutFeedback onPress={() => {
+                                        this.adjustCustomAmountInCart()
+                                    }}>
+                                        <View
+                                            style={styleHome.modalButtonSubmit}>
 
-                                    <TextLarge style={styleHome.modalButtonSubmitFont}>Sửa</TextLarge>
-                                </View>
-                            </TouchableWithoutFeedback> :
+                                            <TextLarge style={styleHome.modalButtonSubmitFont}>Sửa</TextLarge>
+                                        </View>
+                                    </TouchableWithoutFeedback> :
+                                    <TouchableWithoutFeedback onPress={() => {
+                                        this.adjustItemInCart()
+                                    }}>
+                                        <View
+                                            style={styleHome.modalButtonSubmit}>
+
+                                            <TextLarge style={styleHome.modalButtonSubmitFont}>Sửa</TextLarge>
+                                        </View>
+                                    </TouchableWithoutFeedback>
+                            )
+
+
+                            :
                             <TouchableWithoutFeedback onPress={() => {
                                 this.addToCart()
                             }}>
@@ -127,51 +160,58 @@ class ViewItem extends React.Component {
                     }
 
                 </View>
-                <View style={[styleHome.paddingModal, {flex: 1}]}>
-                    {/*-----------------List---------------------------*/}
-                    <ListPrice productData={this.state.product} instant={this} {...this.state}/>
+                {
+                    this.props.hasOwnProperty("customAmount") ?
+                        <CustomAmount existData={this.props.existData}/> :
+                        <View style={[styleHome.paddingModal, {flex: 1}]}>
+                            {/*-----------------List---------------------------*/}
+                            <ListPrice productData={this.state.product} instant={this} {...this.state}/>
 
 
-                    {/*-----------------Note and Quatity---------------------------*/}
-                    <TextNormal style={[styleModalItems.marginVertical, styleModalItems.modalItem]}>GHI CHÚ VÀ SỐ
-                        LƯỢNG</TextNormal>
-                    <TextInputNormal placeholder={"Ghi chú"} value={this.state.note}
-                                     onChangeText={(text) => this.setState({note: text})}
-                                     style={styleModalItems.marginVertical}/>
-                    <View style={[styleModalItems.marginVertical, {flexDirection: 'row'}]}>
-                        <TouchableWithoutFeedback
-                            onPress={() => this.setState({itemQuatity: this.state.itemQuatity > 1 ? this.state.itemQuatity - 1 : 1})}>
-                            <View style={[styleHome.boxPadding, styleHome.box]}>
-                                <TextLarge>-</TextLarge>
+                            {/*-----------------Note and Quatity---------------------------*/}
+                            <TextNormal style={[styleModalItems.marginVertical, styleModalItems.modalItem]}>GHI CHÚ VÀ
+                                SỐ
+                                LƯỢNG</TextNormal>
+                            <TextInputNormal placeholder={"Ghi chú"} value={this.state.note}
+                                             onChangeText={(text) => this.setState({note: text})}
+                                             style={styleModalItems.marginVertical}/>
+                            <View style={[styleModalItems.marginVertical, {flexDirection: 'row'}]}>
+                                <TouchableWithoutFeedback
+                                    onPress={() => this.setState({itemQuatity: this.state.itemQuatity > 1 ? this.state.itemQuatity - 1 : 1})}>
+                                    <View style={[styleHome.boxPadding, styleHome.box]}>
+                                        <TextLarge>-</TextLarge>
+                                    </View>
+                                </TouchableWithoutFeedback>
+                                <View style={[styleBase.center, {flex: 1}]}>
+                                    <TextInputNumber value={this.state.itemQuatity.toString()}
+                                                     style={{textAlign: 'center', width: 100}}
+                                                     placeholder={this.state.itemQuatity.toString()}
+                                                     onChangeText={(text) => {
+
+                                                         this.setState({itemQuatity: text > 0 ? text : 1})
+                                                     }}/>
+                                </View>
+                                <TouchableWithoutFeedback
+                                    onPress={() => this.setState({itemQuatity: this.state.itemQuatity + 1})}>
+                                    <View style={[styleHome.boxPadding, styleHome.box]}>
+                                        <TextLarge>+</TextLarge>
+                                    </View>
+                                </TouchableWithoutFeedback>
                             </View>
-                        </TouchableWithoutFeedback>
-                        <View style={[styleBase.center, {flex: 1}]}>
-                            <TextInputNumber value={this.state.itemQuatity.toString()}
-                                             style={{textAlign: 'center', width: 100}}
-                                             placeholder={this.state.itemQuatity.toString()} onChangeText={(text) => {
+                            {
+                                this.props.hasOwnProperty("existData") &&
+                                <TouchableWithoutFeedback onPress={() => {
+                                    this.removeItemInCart(this.props.existData._id)
+                                }}>
+                                    <View style={styleHome.buttonDelete}>
+                                        <TextNormal style={styleBase.color4}>Xoá</TextNormal>
+                                    </View>
+                                </TouchableWithoutFeedback>
 
-                                this.setState({itemQuatity: text > 0 ? text : 1})
-                            }}/>
+                            }
                         </View>
-                        <TouchableWithoutFeedback
-                            onPress={() => this.setState({itemQuatity: this.state.itemQuatity + 1})}>
-                            <View style={[styleHome.boxPadding, styleHome.box]}>
-                                <TextLarge>+</TextLarge>
-                            </View>
-                        </TouchableWithoutFeedback>
-                    </View>
-                    {
-                        this.props.hasOwnProperty("existData") &&
-                        <TouchableWithoutFeedback onPress={() => {
-                            this.removeItemInCart(this.props.existData._id)
-                        }}>
-                            <View style={styleHome.buttonDelete}>
-                                <TextNormal style={styleBase.color4}>Xoá</TextNormal>
-                            </View>
-                        </TouchableWithoutFeedback>
 
-                    }
-                </View>
+                }
 
 
             </View>

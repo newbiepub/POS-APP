@@ -1,5 +1,6 @@
 import EStyleSheet from "react-native-extended-stylesheet";
 
+
 const styleProduct = EStyleSheet.create({
     productItem: {
         borderRadius: 15,
