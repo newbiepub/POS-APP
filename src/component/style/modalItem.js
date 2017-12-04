@@ -8,7 +8,7 @@ const styleHome = EStyleSheet.create({
             paddingHorizontal: 10,
             paddingVertical:20,
             borderBottomWidth: 1,
-            borderBottomColor: "#e5e5e5"
+            borderBottomColor: "#e5e5e5",
         },
         modalTextInputFocus: {
             borderBottomWidth: 2,

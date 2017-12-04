@@ -62,7 +62,8 @@ class Product extends Component {
         const productChanged = this.props.allProduct !== nextProps.allProduct;
         const viewChanged = this.state.selected !== nextState.selected;
         const loadingChanged = this.props.loading !== nextProps.loading;
-        return productChanged || viewChanged || loadingChanged
+        const searchText = this.state.searchText !== nextState.searchText;
+        return productChanged || viewChanged || loadingChanged || searchText;
     }
 
     componentDidMount() {
@@ -140,11 +141,12 @@ class Product extends Component {
                                 <EvilIcons name="search" style={[styleBase.vector26]}/>
                             </View>
                             <View style={[styleHome.itemBarTitle]}>
-                                <TextInput value={this.state.searchText}
-                                           placeholder={`Tìm kiếm ${this.state.selected.name.toLowerCase()}...`}
+                                <TextInput placeholder={`Tìm kiếm ${this.state.selected.name.toLowerCase()}...`}
                                            onChangeText={(text) => {
                                                this.setState({searchText: text})
-                                           }} style={[styleBase.font16, {flex: 1}]}/>
+                                           }} style={[styleBase.font16, {flex: 1}]}
+                                           value={this.state.searchText}
+                                />
                                 {
                                     this.state.searchText !== '' &&
                                     <TouchableWithoutFeedback onPress={() => this.setState({searchText: ''})}>
@@ -216,7 +218,8 @@ class AllProduct extends React.PureComponent {
     render() {
         return (
             <View style={[styleHome.scrollView]}>
-                <TouchableOpacity onPress={this.createItem.bind(this)} style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
+                <TouchableOpacity onPress={this.createItem.bind(this)}
+                                  style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
                     <TextNormal style={[styleBase.color2]}>Thêm hàng</TextNormal>
                 </TouchableOpacity>
                 <View style={[styleHome.listItem, styleHome.borderTop,]}>
@@ -255,20 +258,22 @@ class ProductItem extends React.PureComponent {
     };
 
     modifyItem() {
-        let { item } = this.props;
+        let {item} = this.props;
         this.props.renderPopup(<CreateModifyProductPopup productData={item}/>);
         this.props.openPopup();
     }
 
     onDeleteItem() {
-        let { item, index } = this.props;
+        let {item, index} = this.props;
         if (this.state.deleteVerification) {
+            let {swipeableItem} = this.refs;
+            swipeableItem.transition({height: 40},{height: 0})
         } else {
             InteractionManager.runAfterInteractions(() => {
                 if (this.deleteButton != undefined) {
                     this.deleteButton.transitionTo({width: 150}, 400);
                 }
-                if(this.swipeableRef != undefined) {
+                if (this.swipeableRef != undefined) {
                     Animated.spring(this.swipeableRef.state.pan.x, {
                         toValue: -150,
                         duration: 450,
@@ -291,7 +296,9 @@ class ProductItem extends React.PureComponent {
 
     renderRightItem() {
         return (
-            <TouchableOpacityAnimate ref={(rowRef) => {this.deleteButton = rowRef;}}
+            <TouchableOpacityAnimate ref={(rowRef) => {
+                this.deleteButton = rowRef;
+            }}
                                      onPress={this.onDeleteItem.bind(this)}
                                      style={[styleBase.center, styleProduct.swiperDeleteButton]}>
                 <Text style={[styleBase.font16, styleBase.textE5]}>
@@ -301,24 +308,26 @@ class ProductItem extends React.PureComponent {
         )
     }
 
-    render () {
+    render() {
         let {item, index} = this.props;
         return (
-            <Swipeable
-                ref={ref => this.swipeableRef = ref}
-                rightButtons={[this.renderRightItem({item, index})]}>
-                <TouchableWithoutFeedback onPress={() => this.modifyItem(item)} style={{height: 80}}>
-                    <View style={[styleHome.itemBar]}>
-                        <View style={[styleHome.itemBarIcon]}>
-                            <TextNormal style={styleBase.background2}>{item.name.substr(0, 2)}</TextNormal>
+            <Animate.View ref="swipeableItem">
+                <Swipeable
+                    ref={ref => this.swipeableRef = ref}
+                    rightButtons={[this.renderRightItem({item, index})]}>
+                    <TouchableWithoutFeedback onPress={() => this.modifyItem(item)}>
+                        <View style={[styleHome.itemBar]}>
+                            <View style={[styleHome.itemBarIcon]}>
+                                <TextNormal style={styleBase.background2}>{item.name.substr(0, 2)}</TextNormal>
+                            </View>
+                            <View style={[styleHome.itemBarTitle]}>
+                                <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
+                                <TextSmall> {item.price} giá</TextSmall>
+                            </View>
                         </View>
-                        <View style={[styleHome.itemBarTitle]}>
-                            <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
-                            <TextSmall> {item.price} giá</TextSmall>
-                        </View>
-                    </View>
-                </TouchableWithoutFeedback>
-            </Swipeable>
+                    </TouchableWithoutFeedback>
+                </Swipeable>
+            </Animate.View>
         )
     }
 }
@@ -421,7 +430,8 @@ class CategoryPreview extends React.PureComponent {
         return (
             <ScrollView>
                 <View style={[styleHome.scrollView]}>
-                    <TouchableOpacity onPress={this.modifyCategory.bind(this)} style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
+                    <TouchableOpacity onPress={this.modifyCategory.bind(this)}
+                                      style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
                         <TextNormal style={[styleBase.color2]}>Thêm hàng</TextNormal>
                     </TouchableOpacity>
                     <View style={[styleHome.listItem, styleHome.borderTop]}>

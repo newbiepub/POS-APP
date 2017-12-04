@@ -1,6 +1,6 @@
 import React from "react";
-import {ScrollView, View, Dimensions, TouchableWithoutFeedback, Text, Platform, TouchableOpacity,} from "react-native";
-import {TextInputNormal, TextLarge, TextSmall, TextInputPriceMask} from '../../reusable/text';
+import {Dimensions, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, View, Alert} from "react-native";
+import {TextInputNormal, TextInputPriceMask, TextLarge, TextSmall} from '../../reusable/text';
 import styleBase from "../../style/base";
 import styleHome from '../../style/home';
 import styleModalItems from '../../style/modalItem';
@@ -13,6 +13,8 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
 import PriceGrid from '../../home/product/price/priceGrid';
 import Entypo from 'react-native-vector-icons/Entypo';
 import styleSetting from "../../style/setting";
+import config from "../../../config";
+import LoadingOverlay from "../../loadingOverlay/loadingOverlay";
 
 class CreateItem extends React.Component {
     constructor(props) {
@@ -26,12 +28,14 @@ class CreateItem extends React.Component {
                 price: 0,
                 categoryId: '',
                 categoryName: '',
-                description: ""
+                description: "",
+                unit: ""
             },
             itemName: this.props.hasOwnProperty("item") ? this.props.item.name : "",
             itemPrice: this.props.hasOwnProperty("item") ? this.props.item.prices[0].value : "",
             itemSKU: this.props.hasOwnProperty("item") ? this.props.item.prices[0].SKU : "",
             description: this.props.hasOwnProperty("item") ? this.props.item.description : "",
+            unit: this.props.hasOwnProperty("item") ? this.props.item.unit : "",
             newItemName: "",
             newItemPrice: 0,
             newItemSKU: "",
@@ -47,14 +51,6 @@ class CreateItem extends React.Component {
 
 
     ChangeItem(name, text) {
-        if (name === "name") {
-            this.setState({
-                productData: {
-                    ...this.state.productData,
-                    name: text
-                }
-            })
-        }
         if (name === "category") {
             this.setState({
                 productData: {
@@ -63,25 +59,11 @@ class CreateItem extends React.Component {
                     categoryName: text.name
                 }
             })
+        } else {
+            let productData = {...this.state.productData};
+            productData[name] = text;
+            this.setState({productData})
         }
-        if (name === "price") {
-            this.setState({
-                productData: {
-                    ...this.state.productData,
-                    price: text
-                }
-            })
-        }
-        if (name === "description") {
-            this.setState({
-                productData: {
-                    ...this.state.productData,
-                    description: text
-                }
-            })
-        }
-
-
     }
 
     getVariantProduct(id, allVariant) {
@@ -95,7 +77,38 @@ class CreateItem extends React.Component {
         return variant;
     }
 
-    onCreateProduct() {
+    async onCreateProduct() {
+        let loadingOverlay = this.refs.loadingOverlay;
+        try {
+            let {name, price, unit} = this.state.productData,
+                {account} = this.props;
+            if (loadingOverlay) {
+                loadingOverlay.setLoading();
+                if (name && price && unit) {
+                    let response = await fetch(`${config.api}/api/product/create?access_token=${account.access_token}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": 'application/json'
+                        },
+                        body: JSON.stringify({
+                            ...this.state.productData,
+                            productVariant: this.productVariant
+                        })
+                    });
+                    response = await response.json();
+                    if(response.success) {
+                        Alert.alert("Thành Công", "Thêm Sản Phẩm Mới Thành Công !!");
+                    }
+                } else {
+                    return Alert.alert("Thông báo", "Xin mời nhập giá và tên sản phẩm");
+                }
+                loadingOverlay.stopLoading();
+            } else {
+                return Alert.alert("Thông báo", "Đã có lỗi xảy ra");
+            }
+        } catch(e) {
+            loadingOverlay.stopLoading();
+        }
     }
 
     onUpdateProduct() {
@@ -164,6 +177,7 @@ class CreateItem extends React.Component {
                             listPrice={this.getVariantProduct(this.state.productData._id || "", this.props.variantProduct)}/>
                     }
                 </View>
+                <LoadingOverlay ref="loadingOverlay" message="Xin vui lòng chờ"/>
             </View>
         )
     }
@@ -207,31 +221,35 @@ class AddItem extends React.PureComponent {
                     </View>
                     <View style={styleHome.paddingModal}>
                         {/*--------------Name item-----------------*/}
-                        <TextInputNormal placeholder={"Tên"}
-                                         value={this.props.productData.name || ""}
-                                         onChangeText={(text) => {
-                                             this.props.ChangeItem("name", text)
-                                         }}
+                        <View style={[styleModalItems.modalItem, styleModalItems.modalTextInput, {
+                            marginTop: 0,
+                            borderBottomWidth: 0
+                        }]}>
+                            <TextInputNormal placeholder={"Tên"}
+                                             value={this.props.productData.name || ""}
+                                             onChangeText={(text) => {
+                                                 this.props.ChangeItem("name", text)
+                                             }}
 
-                                         style={[styleModalItems.modalTextInput, {flex: 1}]}
-                        />
+                                             style={[styleModalItems.modalTextInput, {flex: 1}]}
+                            />
+                        </View>
                         {/*------------------category-------------*/}
                         <TouchableWithoutFeedback onPress={() => {
                             this.changeView('Category', "Loại hàng")
                         }}>
-                            <View style={[styleHome.boxPadding, styleBase.centerVertical, {
-                                flexDirection: 'row',
-                                paddingHorizontal: 0,
-                                borderBottomWidth: 1,
-                                borderBottomColor: "#e5e5e5"
-                            }]}>
+                            <View
+                                style={[styleModalItems.modalItem, styleModalItems.modalTextInput, styleBase.row, {marginTop: 0}]}>
                                 <TextLarge
                                     style={{flex: 1}}>{this.props.productData.categoryName || 'Chọn loại hàng'}</TextLarge>
                                 <EvilIcons name="chevron-right" style={styleBase.vector32}/>
                             </View>
                         </TouchableWithoutFeedback>
                         {/*----------------price and SKU-------------------*/}
-                        <View style={[styleModalItems.modalItem, {flexDirection: 'row'}]}>
+                        <View style={[styleModalItems.modalItem, styleModalItems.modalTextInput, {
+                            marginTop: 0,
+                            borderBottomWidth: 0
+                        }]}>
                             <TextInputPriceMask placeholder={"0đ"}
                                                 value={this.props.productData.price.toString() || ""}
                                                 keyboardType={'numeric'}
@@ -240,10 +258,12 @@ class AddItem extends React.PureComponent {
                                                 }}
                                                 style={[styleModalItems.modalTextInput, {flex: 1}]}
                             />
-
                         </View>
                         {/*--------------------add price --------------------*/}
-                        <View style={[styleModalItems.modalItem,]}>
+                        <View style={[styleModalItems.modalItem, styleModalItems.modalTextInput, {
+                            marginTop: 0,
+                            borderBottomWidth: 0
+                        }]}>
                             <TouchableWithoutFeedback onPress={() => {
                                 this.changeView('AddPrice', "Thêm giá")
                             }}>
@@ -259,13 +279,28 @@ class AddItem extends React.PureComponent {
                             </TouchableWithoutFeedback>
 
                         </View>
-                        <View style={[styleModalItems.modalItem, styleModalItems.modalTextInput]}>
+                        <View style={[styleModalItems.modalItem, styleModalItems.modalTextInput, {
+                            marginTop: 0,
+                            borderBottomWidth: 0
+                        }]}>
                             <TextInputNormal placeholder={"Mô tả"}
                                              value={this.props.productData.description || ""}
                                              onChangeText={(text) => {
                                                  this.props.ChangeItem("description", text)
                                              }}
-                                             style={[styleModalItems.modalTextInput, {flex: 1}]}
+                                             style={[styleModalItems.modalTextInput]}
+                            />
+                        </View>
+                        <View style={[styleModalItems.modalItem, styleModalItems.modalTextInput, {
+                            marginTop: 0,
+                            borderBottomWidth: 0
+                        }]}>
+                            <TextInputNormal placeholder={"Đơn Vị"}
+                                             value={this.props.productData.unit || ""}
+                                             onChangeText={(text) => {
+                                                 this.props.ChangeItem("unit", text)
+                                             }}
+                                             style={[styleModalItems.modalTextInput]}
                             />
                         </View>
                     </View>
@@ -297,7 +332,7 @@ class Category extends React.PureComponent {
                         <TouchableWithoutFeedback key={data._id} onPress={() => {
                             this.changeCategory(data.name, data._id)
                         }}>
-                            <View style={[styleHome.menuItem, {flexDirection: 'row'}]}>
+                            <View style={[styleHome.menuItem, {flexDirection: 'row'}, styleBase.centerHorizontal]}>
                                 <TextLarge
                                     style={[this.props.checkedCategory === data._id ? styleBase.color2 : styleBase.color3, {flex: 1}]}>{data.name}</TextLarge>
                                 <View style={[styleBase.center, styleHome.borderRadioButton]}>
@@ -333,7 +368,6 @@ class Category extends React.PureComponent {
                     <View style={styleHome.scrollView}>
                         {listCategory}
                     </View>
-
                 </ScrollView>
             </View>
         )
@@ -408,7 +442,10 @@ class RowComponent extends React.Component {
                                                     this.setState({price}); // Update Price
 
                                                     let listPrice = this.props.instance.state.data; // Get List Price
-                                                    listPrice[this.props.index] = {name: this.state.name, price: this.state.price};
+                                                    listPrice[this.props.index] = {
+                                                        name: this.state.name,
+                                                        price: this.state.price
+                                                    };
                                                     this.props.instance.setState({data: listPrice}); // Update List Price
                                                 }
                                             }}
@@ -442,7 +479,7 @@ class AddPrice extends React.Component {
         listPrice: []
     };
 
-    onAddPrice () {
+    onAddPrice() {
         let data = this.state.data;
 
         data.push({name: '', price: 0});
@@ -472,9 +509,9 @@ class AddPrice extends React.Component {
                                    this.state.data.splice(e.to, 0, e.row.data);
                                }}
                                renderRow={(row, sId, index) => <RowComponent key={index} data={row}
-                                                                        index={index}
-                                                                        instance={this}
-                                                                        listPrice={this.state.data}/>}/>
+                                                                             index={index}
+                                                                             instance={this}
+                                                                             listPrice={this.state.data}/>}/>
                 }
 
             </View>

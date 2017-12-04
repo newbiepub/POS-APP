@@ -622,7 +622,7 @@ export default class Swipeable extends PureComponent {
         }];
 
         return (
-            <View onLayout={this._handleLayout} style={[styles.container, style]} {...this._panResponder.panHandlers} {...props}>
+            <Animated.View onLayout={this._handleLayout} style={[styles.container, style]} {...this._panResponder.panHandlers} {...props}>
                 {canSwipeRight && (
                     <Animated.View style={[{transform, marginLeft: -width, width}, leftContainerStyle]}>
                         {leftContent || this._renderButtons(leftButtons, true)}
@@ -634,7 +634,7 @@ export default class Swipeable extends PureComponent {
                         {rightContent || this._renderButtons(rightButtons, false)}
                     </Animated.View>
                 )}
-            </View>
+            </Animated.View>
         );
     }
 }
