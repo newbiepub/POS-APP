@@ -34,6 +34,9 @@ export const PRODUCT = {
 //transaction
 export const TRANSACTION = {
     CREATE_TRANSACTION: "CREATE_ITEM",
+    GET_PAYMENT_METHOD:"GET_PAYMENT_METHOD",
+    GET_PAYMENT_STATUS:"GET_PAYMENT_STATUS",
+    GET_TRANSACTION: "GET_TRANSACTION"
 };
 //cart
 export const CART = {

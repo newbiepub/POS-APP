@@ -12,7 +12,7 @@ import {TextLarge, TextNormal, TextSmall} from '../../reusable/text';
 import {numberwithThousandsSeparator} from '../../reusable/function';
 import {clearCart} from '../../../action/cart';
 import ViewProduct from '../../popup/product/viewProduct';
-
+import ChargeView from '../../popup/transaction/charge';
 //import ProductGrid from '../product/product/listProduct';
 class POS extends React.Component {
     constructor(props) {
@@ -48,6 +48,13 @@ class POS extends React.Component {
         this.setState({
             currentView: view
         })
+    }
+
+    charge() {
+        this.props.openPopup();
+        this.props.renderPopup(
+            <ChargeView />
+        );
     }
 
     clearSale() {
@@ -246,9 +253,14 @@ class POS extends React.Component {
                         <ScrollView style={{flex: 1}}>
                             {listCurrentSale}
                         </ScrollView>
-                        <View style={styleHome.buttonCharge}>
-                            <TextLarge numberOfLines={1}> Thanh toán {this.getTotalPrice()}đ </TextLarge>
-                        </View>
+                        <TouchableWithoutFeedback onPress={() => {
+                            this.props.cart.length > 0 &&
+                            this.charge()
+                        }}>
+                            <View style={styleHome.buttonCharge}>
+                                <TextLarge numberOfLines={1}> Thanh toán {this.getTotalPrice()}đ </TextLarge>
+                            </View>
+                        </TouchableWithoutFeedback>
                         {
                             this.state.clearSalesVisible &&
                             <TouchableWithoutFeedback onPress={() => this.openClearSales()}>

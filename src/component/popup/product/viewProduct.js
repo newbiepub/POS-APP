@@ -17,10 +17,10 @@ class ViewItem extends React.Component {
     constructor(props) {
         super(props);
         var {width, height} = Dimensions.get('window');
+        const parent= this.props.hasOwnProperty("existData") ? this.props.existData : this.props.productData ;
         this.state = {
-            currentId: this.props.hasOwnProperty("existData") ? this.props.existData._id : this.props.productData._id,
-            currentPrice: this.props.hasOwnProperty("existData") ? this.props.existData.price : this.props.productData.price,
-            currentName: this.props.hasOwnProperty("existData") ? this.props.existData.name : this.props.productData.name,
+            currentProduct: this.props.hasOwnProperty("existData") ? this.props.existData : this.props.productData,
+            parrentData: parent,
             itemQuatity: this.props.hasOwnProperty("existData") ? this.props.existData.quatity : 1,
             note: ""
         };
@@ -41,6 +41,7 @@ class ViewItem extends React.Component {
             if (this.props.existData.hasOwnProperty("customAmount") !== true) {
                 this.setState({
                     product: this.getVariantProduct(this.props.existData.productData, this.props.variant)
+
                 })
             }
 
@@ -55,12 +56,13 @@ class ViewItem extends React.Component {
 
     async addToCart() {
         let a = await  this.props.addToCart({
-            _id: this.state.currentId,
-            name: this.state.currentName,
-            price: this.state.currentPrice,
+            _id: this.state.currentProduct._id,
+            name: this.state.currentProduct.name,
+            price: this.state.currentProduct.price,
             quatity: this.state.itemQuatity,
-            totalPrice: this.state.currentPrice * this.state.itemQuatity,
-            productData: this.props.productData
+            totalPrice: this.state.currentProduct.price * this.state.itemQuatity,
+            unit: this.state.currentProduct.unit,
+            productData: this.state.parrentData
         });
         this.closePopup()
     }
@@ -73,25 +75,26 @@ class ViewItem extends React.Component {
 
     async adjustItemInCart() {
         let a = await  this.props.addToCart({
-            _id: this.state.currentId,
+            _id: this.state.currentProduct._id,
             oldId: this.props.existData._id,
-            name: this.state.currentName,
-            price: this.state.currentPrice,
+            name: this.state.currentProduct.name,
+            price: this.state.currentProduct.price,
             quatity: this.state.itemQuatity,
-            totalPrice: this.state.currentPrice * this.state.itemQuatity,
-            productData: this.props.productData
+            unit: this.state.currentProduct.unit,
+            totalPrice:this.state.currentProduct.price * this.state.itemQuatity,
+            productData: this.state.parrentData
         });
         this.closePopup()
     }
 
     async adjustCustomAmountInCart() {
-        console.warn(this.props.existData.name);
         let a = await  this.props.addToCart({
             _id: this.props.existData.name,
             oldId: this.props.existData._id,
             name: this.props.existData.name,
             price: this.props.existData.price,
             quatity: 1,
+            unit:'cái',
             customAmount: true,
             totalPrice: this.props.existData.price,
         });
@@ -118,8 +121,8 @@ class ViewItem extends React.Component {
                     </TouchableWithoutFeedback>
 
                     <View style={[{flex: 1, flexDirection: 'row'}]}>
-                        <TextLarge>{this.state.currentName || ""}</TextLarge>
-                        <TextLarge>  {numberwithThousandsSeparator(this.state.currentPrice * this.state.itemQuatity) || ""}
+                        <TextLarge>{this.state.currentProduct.name || ""}</TextLarge>
+                        <TextLarge>  {numberwithThousandsSeparator(this.state.currentProduct.price * this.state.itemQuatity) || ""}
                             đ</TextLarge>
                     </View>
                     {
@@ -233,11 +236,9 @@ class ListPrice extends React.PureComponent {
         })
     }
 
-    changeType(name, price, id) {
+    changeType(data) {
         this.props.instant.setState({
-            currentPrice: price,
-            currentName: name,
-            currentId: id
+            currentProduct: data
         });
 
     }
@@ -249,16 +250,16 @@ class ListPrice extends React.PureComponent {
             var listPrice = this.props.productData.map((data) => {
                 return (
                     <TouchableWithoutFeedback key={data._id}
-                                              onPress={() => this.changeType(data.name, data.price, data._id)}>
+                                              onPress={() => this.changeType(data)}>
                         <View
                             style={[styleHome.box, styleHome.boxPadding, styleModalItems.marginVertical, styleModalItems.choosePriceItem, {
                                 flexDirection: 'row',
                                 width: priceItemWidth
-                            }, this.props.productData.indexOf(data) % 2 === 0 && {marginRight: margin}, this.props.instant.state.currentId === data._id && styleBase.background3]}>
+                            }, this.props.productData.indexOf(data) % 2 === 0 && {marginRight: margin}, this.props.instant.state.currentProduct._id === data._id && styleBase.background3]}>
                             <TextSmall numberOfLines={2}
-                                       style={[styleBase.bold, this.props.instant.state.currentId === data._id && styleBase.color4, {flex: 1}]}>{data.name}</TextSmall>
+                                       style={[styleBase.bold, this.props.instant.state.currentProduct._id === data._id && styleBase.color4, {flex: 1}]}>{data.name}</TextSmall>
                             <TextSmall numberOfLines={2}
-                                       style={this.props.instant.state.currentId === data._id && styleBase.color4}>{numberwithThousandsSeparator(data.price)}đ</TextSmall>
+                                       style={this.props.instant.state.currentProduct._id === data._id && styleBase.color4}>{numberwithThousandsSeparator(data.price)}đ</TextSmall>
                         </View>
                     </TouchableWithoutFeedback>
                 )
@@ -276,7 +277,7 @@ class ListPrice extends React.PureComponent {
                     this.measureView(event)
                 }} style={{flexDirection: 'row'}}>
                     <TextNormal
-                        style={[styleBase.bold]}>{this.props.instant.state.currentName.toUpperCase()}</TextNormal>
+                        style={[styleBase.bold]}>{this.props.instant.state.currentProduct.name.toUpperCase()}</TextNormal>
                     <TextNormal> CHỌN GIÁ</TextNormal>
                 </View>
                 <View style={[styleModalItems.marginVertical, {flexDirection: 'row', flexWrap: "wrap"}]}>

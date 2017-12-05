@@ -1,16 +1,13 @@
 import React, {PureComponent} from "react";
-import {View,Dimensions} from "react-native";
+import {View, Dimensions} from "react-native";
 import styleBase from "../style/base";
-import POS from './POS/pointOfSale';
-import Transaction from './transaction/transaction';
-import Product from './product/product';
-import Setting from './setting/setting';
 import Main from './main';
 import {connect} from 'react-redux';
 import * as _ from "lodash";
 import Menu from './menu';
 
 import {getProduct} from '../../action/product';
+import {getPayment, getTransaction} from '../../action/transaction';
 
 class Home extends React.Component {
     constructor(props) {
@@ -24,8 +21,9 @@ class Home extends React.Component {
     componentWillMount() {
         //console.warn(JSON.stringify(this.props.account));
         let {access_token} = this.props.account;
-        this.props.getProduct(access_token)
-
+        this.props.getProduct(access_token);
+        this.props.getPayment(access_token);
+        //this.props.getTransaction(access_token,10,0);
     }
 
     async getProduct() {
@@ -70,6 +68,8 @@ const mapStateToProps = (state) => {
     }
 };
 const mapDispatchToProps = {
-    getProduct
+    getProduct,
+    getTransaction,
+    getPayment
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

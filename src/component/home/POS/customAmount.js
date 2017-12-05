@@ -10,6 +10,7 @@ import {connect} from "react-redux";
 import {addToCart, removeCart} from '../../../action/cart';
 import {closePopup} from '../../../action/popup';
 import {size} from "../../style/product";
+
 class CustomAmount extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -20,26 +21,27 @@ class CustomAmount extends React.PureComponent {
 
     }
 
-    async changeCustomAmount(number) {
+    changeCustomAmount(number) {
         if (number === 11) {
-            await this.setState({
+            this.setState({
                 customAmount: Math.floor(this.state.customAmount / 10)
             })
         }
 
         if (number === 100) {
-            await this.setState({
+            this.setState({
                 customAmount: this.state.customAmount * 100
             })
         }
         if (number >= 0 && number <= 9) {
-            await this.setState({
+            this.setState({
                 customAmount: this.state.customAmount * 10 + number
             })
         }
 
         if (this.props.hasOwnProperty("existData")) {
             this.props.existData.price = this.state.customAmount
+
         }
 
     }
@@ -50,6 +52,7 @@ class CustomAmount extends React.PureComponent {
             name: this.state.title !== "" ? this.state.title : "ghi chú",
             quatity: 1,
             price: this.state.customAmount,
+            unit: 'cái',
             customAmount: true,
             totalPrice: this.state.customAmount
         });
@@ -78,8 +81,7 @@ class CustomAmount extends React.PureComponent {
                                          value={this.state.title}
                                          onChangeText={(text) => {
                                              this.setState({title: text});
-                                             if(this.props.hasOwnProperty("existData"))
-                                             {
+                                             if (this.props.hasOwnProperty("existData")) {
                                                  this.props.existData.name = text
                                              }
                                          }}
@@ -196,13 +198,17 @@ class CustomAmount extends React.PureComponent {
                         </View>
                     </View>
                     {
-                        this.props.hasOwnProperty("existData")?
-                            <TouchableWithoutFeedback onPress={() => {this.props.removeCart(this.props.existData._id); this.props.closePopup()}}>
+                        this.props.hasOwnProperty("existData") ?
+                            <TouchableWithoutFeedback onPress={() => {
+                                this.props.removeCart(this.props.existData._id);
+                                this.props.closePopup()
+                            }}>
                                 <View style={[{flex: 1}, styleHome.box, styleBase.center]}>
-                                    <Text style={[styleBase.font32, {color:'red'}]}> - </Text>
+                                    <Text style={[styleBase.font32, {color: 'red'}]}> - </Text>
                                 </View>
-                            </TouchableWithoutFeedback>:
-                            <TouchableWithoutFeedback onPress={() => this.state.customAmount !== 0 && this.addToCategories()}>
+                            </TouchableWithoutFeedback> :
+                            <TouchableWithoutFeedback
+                                onPress={() => this.state.customAmount !== 0 && this.addToCategories()}>
                                 <View style={[{flex: 1}, styleHome.box, styleBase.center]}>
                                     <Text style={[styleBase.font32, styleBase.color2]}> + </Text>
                                 </View>

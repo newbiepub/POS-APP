@@ -7,34 +7,49 @@ import {connect} from 'react-redux';
 import Entypo from 'react-native-vector-icons/Entypo';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import {getTransaction} from '../../../action/transaction';
 import {openPopup, renderPopup} from '../../../action/popup';
 import CreateModifyProductPopup from '../../popup/product/createModifyProduct';
 import CreateCategory from '../../popup/product/createCategory';
+import {numberwithThousandsSeparator} from '../../reusable/function';
+import moment from '../../momentJs';
 
-class Transaction extends PureComponent {
+class Transaction extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             searchText: '',
             transaction: [],
-            currentView:{},
+            selectedTransaction: {}
         }
     }
 
-    async componentWillMount() {
-        //console.warn(JSON.stringify(this.props.transaction));
-        let oldTransaction = this.props.transaction;
+    shouldComponentUpdate(nextProps, nextState) {
+        const transactionChanged = this.state.transaction !== nextState.transaction;
+        const selectedTransactionChanged = this.state.selectedTransaction !== nextState.selectedTransaction;
+        return transactionChanged || selectedTransactionChanged
+    }
+
+    async componentWillReceiveProps(nextProps) {
+        if (this.props.transaction !== nextProps.transaction) {
+            await this.setState({
+                transaction: this.sortDataByDate(nextProps.transaction)
+            });
+            this.setState({
+                selectedTransaction: this.state.transaction[0].data[0]
+            })
+        }
+    }
+
+    sortDataByDate(oldTransaction) {
         let newTransaction = [];
         for (var i = 0; i < oldTransaction.length; i++) {
-            //console.warn(oldTransaction[i].date)
             if (newTransaction.length === 0) {
                 newTransaction.push({title: oldTransaction[i].date, data: [oldTransaction[i]]});
-
             } else {
                 for (var j = 0; j < newTransaction.length; j++) {
 
-                    if (oldTransaction[i].date === newTransaction[j].title) {
+                    if (moment(oldTransaction[i].date).format("DD/MM/YYYY") === moment(newTransaction[j].title).format("DD/MM/YYYY")) {
                         newTransaction[j].data.push(oldTransaction[i]);
                         break;
                     } else {
@@ -47,35 +62,107 @@ class Transaction extends PureComponent {
             }
 
             if (i === oldTransaction.length - 1) {
-
-                await this.setState({
-                    transaction: newTransaction
-                });
-                console.warn(JSON.stringify(this.state.transaction))
+                return newTransaction
             }
         }
+        // return setTimeout(() => {
+        //     return newTransaction
+        // }, 0)
+    }
+
+    async componentWillMount() {
+        let {access_token} = this.props.account;
+        let a = await this.props.getTransaction(access_token, 10, 0);
+
+
+    }
+
+    getTitleDate(date) {
+        let getDay = () => {
+            if (moment(date).format('dddd') === "Monday") {
+                return "Thứ hai"
+            }
+            if (moment(date).format('dddd') === "Tuesday") {
+                return "Thứ ba"
+            }
+            if (moment(date).format('dddd') === "Wednesday") {
+                return "Thứ tư"
+            }
+            if (moment(date).format('dddd') === "Thursday") {
+                return "Thứ năm"
+            }
+            if (moment(date).format('dddd') === "Friday") {
+                return "Thứ sáu"
+            }
+            if (moment(date).format('dddd') === "Saturday") {
+                return "Thứ bảy"
+            }
+            if (moment(date).format('dddd') === "Sunday") {
+                return "Chủ nhật"
+            }
+        };
+        return moment(date).format(`[${getDay()},]DD [tháng] 12 [năm] YYYY `)
+    }
+
+    getTime(date) {
+        let retrunSection = () => {
+            if (moment(date).format('a') === 'pm') {
+                return 'ch'
+            } else {
+                return 'sa'
+            }
+        };
+        return moment(date).format(`hh:mm [${retrunSection()}]`)
+    }
+
+    previewListItemInTransaction(productItems) {
+        let items = "";
+        let i = 0;
+
+        for (data of productItems) {
+            items = (items !== "" ? items + ", " : "" ) + data.name;
+            i++;
+            if (i === productItems.length) {
+                return items
+            }
+        }
+
 
     }
 
     _renderListTransactionHeader = ({section}) => (
         <View style={styleHome.listTransactionHeader}
               key={section.title}>
-            <TextNormal>{section.title}</TextNormal>
+            <TextSmall>{this.getTitleDate(section.title)}</TextSmall>
         </View>
     );
-    _renderListTransactionBody = ({item}) => (
-        <View style={styleHome.listTransactionItem}>
-            <Ionicons name={"ios-cash-outline"} style={[styleHome.listTransactionItemIcon]}/>
-            <View style={styleHome.listTransactionItemTitle}>
-                <TextNormal>{item.productItems[0].productName}</TextNormal>
+    _renderListTransactionBody = ({item, index}) => (
+        <TouchableWithoutFeedback onPress={()=> this.setState({
+            selectedTransaction: item
+        })}>
+            <View
+                style={[styleHome.listTransactionItem, this.state.selectedTransaction._id === item._id && styleBase.background2]}
+            >
+
+                <Ionicons name={"ios-cash-outline"}
+                          style={[styleHome.listTransactionItemIcon, this.state.selectedTransaction._id === item._id && styleBase.color4]}/>
+                <View style={{flex: 1}}>
+                    <View style={{flexDirection: 'row', flex: 1}}>
+                        <TextNormal
+                            style={[{flex: 1}, this.state.selectedTransaction._id === item._id && styleBase.color4]}>{numberwithThousandsSeparator(item.totalPrice)}</TextNormal>
+                        <TextSmall
+                            style={this.state.selectedTransaction._id === item._id && styleBase.color4}>{this.getTime(item.date)}</TextSmall>
+                    </View>
+                    <TextSmall
+                        numberOfLines={1}
+                        style={[styleBase.color6, {flex: 1}]}>{this.previewListItemInTransaction(item.productItems)}</TextSmall>
+                </View>
+
             </View>
-            <TextSmall>Giờ</TextSmall>
-        </View>
+        </TouchableWithoutFeedback>
     );
 
     render() {
-
-
         return (
             <View style={[styleBase.container, styleBase.background4, {flexDirection: 'row'}]}>
                 {/*----------------leftSide--------------------*/}
@@ -114,6 +201,7 @@ class Transaction extends PureComponent {
                         <SectionList
                             renderItem={this._renderListTransactionBody}
                             renderSectionHeader={this._renderListTransactionHeader}
+                            keyExtractor={(item) => item._id}
                             sections={this.state.transaction}
                         />
                     </View>
@@ -123,7 +211,9 @@ class Transaction extends PureComponent {
                     {/*Header*/}
                     <View
                         style={[styleHome.header, styleHome.boxPadding]}>
-
+                        <TextLarge>
+                            {this.state.selectedTransaction.totalPrice}
+                        </TextLarge>
                         {/*{*/}
                         {/*this.state.selected.id === 'previewCategory' &&*/}
                         {/*<TouchableWithoutFeedback onPress={() => {*/}
@@ -156,6 +246,7 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = {
     openPopup,
-    renderPopup
+    renderPopup,
+    getTransaction
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Transaction);

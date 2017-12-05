@@ -187,12 +187,29 @@ const styleHome = EStyleSheet.create({
     listTransactionItemTitle: {
         flex: 1,
         paddingHorizontal: 10,
-        height: '$widthSize',
+        // height: '$widthSize',
         justifyContent: 'center'
     },
     listTransactionItemIcon: {
         fontSize: '$font16',
         height: 16,
+        width:'$font16',
+    },
+// Charge Modal
+    chargeContent:{
+      padding:20,
+        flex:1
+    },
+    chargeOption:{
+        height: '$widthSize',
+        padding:20,
+        flexDirection:'row',
+        alignItems:'center',
+    },
+    chargeOptionTitle:{
+        flex:1,
+        paddingHorizontal: 15,
+
     },
 //    product
     categoryBar: {
