@@ -17,11 +17,11 @@ class ViewItem extends React.Component {
     constructor(props) {
         super(props);
         var {width, height} = Dimensions.get('window');
-        const parent= this.props.hasOwnProperty("existData") ? this.props.existData : this.props.productData ;
+        const parent = this.props.hasOwnProperty("existData") ? this.props.existData : this.props.productData;
         this.state = {
             currentProduct: this.props.hasOwnProperty("existData") ? this.props.existData : this.props.productData,
-            parrentData: parent,
-            itemQuatity: this.props.hasOwnProperty("existData") ? this.props.existData.quatity : 1,
+            parentData: parent,
+            itemQuantity: this.props.hasOwnProperty("existData") ? this.props.existData.quantity : 1,
             note: ""
         };
     }
@@ -59,10 +59,10 @@ class ViewItem extends React.Component {
             _id: this.state.currentProduct._id,
             name: this.state.currentProduct.name,
             price: this.state.currentProduct.price,
-            quatity: this.state.itemQuatity,
-            totalPrice: this.state.currentProduct.price * this.state.itemQuatity,
+            quantity: this.state.itemQuantity,
+            totalPrice: this.state.currentProduct.price * this.state.itemQuantity,
             unit: this.state.currentProduct.unit,
-            productData: this.state.parrentData
+            productData: this.state.parentData
         });
         this.closePopup()
     }
@@ -79,10 +79,10 @@ class ViewItem extends React.Component {
             oldId: this.props.existData._id,
             name: this.state.currentProduct.name,
             price: this.state.currentProduct.price,
-            quatity: this.state.itemQuatity,
+            quantity: this.state.itemQuantity,
             unit: this.state.currentProduct.unit,
-            totalPrice:this.state.currentProduct.price * this.state.itemQuatity,
-            productData: this.state.parrentData
+            totalPrice: this.state.currentProduct.price * this.state.itemQuantity,
+            productData: this.state.parentData
         });
         this.closePopup()
     }
@@ -93,8 +93,8 @@ class ViewItem extends React.Component {
             oldId: this.props.existData._id,
             name: this.props.existData.name,
             price: this.props.existData.price,
-            quatity: 1,
-            unit:'cái',
+            quantity: 1,
+            unit: 'cái',
             customAmount: true,
             totalPrice: this.props.existData.price,
         });
@@ -122,7 +122,7 @@ class ViewItem extends React.Component {
 
                     <View style={[{flex: 1, flexDirection: 'row'}]}>
                         <TextLarge>{this.state.currentProduct.name || ""}</TextLarge>
-                        <TextLarge>  {numberwithThousandsSeparator(this.state.currentProduct.price * this.state.itemQuatity) || ""}
+                        <TextLarge>  {numberwithThousandsSeparator(this.state.currentProduct.price * this.state.itemQuantity) || ""}
                             đ</TextLarge>
                     </View>
                     {
@@ -171,7 +171,7 @@ class ViewItem extends React.Component {
                             <ListPrice productData={this.state.product} instant={this} {...this.state}/>
 
 
-                            {/*-----------------Note and Quatity---------------------------*/}
+                            {/*-----------------Note and Quantity---------------------------*/}
                             <TextNormal style={[styleModalItems.marginVertical, styleModalItems.modalItem]}>GHI CHÚ VÀ
                                 SỐ
                                 LƯỢNG</TextNormal>
@@ -180,22 +180,22 @@ class ViewItem extends React.Component {
                                              style={styleModalItems.marginVertical}/>
                             <View style={[styleModalItems.marginVertical, {flexDirection: 'row'}]}>
                                 <TouchableWithoutFeedback
-                                    onPress={() => this.setState({itemQuatity: this.state.itemQuatity > 1 ? this.state.itemQuatity - 1 : 1})}>
+                                    onPress={() => this.setState({itemQuantity: this.state.itemQuantity > 1 ? this.state.itemQuantity - 1 : 1})}>
                                     <View style={[styleHome.boxPadding, styleHome.box]}>
                                         <TextLarge>-</TextLarge>
                                     </View>
                                 </TouchableWithoutFeedback>
                                 <View style={[styleBase.center, {flex: 1}]}>
-                                    <TextInputNumber value={this.state.itemQuatity.toString()}
+                                    <TextInputNumber value={this.state.itemQuantity.toString()}
                                                      style={{textAlign: 'center', width: 100}}
-                                                     placeholder={this.state.itemQuatity.toString()}
+                                                     placeholder={this.state.itemQuantity.toString()}
                                                      onChangeText={(text) => {
 
-                                                         this.setState({itemQuatity: text > 0 ? text : 1})
+                                                         this.setState({itemQuantity: text > 0 ? text : 1})
                                                      }}/>
                                 </View>
                                 <TouchableWithoutFeedback
-                                    onPress={() => this.setState({itemQuatity: this.state.itemQuatity + 1})}>
+                                    onPress={() => this.setState({itemQuantity: this.state.itemQuantity + 1})}>
                                     <View style={[styleHome.boxPadding, styleHome.box]}>
                                         <TextLarge>+</TextLarge>
                                     </View>

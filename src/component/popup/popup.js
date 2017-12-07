@@ -4,13 +4,16 @@ import styleBase from "../style/base";
 import {connect} from "react-redux";
 import {closePopup} from '../../action/popup';
 import * as Animate from "react-native-animatable";
+
 class Popup extends React.PureComponent {
     constructor(props) {
         super(props);
+        let {width, height} = Dimensions.get('window');
         this.state = {
-            width: 0,
-            height: 0
+            width,
+            height
         }
+
     }
 
     closePopup() {
@@ -27,7 +30,7 @@ class Popup extends React.PureComponent {
 
     }
 
-    measureWidth(event){
+    measureWidth(event) {
         this.setState({
             width: event.nativeEvent.layout.width,
             height: event.nativeEvent.layout.height
@@ -48,14 +51,15 @@ class Popup extends React.PureComponent {
                 >
                     <TouchableWithoutFeedback onPress={() => {
                         this.closePopup()
-                    }} >
+                    }}>
                         <View
                             style={[styleBase.overlay, {position: 'absolute'}]}/>
                     </TouchableWithoutFeedback>
-                    <Animate.View animation={"bounceIn"} duration={300} style={[styleBase.container, styleBase.background4, {
-                        width: this.state.width > this.state.height ? this.state.width * 85 / 100 : this.state.width,
-                        alignSelf: 'center'
-                    }]}>
+                    <Animate.View animation={"bounceIn"} duration={300}
+                                  style={[styleBase.container, styleBase.background4, {
+                                      width: this.state.width> 800 ?  this.state.width * 85 / 100 : this.state.width,
+                                      alignSelf: 'center'
+                                  }]}>
                         {Object.keys(this.props.renderModal).length > 0 &&
                         this.renderContent()
                         }

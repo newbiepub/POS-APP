@@ -21,20 +21,20 @@ class CustomAmount extends React.PureComponent {
 
     }
 
-    changeCustomAmount(number) {
+    async changeCustomAmount(number) {
         if (number === 11) {
-            this.setState({
+            await this.setState({
                 customAmount: Math.floor(this.state.customAmount / 10)
             })
         }
 
         if (number === 100) {
-            this.setState({
+            await this.setState({
                 customAmount: this.state.customAmount * 100
             })
         }
         if (number >= 0 && number <= 9) {
-            this.setState({
+            await  this.setState({
                 customAmount: this.state.customAmount * 10 + number
             })
         }
@@ -50,7 +50,7 @@ class CustomAmount extends React.PureComponent {
         this.props.addToCart({
             _id: this.state.title !== "" ? this.state.title : "ghi chú",
             name: this.state.title !== "" ? this.state.title : "ghi chú",
-            quatity: 1,
+            quantity: 1,
             price: this.state.customAmount,
             unit: 'cái',
             customAmount: true,

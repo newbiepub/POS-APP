@@ -217,7 +217,7 @@ class AllProduct extends React.PureComponent {
 
     render() {
         return (
-            <View style={[styleHome.scrollView]}>
+            <ScrollView style={[styleHome.scrollView]}>
                 <TouchableOpacity onPress={this.createItem.bind(this)}
                                   style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
                     <TextNormal style={[styleBase.color2]}>Thêm hàng</TextNormal>
@@ -237,7 +237,7 @@ class AllProduct extends React.PureComponent {
                             />
                     }
                 </View>
-            </View>
+            </ScrollView>
         )
     }
 }

@@ -145,8 +145,8 @@ class POS extends React.Component {
                             <View style={{flex: 1}}>
                                 <TextNormal numberOfLines={2}>{data.name}</TextNormal>
                                 {
-                                    data.quatity > 1 &&
-                                    <TextSmall style={styleBase.color6}>x{data.quatity}</TextSmall>
+                                    data.quantity > 1 &&
+                                    <TextSmall style={styleBase.color6}>x{data.quantity}</TextSmall>
                                 }
 
                             </View>

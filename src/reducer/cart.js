@@ -21,14 +21,18 @@ function addToCart(currentCart, product) {
     for (item of currentCart) {
 
         if (product._id === item._id) {
-            return item.quatity = product.quatity, item.totalPrice = product.totalPrice;
+            {
+                item.hasOwnProperty("productData") ? item.productData = item.productData : null
+            }
+            return item.quantity = product.quantity, item.totalPrice = product.totalPrice;
+
         }
     }
     return currentCart.push(product)
 
 }
 
-function removeItemInCart(currentCart,id) {
+function removeItemInCart(currentCart, id) {
     for (item of currentCart) {
 
         if (id === item._id) {

@@ -10,17 +10,18 @@ import {size} from '../style/home';
 class Menu extends React.Component {
     constructor(props) {
         super(props);
-
+        let {width, height} = Dimensions.get('window');
         this.state = {
-            currentRoute: this.props.currentRoute,
-
+            width,
+            height
         }
     }
 
 
     shouldComponentUpdate(nextProps, nextState) {
         const changeVisible = this.props.visible !== nextProps.visible;
-        return changeVisible
+        const widthChanged = this.state.width !== nextState.width;
+        return changeVisible || widthChanged
     }
 
 
@@ -41,6 +42,14 @@ class Menu extends React.Component {
         </TouchableOpacity>
     );
 
+    measureWidth(event) {
+        let {width, height} = Dimensions.get('window');
+        this.setState({
+            width,
+            height
+        })
+    }
+
     render() {
         return (
             <ModalWrapper
@@ -53,13 +62,13 @@ class Menu extends React.Component {
                 supportedOrientations={['portrait', 'landscape']}
                 visible={this.props.visible}>
 
-                <View style={styleBase.container}>
+                <View onLayout={(event) => this.measureWidth(event)} style={styleBase.container}>
                     <View
                         style={{
-                            width: size.menuSize,
+                            width: this.state.width * 30 / 100,
+                            height: this.state.height,
                             backgroundColor: 'rgb(60, 60, 61)',
                             position: 'absolute',
-                            height: size.window.height,
                             padding: 40,
                         }}>
 

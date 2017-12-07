@@ -1,5 +1,5 @@
 import React from "react";
-import {ScrollView, View, Dimensions, TouchableWithoutFeedback, Text, Platform,} from "react-native";
+import {ScrollView, View, Dimensions, TouchableWithoutFeedback, Text, ActivityIndicator,} from "react-native";
 import {TextInputNormal, TextLarge, TextInputPriceMask, TextNormal} from '../../reusable/text';
 import styleBase from "../../style/base";
 import styleHome from '../../style/home';
@@ -13,18 +13,22 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
 import PriceGrid from '../../home/product/price/priceGrid';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import {createTransaction} from '../../../action/transaction';
-
+import {clearCart} from '../../../action/cart';
 class Charge extends React.Component {
     constructor(props) {
         super(props);
+        let {width, height} = Dimensions.get('window');
         this.state = {
             currentView: 'Main',
+            width: width * 30 / 100,
+            height,
             totalPrice: 0,
             productItems: [],
             inputPrices: 0,
             paymentMethod: this.props.paymentMethod[0],
             paymentStatus: this.props.paymentStatus[0],
             description: '',
+            onProgressing: false
         }
 
     }
@@ -36,7 +40,7 @@ class Charge extends React.Component {
             await  itemInCart.push({
                 name: item.name,
                 price: item.price,
-                quatity: item.quatity,
+                quantity: item.quantity,
                 unit: item.unit,
             });
             totalPrice += await item.totalPrice;
@@ -50,27 +54,47 @@ class Charge extends React.Component {
 
     }
 
-    onCharge() {
+    async onCharge() {
+        this.setState({
+            onProgressing: true
+        })
         let transaction = {
             productItems: this.state.productItems,
             totalPrice: this.state.totalPrice,
             paymentMethod: this.state.paymentMethod,
             paymentStatus: this.state.paymentStatus,
             description: this.state.description,
-            type:'Thu'
+            type: 'Thu'
         };
         let {access_token} = this.props.account;
-        this.props.createTransaction(access_token, transaction)
-
+        let result = await this.props.createTransaction(access_token, transaction);
+        console.warn(JSON.stringify(result));
+        if (result === false) {
+            console.warn("loi tao giao dich")
+        } else {
+            this.closePopup();
+            this.props.clearCart();
+            console.warn(result._bodyInit)
+        }
     }
 
     closePopup() {
         this.props.closePopup();
     }
 
+    getModalSize(evt) {
+        var {width, height} = evt.nativeEvent.layout;
+        this.setState({
+            width,
+            height
+        })
+    }
+
     render() {
         return (
-            <View style={[styleBase.container, styleBase.background4,]}>
+            <View onLayout={(event) => {
+                this.getModalSize(event)
+            }} style={[styleBase.container, styleBase.background4,]}>
                 {/*-----------Header_____________------*/}
                 <View style={styleHome.modalHeader}>
                     {
@@ -130,7 +154,19 @@ class Charge extends React.Component {
                     }
 
                 </View>
-
+                {
+                    this.state.onProgressing &&
+                    <View style={{
+                        position: 'absolute',
+                        width: this.state.width,
+                        height: this.state.height,
+                        backgroundColor: 'rgba(1,1,1,0.1)'
+                    }}>
+                        <View style={[styleBase.center, {flex: 1}]}>
+                            <ActivityIndicator size={"large"}/>
+                        </View>
+                    </View>
+                }
 
             </View>
         )
@@ -269,7 +305,8 @@ class PaymentMethod extends React.Component {
 
 const mapDispatchToProps = {
     closePopup,
-    createTransaction
+    createTransaction,
+    clearCart
 };
 const mapStateToProps = (state) => {
     return {

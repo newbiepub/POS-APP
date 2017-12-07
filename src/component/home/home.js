@@ -23,7 +23,7 @@ class Home extends React.Component {
         let {access_token} = this.props.account;
         this.props.getProduct(access_token);
         this.props.getPayment(access_token);
-        //this.props.getTransaction(access_token,10,0);
+        // this.props.getTransaction(access_token,10,0);
     }
 
     async getProduct() {

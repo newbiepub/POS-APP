@@ -1,8 +1,9 @@
 import EStyleSheet from "react-native-extended-stylesheet";
+
 export var size = {
     gridItemWidth: 0,
     menuSize: 0,
-    window:{
+    window: {
         width: 0,
         height: 0
     }
@@ -16,6 +17,7 @@ const styleHome = EStyleSheet.create({
     $color4: '#ffffff',
     $color6: '#a3a3a3',
     $color5: '#e5e5e5',
+    $button: {},
     container: {
         flex: 1,
         margin: 20
@@ -61,11 +63,15 @@ const styleHome = EStyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 1.5,
     },
+
     menuButton: {
         alignItems: 'center',
         justifyContent: 'center',
         width: '$widthSize',
         height: '$widthSize'
+    },
+    marginTop:{
+        marginTop:'$widthSize'
     },
     box: {
         borderWidth: 1,
@@ -130,8 +136,7 @@ const styleHome = EStyleSheet.create({
         height: 10,
     },
     scrollView: {
-        padding: '$widthSize',
-        marginBottom:'$widthSize'
+        paddingHorizontal: '$widthSize',
     },
     buttonCharge: {
         justifyContent: 'center',
@@ -175,6 +180,9 @@ const styleHome = EStyleSheet.create({
         backgroundColor: '$color5',
         paddingVertical: 10
     },
+    transactionItemName:{
+        paddingVertical:10
+    },
     listTransactionItem: {
         paddingHorizontal: 10,
         flexDirection: 'row',
@@ -192,22 +200,24 @@ const styleHome = EStyleSheet.create({
     },
     listTransactionItemIcon: {
         fontSize: '$font16',
-        height: 16,
-        width:'$font16',
+        height: "$font16",
+        marginRight: 10,
+        width: '$font16',
+
     },
 // Charge Modal
-    chargeContent:{
-      padding:20,
-        flex:1
+    chargeContent: {
+        padding: 20,
+        flex: 1
     },
-    chargeOption:{
+    chargeOption: {
         height: '$widthSize',
-        padding:20,
-        flexDirection:'row',
-        alignItems:'center',
+        padding: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
     },
-    chargeOptionTitle:{
-        flex:1,
+    chargeOptionTitle: {
+        flex: 1,
         paddingHorizontal: 15,
 
     },

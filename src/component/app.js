@@ -38,7 +38,7 @@ class App extends PureComponent {
     }
 
     getSize(evt) {
-        var {width, height} = evt.nativeEvent.layout;
+        let {width, height} = evt.nativeEvent.layout;
         size.gridItemWidth = (width * 60 / 100 - 30) / 4 - 20;
         size.menuSize = width *30 / 100;
         size.window= {
