@@ -110,3 +110,28 @@ export function createTransaction(access_token, data) {
         })
     }
 }
+export function issueRefund(access_token, data) {
+    return async (dispatch, getState) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+
+                let {api} = url;
+                let result = await fetch(`${api}/api/transaction/issueRefund?access_token=${access_token}`, {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        refund: data,
+                    })
+                });
+                resolve(result)
+            } catch (e) {
+                console.warn(e);
+                reject(false)
+            }
+
+        })
+    }
+}

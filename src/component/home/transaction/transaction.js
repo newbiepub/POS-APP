@@ -22,6 +22,7 @@ import CreateModifyProductPopup from '../../popup/product/createModifyProduct';
 import CreateCategory from '../../popup/product/createCategory';
 import {numberwithThousandsSeparator} from '../../reusable/function';
 import moment from '../../momentJs';
+import IssueRefund from '../../popup/transaction/issueRefund';
 
 class Transaction extends React.Component {
     constructor(props) {
@@ -53,35 +54,14 @@ class Transaction extends React.Component {
 
     }
 
-    //
-    // sortDataByDate(oldTransaction) {
-    //     let newTransaction = [];
-    //     for (var i = 0; i < oldTransaction.length; i++) {
-    //         if (newTransaction.length === 0) {
-    //             newTransaction.push({title: oldTransaction[i].date, data: [oldTransaction[i]]});
-    //         } else {
-    //             for (var j = 0; j < newTransaction.length; j++) {
-    //
-    //                 if (moment(oldTransaction[i].date).format("DD/MM/YYYY") === moment(newTransaction[j].title).format("DD/MM/YYYY")) {
-    //                     newTransaction[j].data.push(oldTransaction[i]);
-    //                     break;
-    //                 } else {
-    //                     if (j === newTransaction.length - 1) {
-    //                         newTransaction.push({title: oldTransaction[i].date, data: [oldTransaction[i]]});
-    //                         break;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //
-    //         if (i === oldTransaction.length - 1) {
-    //             return newTransaction
-    //         }
-    //     }
-    //     // return setTimeout(() => {
-    //     //     return newTransaction
-    //     // }, 0)
-    // }
+    openIssueRefundPopup() {
+        this.props.openPopup();
+        this.props.renderPopup(
+            <IssueRefund
+                transactionId={this.state.selectedTransaction._id}
+                refundInfo={this.state.selectedTransaction.hasOwnProperty('issue_refund') ? this.state.selectedTransaction.issue_refund : null}/>
+        )
+    }
 
     async componentWillMount() {
         if (this.props.transaction.length === 0) {
@@ -279,8 +259,10 @@ class Transaction extends React.Component {
                             this.state.selectedTransaction.hasOwnProperty("productItems")
                             &&
                             <ScrollView style={styleHome.scrollView}>
-                                <TouchableOpacity
-                                    style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center, styleHome.marginTop]}>
+                                <TouchableOpacity onPress={() => {
+                                    this.openIssueRefundPopup()
+                                }}
+                                                  style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center, styleHome.marginTop]}>
                                     <TextNormal style={[styleBase.color2]}>Hoàn trả</TextNormal>
                                 </TouchableOpacity>
                                 <View style={styleHome.modalItem}>
@@ -305,6 +287,26 @@ class Transaction extends React.Component {
                                             toán: {this.state.selectedTransaction.paymentMethod}</TextSmall>
                                     </View>
                                 </View>
+                                {
+                                    this.state.selectedTransaction.hasOwnProperty("issue_refund") &&
+                                    <View style={styleHome.modalItem}>
+                                        <TextNormal style={styleHome.transactionItemName} l>Hoàn trả</TextNormal>
+                                        <View style={styleHome.chargeOption}>
+                                            {/*<Ionicons name={"ios-barcode-outline"}*/}
+                                            {/*style={[styleHome.listTransactionItemIcon]}/>*/}
+                                            <TextSmall style={styleHome.chargeOptionTitle}>Số tiền hoàn
+                                                trả: {numberwithThousandsSeparator(this.state.selectedTransaction.issue_refund.amount)}đ</TextSmall>
+                                        </View>
+                                        <View style={styleHome.chargeOption}>
+                                            {/*<Ionicons name={"ios-barcode-outline"}*/}
+                                            {/*style={[styleHome.listTransactionItemIcon]}/>*/}
+                                            <TextSmall style={styleHome.chargeOptionTitle}>Lý
+                                                do: {this.state.selectedTransaction.issue_refund.reason[0].name}</TextSmall>
+                                        </View>
+
+                                    </View>
+                                }
+
                                 <View style={styleHome.modalItem}>
                                     <TextNormal style={styleHome.transactionItemName} l>Hàng</TextNormal>
                                     <FlatList

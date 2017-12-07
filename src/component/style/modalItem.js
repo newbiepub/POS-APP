@@ -1,11 +1,10 @@
 import EStyleSheet from "react-native-extended-stylesheet";
 
-const styleHome = EStyleSheet.create({
+const style = EStyleSheet.create({
         modalItemCover: {
             height: 300,
         },
         modalTextInput: {
-            paddingHorizontal: 10,
             paddingVertical:20,
             borderBottomWidth: 1,
             borderBottomColor: "#e5e5e5",
@@ -31,4 +30,4 @@ const styleHome = EStyleSheet.create({
     })
 ;
 
-export default styleHome;
+export default style;
