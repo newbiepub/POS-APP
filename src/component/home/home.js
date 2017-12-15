@@ -1,5 +1,5 @@
-import React, {PureComponent} from "react";
-import {View, Dimensions} from "react-native";
+import React from "react";
+import {View} from "react-native";
 import styleBase from "../style/base";
 import Main from './main';
 import {connect} from 'react-redux';

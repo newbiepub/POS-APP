@@ -24,6 +24,13 @@ export const ROUTE = {
     OPEN_MENU: "OPEN_MENU",
     CLOSE_MENU:"CLOSE_MENU"
 };
+
+//Inventory
+export const INVENTORY = {
+    GET_INVENTORY_PRODUCT: "GET_INVENTORY_PRODUCT",
+    GET_INVENTORY_INGREDIENT: "GET_INVENTORY_INGREDIENT"
+};
+
 //product
 export const PRODUCT = {
     GET_PRODUCT: "GET_PRODUCT",

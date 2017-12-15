@@ -84,6 +84,9 @@ const styleBase = EStyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
     },
+    borderBottomE5: {
+        borderColor: "#e5e5e5", borderBottomWidth: 1
+    },
     overlay: {
         flex: 1,
         backgroundColor: "rgba(0,0,0,0.35)",
