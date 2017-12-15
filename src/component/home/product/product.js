@@ -311,7 +311,7 @@ class ProductItem extends React.PureComponent {
     render() {
         let {item, index} = this.props;
         return (
-            <Animate.View ref="swipeableItem">
+            <Animate.View ref="swipeableItem" style={{overflow: "hidden"}}>
                 <Swipeable
                     ref={ref => this.swipeableRef = ref}
                     rightButtons={[this.renderRightItem({item, index})]}>

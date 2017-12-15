@@ -49,6 +49,9 @@ class CreateItem extends React.Component {
         this.props.closePopup();
     }
 
+    componentDidMount() {
+        this.productVariant = this.getVariantProduct((this.state.productData._id || ""), this.props.variantProduct); // Update Product Variant To Parent Component
+    }
 
     ChangeItem(name, text) {
         if (name === "category") {
@@ -73,7 +76,6 @@ class CreateItem extends React.Component {
                 await variant.push(item);
             }
         });
-        this.productVariant = variant; // Update Product Variant To Parent Component
         return variant;
     }
 
@@ -111,8 +113,40 @@ class CreateItem extends React.Component {
         }
     }
 
-    onUpdateProduct() {
+    async onUpdateProduct() {
+        let loadingOverlay = this.refs.loadingOverlay;
+        try {
+            let { name, price, unit } = this.state.productData,
+                {account} = this.props;
 
+            if(loadingOverlay) {
+                loadingOverlay.setLoading();
+                if (name && price && unit) {
+                    let response = await fetch(`${config.api}/api/product/update?access_token=${account.access_token}`, {
+                        method: "POST",
+                        headers: {
+                            "Accept": "application/json",
+                            "Content-Type": 'application/json'
+                        },
+                        body: JSON.stringify({
+                            ...this.state.productData,
+                            productVariant: this.productVariant
+                        })
+                    });
+                    response = await response.json();
+                    if(response.success) {
+                        Alert.alert("Thành Công", "Cập nhật sản phẩm thành công !!");
+                    }
+                } else {
+                    return Alert.alert("Thông báo", "Xin mời nhập giá và tên sản phẩm");
+                }
+                loadingOverlay.stopLoading();
+            } else {
+                return Alert.alert("Thông báo", "Đã có lỗi xảy ra");
+            }
+        } catch(e) {
+            loadingOverlay.stopLoading();
+        }
     }
 
     render() {
@@ -174,7 +208,7 @@ class CreateItem extends React.Component {
                         this.state.currentView === 'Thêm giá' &&
                         <AddPrice
                             instance={this}
-                            listPrice={this.getVariantProduct(this.state.productData._id || "", this.props.variantProduct)}/>
+                            listPrice={this.productVariant}/>
                     }
                 </View>
                 <LoadingOverlay ref="loadingOverlay" message="Xin vui lòng chờ"/>
@@ -378,16 +412,21 @@ class RowComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: "",
-            price: 0
+            name: this.props.data.name,
+            price: this.props.data.price
         }
     }
 
     static propTypes = {
         instance: React.PropTypes.object,
         row: React.PropTypes.object,
+        data: React.PropTypes.object,
         listPrice: React.PropTypes.array,
         index: React.PropTypes.string
+    };
+
+    static defaultProps = {
+        data: {name: "", price: 0},
     };
 
     onRemoveItem() {

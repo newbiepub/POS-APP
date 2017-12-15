@@ -5,10 +5,10 @@ import POS from './POS/pointOfSale';
 import Transaction from './transaction/transaction';
 import Product from './product/product';
 import Setting from './setting/setting';
-import {connect} from 'react-redux';;
+import Inventory from "./inventory/inventory";
+import {connect} from 'react-redux';
 import * as Animate from "react-native-animatable";
 import {openMenu} from '../../action/route';
-
 import {getProduct} from '../../action/product';
 
 
@@ -24,7 +24,7 @@ class Main extends React.Component {
 
                 {
                     this.props.currentRoute === "POS" &&
-                    <Animate.View  style={{flex: 1}}>
+                    <Animate.View style={{flex: 1}}>
                         <POS openMenu={() => {
                             this.props.openMenu()
                         }}/>
@@ -42,7 +42,7 @@ class Main extends React.Component {
                 }
                 {
                     this.props.currentRoute === "item" &&
-                    <Animate.View  style={{flex: 1}}>
+                    <Animate.View style={{flex: 1}}>
                         <Product openMenu={() => {
                             this.props.openMenu()
                         }}/>
@@ -57,7 +57,14 @@ class Main extends React.Component {
                         }} title="Cài Đặt"
                                  navigator={this.props.navigator}/>
                     </Animate.View>
-
+                }
+                {
+                    this.props.currentRoute === "inventory" &&
+                    <Animate.View style={{flex: 1}}>
+                        <Inventory
+                            openMenu={this.props.openMenu.bind(this)}
+                            navigator={this.props.navigator}/>
+                    </Animate.View>
                 }
             </View>
         )
