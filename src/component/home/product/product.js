@@ -17,13 +17,14 @@ import styleBase from "../../style/base";
 import {connect} from 'react-redux';
 import Entypo from 'react-native-vector-icons/Entypo';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import Octicons from 'react-native-vector-icons/Octicons';
 import {openPopup, renderPopup} from '../../../action/popup';
 import CreateModifyProductPopup from '../../popup/product/createModifyProduct';
 import CreateCategory from '../../popup/product/createCategory';
+import CreateDiscount from '../../popup/product/createDiscount';
 import styleProduct from "../../style/product";
 import * as Animate from "react-native-animatable";
 import Swipeable from "../../swipeableList/swipeableList";
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {numberwithThousandsSeparator} from "../../reusable/function";
 
 const TouchableOpacityAnimate = Animate.createAnimatableComponent(TouchableOpacity);
@@ -64,7 +65,8 @@ class Product extends Component {
         const viewChanged = this.state.selected !== nextState.selected;
         const loadingChanged = this.props.loading !== nextProps.loading;
         const searchText = this.state.searchText !== nextState.searchText;
-        return productChanged || viewChanged || loadingChanged || searchText;
+        const discountChanged = this.props.discount !== nextProps.discount;
+        return productChanged || viewChanged || loadingChanged || searchText|| discountChanged;
     }
 
     componentDidMount() {
@@ -189,7 +191,7 @@ class Product extends Component {
                             this.state.selected.id === 'discount' &&
                             <Discount
                                 {...this.props}
-                                allDiscount={this.props.allDiscount}/>
+                                allDiscount={this.props.discount}/>
                         }
 
 
@@ -268,7 +270,7 @@ class ProductItem extends React.PureComponent {
         let {item, index} = this.props;
         if (this.state.deleteVerification) {
             let {swipeableItem} = this.refs;
-            swipeableItem.transition({height: 40},{height: 0})
+            swipeableItem.transition({height: 40}, {height: 0})
         } else {
             InteractionManager.runAfterInteractions(() => {
                 if (this.deleteButton != undefined) {
@@ -323,7 +325,7 @@ class ProductItem extends React.PureComponent {
                             </View>
                             <View style={[styleHome.itemBarTitle]}>
                                 <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
-                                <TextSmall> {numberwithThousandsSeparator(item.price)} giá</TextSmall>
+                                <TextSmall> {item.allPrices.length >1 ? item.allPrices.length + " giá" : numberwithThousandsSeparator(item.price)+"đ" }</TextSmall>
                             </View>
                         </View>
                     </TouchableWithoutFeedback>
@@ -453,57 +455,146 @@ class CategoryPreview extends React.PureComponent {
 }
 
 
-class Discount extends React.PureComponent {
-    render() {
-        try {
-            var listDiscount = this.props.allDiscount.map(data => {
-                return (
-                    <TouchableWithoutFeedback key={data.name} onPress={() => this.modifyItem(data)}>
-                        <View style={[styleHome.itemBar]}>
-                            <View style={[styleHome.itemBarIcon]}>
+class DiscountItem extends React.PureComponent {
+    constructor(props) {
+        super(props);
+        this.swipeableRef = null;
+        this.deleteButton = null;
+        this.state = {
+            deleteVerification: false
+        }
+    }
 
-                                <Octicons name={"tag"} style={[styleBase.vector26]}/>
-                            </View>
-                            <View style={[styleHome.itemBarTitle]}>
-                                <TextSmall style={{flex: 1}}>{data.name}</TextSmall>
-                                <TextSmall>{data.value}</TextSmall>
-                            </View>
-                        </View>
-                    </TouchableWithoutFeedback>
+    static propTypes = {
+        item: React.PropTypes.object,
+        index: React.PropTypes.number
+    };
 
-                )
+    modifyItem(item) {
+        this.props.renderPopup(<CreateDiscount discountData={item}/>);
+        this.props.openPopup();
+    }
+
+    onDeleteItem() {
+        let {item, index} = this.props;
+        if (this.state.deleteVerification) {
+            let {swipeableDiscount} = this.refs;
+            swipeableDiscount.transition({height: 40}, {height: 0})
+        } else {
+            InteractionManager.runAfterInteractions(() => {
+                if (this.deleteButton != undefined) {
+                    this.deleteButton.transitionTo({width: 150}, 400);
+                }
+                if (this.swipeableRef != undefined) {
+                    Animated.spring(this.swipeableRef.state.pan.x, {
+                        toValue: -150,
+                        duration: 450,
+                        useNativeDriver: true
+                    }).start();
+                }
+                this.setState({deleteVerification: true});
             });
         }
-        catch (e) {
-            console.warn(e);
-            return <View></View>
-        }
+        setTimeout(() => {
+            this.setState({deleteVerification: false});
+            this.deleteButton.transitionTo({width: 70}, 400);
+            Animated.spring(this.swipeableRef.state.pan.x, {
+                toValue: 0,
+                duration: 450,
+                useNativeDriver: true
+            }).start();
+        }, 2000);
+    }
 
+    renderRightItem() {
         return (
+            <TouchableOpacityAnimate ref={(rowRef) => {
+                this.deleteButton = rowRef;
+            }}
+                                     onPress={this.onDeleteItem.bind(this)}
+                                     style={[styleBase.center, styleProduct.swiperDeleteButton]}>
+                <Text style={[styleBase.font16, styleBase.textE5]}>
+                    {this.state.deleteVerification ? "Xác Nhận" : "Xoá"}
+                </Text>
+            </TouchableOpacityAnimate>
+        )
+    }
 
-            <ScrollView>
-                <View style={[styleHome.paddingModal]}>
-                    <TouchableWithoutFeedback>
-                        <View style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
-                            <TextNormal style={[styleBase.color2]}>Thêm khuyến mãi</TextNormal>
+    render() {
+        let {item, index} = this.props;
+        return (
+            <Animate.View ref="swipeableDiscount">
+                <Swipeable
+                    ref={ref => this.swipeableRef = ref}
+                    rightButtons={[this.renderRightItem({item, index})]}>
+                    <TouchableWithoutFeedback onPress={() => this.modifyItem(item)}>
+                        <View style={[styleHome.itemBar]}>
+                            <View style={[styleHome.itemBarIcon]}>
+                                <Ionicons name={"ios-pricetags-outline"} style={styleBase.vector18}/>
+                            </View>
+                            <View style={[styleHome.itemBarTitle]}>
+                                <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
+                                <TextSmall> {item.value}{item.type === 'percent' ? "%" : "đ"}</TextSmall>
+                            </View>
                         </View>
                     </TouchableWithoutFeedback>
-                    <View style={[styleHome.listItem, styleHome.borderTop]}>
-                        {listDiscount}
-                    </View>
-                </View>
+                </Swipeable>
+            </Animate.View>
+        )
+    }
+}
 
+class Discount extends React.PureComponent {
+    constructor(props) {
+        super(props);
+        this.listRow = [];
+        this.state = {
+            deleteVerification: false
+        }
+    }
+
+    createItem() {
+        this.props.renderPopup(<CreateDiscount/>);
+        this.props.openPopup();
+    }
+
+    _renderItem = ({item, index}) => <DiscountItem {...this.props} item={item} index={index}/>
+
+    render() {
+        return (
+            <ScrollView style={[styleHome.scrollView]}>
+                <TouchableOpacity onPress={this.createItem.bind(this)}
+                                  style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
+                    <TextNormal style={[styleBase.color2]}>Thêm khuyến mãi</TextNormal>
+                </TouchableOpacity>
+                <View style={[styleHome.listItem, styleHome.borderTop,]}>
+                    {
+                        this.props.loading ?
+                            <View style={[styleBase.center, {flex: 1}]}>
+                                <ActivityIndicator size={"large"}/>
+                            </View> :
+                            <FlatList
+                                data={this.props.allDiscount}
+                                extraData={this.state}
+                                initialNumToRender={15}
+                                keyExtractor={(item) => item._id}
+                                renderItem={this._renderItem}
+                            />
+                    }
+                </View>
             </ScrollView>
         )
     }
 }
+
 
 const mapStateToProps = (state) => {
     return {
         account: state.account,
         allProduct: state.product.allProduct,
         category: state.product.category,
-        loading: state.product.loading
+        loading: state.product.loading,
+        discount: state.product.discount
 
     }
 };

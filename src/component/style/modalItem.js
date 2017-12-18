@@ -5,7 +5,7 @@ const style = EStyleSheet.create({
             height: 300,
         },
         modalTextInput: {
-            paddingVertical:20,
+            paddingVertical: 20,
             borderBottomWidth: 1,
             borderBottomColor: "#e5e5e5",
         },
@@ -17,6 +17,14 @@ const style = EStyleSheet.create({
             marginTop: 50,
 
         },
+        modalItemWithUnderLine: {
+            height: 80,
+            justifyContent: 'center',
+            alignItems:'center',
+            flexDirection: 'row',
+            borderBottomWidth: 1,
+            borderBottomColor: "#e5e5e5"
+        },
         marginVertical: {
             marginVertical: 10
         },
@@ -24,9 +32,10 @@ const style = EStyleSheet.create({
             paddingVertical: 50
         },
         choosePriceItem: {
-            height:70,
-            alignItems:'center'
+            height: 70,
+            alignItems: 'center'
         }
+
     })
 ;
 

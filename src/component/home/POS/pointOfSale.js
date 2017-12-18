@@ -13,7 +13,6 @@ import {numberwithThousandsSeparator} from '../../reusable/function';
 import {clearCart} from '../../../action/cart';
 import ViewProduct from '../../popup/product/viewProduct';
 import ChargeView from '../../popup/transaction/charge';
-//import ProductGrid from '../product/product/listProduct';
 class POS extends React.Component {
     constructor(props) {
         super(props);
@@ -143,7 +142,7 @@ class POS extends React.Component {
                     <TouchableWithoutFeedback key={index} onPress={() => this.adjustItemInCart(data)}>
                         <View style={{flexDirection: 'row', padding: 10, alignItems: "center"}}>
                             <View style={{flex: 1}}>
-                                <TextNormal numberOfLines={2}>{data.name}</TextNormal>
+                                <TextNormal numberOfLines={2}>{data.productCharge.name}</TextNormal>
                                 {
                                     data.quantity > 1 &&
                                     <TextSmall style={styleBase.color6}>x{data.quantity}</TextSmall>

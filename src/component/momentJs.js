@@ -1374,7 +1374,7 @@
 
 // LOCALES
 
-    var defaultLocaleWeekdays = 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_');
+    var defaultLocaleWeekdays = 'Chủ nhật_Thứ hai_Thứ ba_Thứ tư_Thứ năm_Thứ sáu_Thứ bảy'.split('_');
     function localeWeekdays (m, format) {
         if (!m) {
             return isArray(this._weekdays) ? this._weekdays :
@@ -1759,9 +1759,9 @@
     var defaultLocaleMeridiemParse = /[ap]\.?m?\.?/i;
     function localeMeridiem (hours, minutes, isLower) {
         if (hours > 11) {
-            return isLower ? 'pm' : 'PM';
+            return isLower ? 'ch' : 'CH';
         } else {
-            return isLower ? 'am' : 'AM';
+            return isLower ? 'sa' : 'SA';
         }
     }
 

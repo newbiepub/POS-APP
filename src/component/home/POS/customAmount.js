@@ -11,7 +11,7 @@ import {addToCart, removeCart} from '../../../action/cart';
 import {closePopup} from '../../../action/popup';
 import {size} from "../../style/product";
 
-class CustomAmount extends React.PureComponent {
+class CustomAmount extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -40,19 +40,27 @@ class CustomAmount extends React.PureComponent {
         }
 
         if (this.props.hasOwnProperty("existData")) {
-            this.props.existData.price = this.state.customAmount
+            this.props.instance.setState({
+                currentPrice:{
+                    ...this.props.instance.state.currentPrice,
+                    price: this.state.customAmount
+                }
+            })
+
 
         }
 
     }
 
-    addToCategories() {
+    addToCart() {
         this.props.addToCart({
-            _id: this.state.title !== "" ? this.state.title : "ghi chú",
-            name: this.state.title !== "" ? this.state.title : "ghi chú",
+            productCharge: {
+                _id: new Date(),
+                name: this.state.title !== "" ? this.state.title : "ghi chú",
+                price: this.state.customAmount,
+                unit: 'cái',
+            },
             quantity: 1,
-            price: this.state.customAmount,
-            unit: 'cái',
             customAmount: true,
             totalPrice: this.state.customAmount
         });
@@ -64,9 +72,6 @@ class CustomAmount extends React.PureComponent {
         )
     }
 
-    numberwithThousandsSeparator(x) {
-        return numberwithThousandsSeparator(x);
-    }
 
     render() {
         return (
@@ -82,7 +87,12 @@ class CustomAmount extends React.PureComponent {
                                          onChangeText={(text) => {
                                              this.setState({title: text});
                                              if (this.props.hasOwnProperty("existData")) {
-                                                 this.props.existData.name = text
+                                                 this.props.instance.setState({
+                                                     currentPrice:{
+                                                         ...this.props.instance.state.currentPrice,
+                                                         name: text
+                                                     }
+                                                 })
                                              }
                                          }}
                                          multiline={true}
@@ -97,7 +107,7 @@ class CustomAmount extends React.PureComponent {
                     }, style.paddingContent]}>
 
                         <Text numberOfLines={1}
-                              style={[styleBase.font32, this.state.customAmount === 0 && style.colorWhenNull]}>{this.numberwithThousandsSeparator(this.state.customAmount)}</Text>
+                              style={[styleBase.font32, this.state.customAmount === 0 && style.colorWhenNull]}>{numberwithThousandsSeparator(this.state.customAmount)}</Text>
                         <Text style={[styleBase.font32, this.state.customAmount === 0 && style.colorWhenNull]}>đ</Text>
                     </View>
                 </View>
@@ -208,7 +218,7 @@ class CustomAmount extends React.PureComponent {
                                 </View>
                             </TouchableWithoutFeedback> :
                             <TouchableWithoutFeedback
-                                onPress={() => this.state.customAmount !== 0 && this.addToCategories()}>
+                                onPress={() => this.state.customAmount !== 0 && this.addToCart()}>
                                 <View style={[{flex: 1}, styleHome.box, styleBase.center]}>
                                     <Text style={[styleBase.font32, styleBase.color2]}> + </Text>
                                 </View>

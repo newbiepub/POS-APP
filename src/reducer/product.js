@@ -4,8 +4,7 @@ const initialState = {
     loading: true,
     allProduct: [],
     variantProduct: [],
-    allDiscount:
-        [{name: 'Cồn', prices: [{type: "Bình thường", value: 100, SKU: 'helo'}]}],
+    discount: [],
     category: []
 };
 
@@ -32,6 +31,12 @@ function productReducer(initialState) {
                     ...state,
                     category: action.payload,
                     loading: false
+                }
+            }
+            case PRODUCT.GET_DISCOUNT : {
+                return {
+                    ...state,
+                    discount: action.payload
                 }
             }
             default: {

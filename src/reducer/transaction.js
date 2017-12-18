@@ -2,10 +2,11 @@ import {TRANSACTION} from "../constant/constant";
 import moment from '../component/momentJs'
 
 const initialState = {
-    paymentMethod: ["Trả trước", "Trả sau"],
-    paymentStatus: ["Đã thanh toán", "Chưa thanh toán"],
+    paymentMethod: ["Trả Trước", "Trả Sau"],
+    paymentStatus: ["Đã Thanh Toán", "Chưa Thanh Toán"],
     transaction: [],
-    currentNumberOfTransaction:0,
+    tax: 0,
+    currentNumberOfTransaction: 0,
     transactionAmount: 0,
     loading: true
 };
@@ -31,6 +32,21 @@ function sortDataByDate(newTransaction, oldTransaction) {
             }
         }
     }
+}
+
+function commitPurchase(transaction, id) {
+
+    for (title of transaction) {
+
+       for(data of title.data)
+       {
+           if(data._id === id )
+           {
+               data.paymentStatus = "Đã Thanh Toán"
+           }
+       }
+    }
+
 }
 
 function transactionReducer(initialState) {
@@ -67,6 +83,27 @@ function transactionReducer(initialState) {
                     loading: false,
                     currentNumberOfTransaction: state.currentNumberOfTransaction + action.payload.length,
                     transaction: [...state.transaction]
+                }
+            }
+            case TRANSACTION.SET_TAX: {
+                return {
+                    ...state,
+                    tax: action.payload
+                }
+            }
+            case TRANSACTION.COMMIT_PURCHASE: {
+                commitPurchase(state.transaction, action.payload);
+                return {
+                    ...state,
+                    transaction: [...state.transaction]
+                }
+            }
+            case TRANSACTION.CLEAN_TRANSACTION: {
+                return {
+                    ...state,
+                    transaction: [],
+                    currentNumberOfTransaction:0,
+                    loading: true
                 }
             }
             default: {

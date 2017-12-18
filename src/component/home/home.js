@@ -6,8 +6,8 @@ import {connect} from 'react-redux';
 import * as _ from "lodash";
 import Menu from './menu';
 
-import {getProduct} from '../../action/product';
-import {getPayment, getTransaction} from '../../action/transaction';
+import {getProduct,getDiscount} from '../../action/product';
+import {getPayment, getTransaction,countTransaction} from '../../action/transaction';
 
 class Home extends React.Component {
     constructor(props) {
@@ -18,18 +18,16 @@ class Home extends React.Component {
 
     }
 
-    componentWillMount() {
+    async componentWillMount() {
         //console.warn(JSON.stringify(this.props.account));
         let {access_token} = this.props.account;
+        let a = await this.props.countTransaction(access_token);
         this.props.getProduct(access_token);
         this.props.getPayment(access_token);
-        // this.props.getTransaction(access_token,10,0);
+        this.props.getDiscount(access_token);
+         this.props.getTransaction(access_token,10,0);
     }
 
-    async getProduct() {
-        // console.warn(JSON.stringify(this.props.account.access_token));
-
-    }
 
     shouldComponentUpdate(nextProps, nextState) {
         const changeRoute = this.props.currentRoute !== nextProps.currentRoute;
@@ -70,6 +68,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
     getProduct,
     getTransaction,
-    getPayment
+    getPayment,
+    getDiscount,
+    countTransaction
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

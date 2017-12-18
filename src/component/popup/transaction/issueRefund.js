@@ -22,7 +22,7 @@ class Charge extends React.Component {
         this.state = {
             width: width * 30 / 100,
             height,
-            amount: this.props.refundInfo !== null ? this.props.refundInfo.amount: 0,
+            amount: this.props.refundInfo !== null ? this.props.refundInfo.amount : 0,
             reason: '',
             onProgressing: false,
             listReason: ["Hoàn tiền", "Đổi hàng", "Thanh toán nhầm"]
@@ -55,7 +55,15 @@ class Charge extends React.Component {
 
                     });
                 if (a.status < 400) {
-                    this.props.closePopup();
+                    Alert.alert(
+                        'Thành công',
+                        'Bạn đã hoàn trả thành công !',
+                        [
+                            {text: 'OK', onPress: () => this.props.closePopup()},
+                        ],
+                        {cancelable: false}
+                    );
+
                 }
                 else
                     Alert.alert("Thất bại", "Đã có lỗi xảy ra !!");
@@ -67,6 +75,18 @@ class Charge extends React.Component {
         } catch (e) {
             console.warn(e)
         }
+    }
+
+    askForRefund() {
+        Alert.alert(
+            'Hoàn trả',
+            'Bạn có muốn thực hiện hoàn trả này không ?',
+            [
+                {text: 'Không'},
+                {text: 'OK', onPress: () => this.onRefund()},
+            ],
+            {cancelable: true}
+        );
     }
 
     render() {
@@ -111,7 +131,7 @@ class Charge extends React.Component {
                     </View>
 
                     <TouchableWithoutFeedback onPress={() => {
-                        this.onRefund()
+                        this.askForRefund()
                     }}>
                         <View style={styleHome.modalButtonSubmit}>
 
@@ -143,7 +163,7 @@ class Charge extends React.Component {
                             })
                         }}
                         placeholder={"lý do khác"}
-                        defaultValue={this.props.refundInfo !== null ? this.props.refundInfo.reason[0].name: ""}
+                        defaultValue={this.props.refundInfo !== null ? this.props.refundInfo.reason[0].name : ""}
                     />
                 </View>
                 {

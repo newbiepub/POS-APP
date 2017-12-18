@@ -1,6 +1,6 @@
 import React from "react";
-import {ScrollView, View, Dimensions, TouchableWithoutFeedback, Text, ActivityIndicator,} from "react-native";
-import {TextInputNormal, TextLarge, TextInputPriceMask, TextNormal} from '../../reusable/text';
+import {ScrollView, View, Dimensions, TouchableWithoutFeedback, Alert, ActivityIndicator, FlatList} from "react-native";
+import {TextInputNormal, TextLarge, TextInputPriceMask, TextNormal, TextSmall} from '../../reusable/text';
 import styleBase from "../../style/base";
 import styleHome from '../../style/home';
 import {numberwithThousandsSeparator} from '../../reusable/function';
@@ -12,8 +12,9 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
 import PriceGrid from '../../home/product/price/priceGrid';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-import {createTransaction} from '../../../action/transaction';
+import {createTransaction, getTransaction} from '../../../action/transaction';
 import {clearCart} from '../../../action/cart';
+
 class Charge extends React.Component {
     constructor(props) {
         super(props);
@@ -28,7 +29,8 @@ class Charge extends React.Component {
             paymentMethod: this.props.paymentMethod[0],
             paymentStatus: this.props.paymentStatus[0],
             description: '',
-            onProgressing: false
+            onProgressing: false,
+            tax: this.props.tax
         }
 
     }
@@ -37,18 +39,20 @@ class Charge extends React.Component {
         let itemInCart = this.state.productItems;
         let totalPrice = 0;
         this.props.cart.forEach(async (item) => {
-            await  itemInCart.push({
-                name: item.name,
-                price: item.price,
+            await itemInCart.push({
+                name: item.hasOwnProperty("productInfo") && item.productCharge._id !== item.productInfo._id ? `${item.productInfo.name}(${item.productCharge.name})` : item.productCharge.name,
+                price: item.productCharge.price,
                 quantity: item.quantity,
-                unit: item.unit,
+                unit: item.productCharge.unit,
+                discount: item.discount,
+                totalPrice: item.totalPrice
             });
             totalPrice += await item.totalPrice;
         });
 
         setTimeout(() => {
             this.setState({
-                totalPrice: totalPrice,
+                totalPrice: totalPrice + (totalPrice * this.props.tax / 100),
             })
         }, 0)
 
@@ -62,20 +66,27 @@ class Charge extends React.Component {
             productItems: this.state.productItems,
             totalPrice: this.state.totalPrice,
             paymentMethod: this.state.paymentMethod,
+            tax: this.state.tax,
             paymentStatus: this.state.paymentStatus,
             description: this.state.description,
             type: 'Thu'
         };
         let {access_token} = this.props.account;
         let result = await this.props.createTransaction(access_token, transaction);
-        console.warn(JSON.stringify(result));
-        if (result === false) {
-            console.warn("loi tao giao dich")
-        } else {
-            this.closePopup();
+        if (result.status < 400) {
             this.props.clearCart();
-            console.warn(result._bodyInit)
+            Alert.alert(
+                'Thành công',
+                'Bạn đã thanh toán thành công !',
+                [
+                    {text: 'OK', onPress: () => this.props.closePopup()},
+                ],
+                {cancelable: false}
+            )
+
         }
+        else
+            Alert.alert("Thất bại", "Đã có lỗi xảy ra !!");
     }
 
     closePopup() {
@@ -123,6 +134,19 @@ class Charge extends React.Component {
                     </View>
                     {this.state.currentView === 'Main' &&
                     <TouchableWithoutFeedback onPress={() => {
+                        this.setState({
+                            currentView: 'Preview'
+                        })
+                    }}>
+                        <View style={styleHome.modalButtonSubmit}>
+
+                            <TextLarge style={[styleHome.modalButtonSubmitFont]}>Tiếp theo</TextLarge>
+                        </View>
+                    </TouchableWithoutFeedback>
+                    }
+
+                    {this.state.currentView === 'Preview' &&
+                    <TouchableWithoutFeedback onPress={() => {
                         this.onCharge()
                     }}>
                         <View style={styleHome.modalButtonSubmit}>
@@ -152,6 +176,11 @@ class Charge extends React.Component {
                         this.state.currentView === "PaymentMethod" &&
                         <PaymentMethod instant={this} paymentMethod={this.props.paymentMethod}/>
                     }
+                    {
+                        this.state.currentView === "Preview" &&
+                        <PreviewCharge instant={this}/>
+                    }
+
 
                 </View>
                 {
@@ -303,10 +332,128 @@ class PaymentMethod extends React.Component {
     }
 }
 
+class PreviewCharge extends React.PureComponent {
+    _renderItem = ({item, index}) => (
+        <View>
+            <View style={[styleHome.itemBar]}>
+                <View style={[styleHome.itemBarIcon]}>
+                    <TextNormal style={styleBase.background2}>{item.name.substr(0, 2)}</TextNormal>
+                </View>
+                <View style={[styleHome.itemBarTitle]}>
+                    <View style={{flex: 1}}>
+                        <TextSmall>{item.name}</TextSmall>
+                        {
+                            item.quantity > 1 &&
+                            <TextSmall style={[styleBase.color6]}>x{item.quantity}</TextSmall>
+                        }
+                    </View>
+                    <TextSmall> {numberwithThousandsSeparator(item.totalPrice)}đ</TextSmall>
+                </View>
+            </View>
+            {
+                item.discount.length > 0 &&
+                <View style={styleHome.transactionDiscountItem}>
+                    <View style={{flexDirection: 'row'}}>
+                        <TextSmall style={{flex: 1}}>Giá gốc:</TextSmall>
+                        <TextSmall>{numberwithThousandsSeparator(item.price)}đ</TextSmall>
+                        {
+                            item.quantity > 1 &&
+                            <TextSmall style={[styleBase.color6]}> x{item.quantity}</TextSmall>
+                        }
+                    </View>
+
+                    {
+                        item.discount.map(discount => {
+                            return (
+                                <View key={discount._id} style={{flexDirection: 'row'}}>
+                                    <TextSmall style={{flex: 1}}>Khuyến
+                                        mãi:{discount.name}({discount.value}{discount.type === "percent" ? "%" : "đ"})</TextSmall>
+                                    <TextSmall>-{discount.type === "percent" ? numberwithThousandsSeparator(Math.floor(item.price * item.quantity * discount.value / 100)) : numberwithThousandsSeparator(discount.value * item.quantity)}đ</TextSmall>
+                                </View>
+
+                            )
+                        })
+                    }
+                </View>
+            }
+        </View>
+    );
+
+    render() {
+        let productItems = this.props.instant.state.productItems;
+        let totalPrice = this.props.instant.state.totalPrice;
+        let paymentMethod = this.props.instant.state.paymentMethod;
+        let paymentStatus = this.props.instant.state.paymentStatus;
+        let tax = this.props.instant.state.tax;
+
+        return (
+            <ScrollView style={styleHome.scrollView}>
+                <View style={styleHome.modalItem}>
+                    <TextNormal style={styleHome.transactionItemName}>Thông tin</TextNormal>
+
+                    <View style={styleHome.chargeOption}>
+                        <Ionicons name={"ios-reorder"} style={[styleHome.listTransactionItemIcon]}/>
+                        <TextSmall
+                            style={styleHome.chargeOptionTitle}>Tình
+                            trạng: {paymentStatus}</TextSmall>
+                    </View>
+
+                    <View style={styleHome.chargeOption}>
+                        <Ionicons name={"ios-barcode-outline"}
+                                  style={[styleHome.listTransactionItemIcon]}/>
+                        <TextSmall style={styleHome.chargeOptionTitle}>Hình thức thanh
+                            toán: {paymentMethod}</TextSmall>
+                    </View>
+                </View>
+                <View style={styleHome.modalItem}>
+                    <TextNormal style={styleHome.transactionItemName} l>Hàng</TextNormal>
+                    <FlatList
+                        data={productItems}
+                        extraData={this.state}
+                        initialNumToRender={15}
+                        keyExtractor={(item, index) => index}
+                        renderItem={this._renderItem}
+                    />
+
+                </View>
+                {
+                    tax > 0 &&
+                    <View style={styleHome.modalItem}>
+                        <TextNormal style={styleHome.transactionItemName}>Thuế</TextNormal>
+                        <View style={[styleHome.itemBar]}>
+                            <View style={[styleHome.itemBarIcon]}>
+                                <Ionicons name={"ios-paper-outline"} style={styleBase.vector26}/>
+                            </View>
+                            <View style={[styleHome.itemBarTitle]}>
+                                <TextSmall style={{flex: 1}}>Thuế</TextSmall>
+                                <TextSmall> {tax}%</TextSmall>
+                            </View>
+                        </View>
+                    </View>
+                }
+
+                <View style={styleHome.modalItem}>
+                    <TextNormal style={styleHome.transactionItemName}>Tổng</TextNormal>
+                    <View style={[styleHome.itemBar]}>
+                        <View style={[styleHome.itemBarIcon]}>
+                            <Ionicons name={"ios-paper-outline"} style={styleBase.vector26}/>
+                        </View>
+                        <View style={[styleHome.itemBarTitle]}>
+                            <TextSmall style={{flex: 1}}>Tổng tiền</TextSmall>
+                            <TextSmall> {numberwithThousandsSeparator(totalPrice)}đ</TextSmall>
+                        </View>
+                    </View>
+                </View>
+            </ScrollView>
+        )
+    }
+}
+
 const mapDispatchToProps = {
     closePopup,
     createTransaction,
-    clearCart
+    clearCart,
+    getTransaction
 };
 const mapStateToProps = (state) => {
     return {
@@ -314,6 +461,7 @@ const mapStateToProps = (state) => {
         cart: state.cart.currentCart,
         paymentMethod: state.transaction.paymentMethod,
         paymentStatus: state.transaction.paymentStatus,
+        tax: state.transaction.tax
     }
 };
 

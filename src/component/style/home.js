@@ -205,6 +205,23 @@ const styleHome = EStyleSheet.create({
         width: '$font16',
 
     },
+    transactionButton:{
+        padding: 15,
+        borderWidth: 1,
+        borderColor: '#e3e3e3',
+        backgroundColor: '$color5',
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop:'$widthSize',
+        flex:1
+    },
+    transactionDiscountItem:{
+        marginLeft:"$widthSize",
+        padding: 15,
+        borderWidth: 1,
+        borderTopWidth:0,
+        borderColor: '#e3e3e3',
+    },
 // Charge Modal
     chargeContent: {
         padding: 20,
@@ -247,7 +264,8 @@ const styleHome = EStyleSheet.create({
         paddingHorizontal: 15,
         flexDirection: 'row',
         backgroundColor: '$color4',
-        flex: 1
+        flex: 1,
+        width: '$widthSize'
     },
     buttonDelete: {
         paddingVertical: 15,

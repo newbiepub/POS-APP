@@ -12,7 +12,7 @@ function addToCart(currentCart, product) {
 
         for (item of currentCart) {
 
-            if (product.oldId === item._id) {
+            if (product.oldId === item.productCharge._id && product.oldId !== product.productCharge._id) {
                 currentCart.splice(currentCart.indexOf(item), 1);
                 break;
             }
@@ -20,11 +20,9 @@ function addToCart(currentCart, product) {
     }
     for (item of currentCart) {
 
-        if (product._id === item._id) {
-            {
-                item.hasOwnProperty("productData") ? item.productData = item.productData : null
-            }
-            return item.quantity = product.quantity, item.totalPrice = product.totalPrice;
+        if (product.productCharge._id === item.productCharge._id) {
+            return item.quantity = product.quantity, item.totalPrice = product.totalPrice, item.productCharge = product.productCharge, item.discount =
+                product.discount, item.productInfo = product.productInfo;
 
         }
     }
@@ -35,7 +33,7 @@ function addToCart(currentCart, product) {
 function removeItemInCart(currentCart, id) {
     for (item of currentCart) {
 
-        if (id === item._id) {
+        if (id === item.productCharge._id) {
             currentCart.splice(currentCart.indexOf(item), 1);
             break;
         }

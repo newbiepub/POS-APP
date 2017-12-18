@@ -7,7 +7,9 @@ import {
     TouchableOpacity,
     ScrollView,
     SectionList,
-    ActivityIndicator
+    ActivityIndicator,
+    Alert,
+    RefreshControl
 } from "react-native";
 import {TextLarge, TextNormal, TextInputNormal, TextSmall} from '../../reusable/text';
 import styleHome from "../../style/home";
@@ -16,7 +18,7 @@ import {connect} from 'react-redux';
 import Entypo from 'react-native-vector-icons/Entypo';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {getTransaction, countTransaction} from '../../../action/transaction';
+import {getTransaction, countTransaction, commitPurchase, cleanTransaction} from '../../../action/transaction';
 import {openPopup, renderPopup} from '../../../action/popup';
 import CreateModifyProductPopup from '../../popup/product/createModifyProduct';
 import CreateCategory from '../../popup/product/createCategory';
@@ -29,10 +31,12 @@ class Transaction extends React.Component {
         super(props);
         this.state = {
             searchText: '',
-            transaction: [],
             selectedTransaction: {},
             isLoadmore: false,
-            limit: 10
+            limit: 10,
+            refreshing: false,
+            currentDiscount: []
+
         }
     }
 
@@ -40,7 +44,8 @@ class Transaction extends React.Component {
         const transactionChanged = this.props.transaction !== nextProps.transaction;
         const selectedTransactionChanged = this.state.selectedTransaction !== nextState.selectedTransaction;
         const loadingChanged = this.state.isLoadmore !== nextState.isLoadmore;
-        return transactionChanged || selectedTransactionChanged || loadingChanged
+        const refreshChanged = this.state.refreshing !== nextState.refreshing;
+        return transactionChanged || selectedTransactionChanged || loadingChanged || refreshChanged
     }
 
 
@@ -63,55 +68,40 @@ class Transaction extends React.Component {
         )
     }
 
-    async componentWillMount() {
-        if (this.props.transaction.length === 0) {
-            let {access_token} = this.props.account;
-            let a = await this.props.countTransaction(access_token);
-            a = await this.props.getTransaction(access_token, 10, 0);
 
+    componentWillReceiveProps(nextProps) {
+        if (this.state.selectedTransaction = {} && nextProps.transaction.length > 0) {
+            this.setState({
+                selectedTransaction: nextProps.transaction[0].data[0],
+            })
         }
+    }
 
-        this.setState({
-            selectedTransaction: this.props.transaction[0].data[0]
-        })
+    onPurchase() {
+        let {access_token} = this.props.account;
+        Alert.alert(
+            'Xác nhận thanh toán',
+            'Bán có muốn xác nhận thanh toán giao dịch này không ?',
+            [
+                {text: 'Không', style: 'cancel'},
+                {
+                    text: 'OK', onPress: () => {
+                    this.props.commitPurchase(access_token, this.state.selectedTransaction._id);
+
+                }
+                },
+            ],
+            {cancelable: true}
+        );
     }
 
     getTitleDate(date) {
-        let getDay = () => {
-            if (moment(date).format('dddd') === "Monday") {
-                return "Thứ hai"
-            }
-            if (moment(date).format('dddd') === "Tuesday") {
-                return "Thứ ba"
-            }
-            if (moment(date).format('dddd') === "Wednesday") {
-                return "Thứ tư"
-            }
-            if (moment(date).format('dddd') === "Thursday") {
-                return "Thứ năm"
-            }
-            if (moment(date).format('dddd') === "Friday") {
-                return "Thứ sáu"
-            }
-            if (moment(date).format('dddd') === "Saturday") {
-                return "Thứ bảy"
-            }
-            if (moment(date).format('dddd') === "Sunday") {
-                return "Chủ nhật"
-            }
-        };
-        return moment(date).format(`[${getDay()},]DD [tháng] 12 [năm] YYYY `)
+
+        return moment(date).format(`dddd,DD [tháng] 12 [năm] YYYY `)
     }
 
     getTime(date) {
-        let retrunSection = () => {
-            if (moment(date).format('a') === 'pm') {
-                return 'ch'
-            } else {
-                return 'sa'
-            }
-        };
-        return moment(date).format(`hh:mm [${retrunSection()}]`)
+        return moment(date).format(`hh:mm a`)
     }
 
     previewListItemInTransaction(productItems) {
@@ -129,21 +119,59 @@ class Transaction extends React.Component {
 
     }
 
+    _onRefresh() {
+        this.setState({refreshing: true});
+        let a = this.props.cleanTransaction();
+        let {access_token} = this.props.account;
+        let b = this.props.getTransaction(access_token, 10, 0);
+        this.setState({refreshing: false});
+    }
+
     _renderItem = ({item, index}) => (
-        <View style={[styleHome.itemBar]}>
-            <View style={[styleHome.itemBarIcon]}>
-                <TextNormal style={styleBase.background2}>{item.name.substr(0, 2)}</TextNormal>
+        <View>
+            <View style={[styleHome.itemBar]}>
+                <View style={[styleHome.itemBarIcon]}>
+                    <TextNormal style={styleBase.background2}>{item.name.substr(0, 2)}</TextNormal>
+                </View>
+
+                <View style={[styleHome.itemBarTitle]}>
+                    <View style={{flex: 1}}>
+                        <TextSmall>{item.name}</TextSmall>
+                        {
+                            item.quantity > 1 &&
+                            <TextSmall style={[styleBase.color6]}>x{item.quantity}</TextSmall>
+                        }
+                    </View>
+                    <TextSmall> {numberwithThousandsSeparator(item.totalPrice)}đ</TextSmall>
+                </View>
+
             </View>
-            <View style={[styleHome.itemBarTitle]}>
-                <View style={{flex: 1}}>
-                    <TextSmall>{item.name}</TextSmall>
+            {
+                item.discount.length > 0 &&
+                <View style={styleHome.transactionDiscountItem}>
+                    <View style={{flexDirection: 'row'}}>
+                        <TextSmall style={{flex: 1}}>Giá gốc:</TextSmall>
+                        <TextSmall>{numberwithThousandsSeparator(item.price)}đ</TextSmall>
+                        {
+                            item.quantity > 1 &&
+                            <TextSmall style={[styleBase.color6]}> x{item.quantity}</TextSmall>
+                        }
+                    </View>
+
                     {
-                        item.quantity > 1 &&
-                        <TextSmall style={[styleBase.color6]}>x{item.quantity}</TextSmall>
+                        item.discount.map(discount => {
+                            return (
+                                <View key={discount._id} style={{flexDirection: 'row'}}>
+                                    <TextSmall style={{flex: 1}}>Khuyến
+                                        mãi:{discount.name}({discount.value}{discount.type === "percent" ? "%" : "đ"})</TextSmall>
+                                    <TextSmall>-{discount.type === "percent" ? numberwithThousandsSeparator(Math.floor(item.price * item.quantity * discount.value / 100)) : numberwithThousandsSeparator(discount.value * item.quantity)}đ</TextSmall>
+                                </View>
+
+                            )
+                        })
                     }
                 </View>
-                <TextSmall> {numberwithThousandsSeparator(item.price)}đ</TextSmall>
-            </View>
+            }
         </View>
     );
 
@@ -180,6 +208,7 @@ class Transaction extends React.Component {
     );
 
     render() {
+
         return (
             <View style={[styleBase.container, styleBase.background4, {flexDirection: 'row'}]}>
                 {/*----------------leftSide--------------------*/}
@@ -221,6 +250,12 @@ class Transaction extends React.Component {
                                     <ActivityIndicator size={"large"}/>
                                 </View> :
                                 <SectionList
+                                    refreshControl={
+                                        <RefreshControl
+                                            refreshing={this.state.refreshing}
+                                            onRefresh={this._onRefresh.bind(this)}
+                                        />
+                                    }
                                     renderItem={this._renderListTransactionBody}
                                     renderSectionHeader={this._renderListTransactionHeader}
                                     keyExtractor={(item) => item._id}
@@ -229,8 +264,12 @@ class Transaction extends React.Component {
                                     }}
                                     onEndReachedThreshold={0.1}
                                     sections={this.props.transaction}
+                                    ListEmptyComponent={() => <View style={[styleBase.center, {flex: 1}]}>
+                                        <TextNormal>Không có giao dịch</TextNormal>
+                                    </View>}
                                 />
                         }
+
                         {
                             this.state.isLoadmore &&
                             <View>
@@ -259,12 +298,27 @@ class Transaction extends React.Component {
                             this.state.selectedTransaction.hasOwnProperty("productItems")
                             &&
                             <ScrollView style={styleHome.scrollView}>
-                                <TouchableOpacity onPress={() => {
-                                    this.openIssueRefundPopup()
-                                }}
-                                                  style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center, styleHome.marginTop]}>
-                                    <TextNormal style={[styleBase.color2]}>Hoàn trả</TextNormal>
-                                </TouchableOpacity>
+                                <View style={{flexDirection: 'row'}}>
+                                    {
+                                        !this.state.selectedTransaction.hasOwnProperty("issue_refund") &&
+                                        <TouchableOpacity onPress={() => {
+                                            this.openIssueRefundPopup()
+                                        }}
+                                                          style={[styleHome.transactionButton, this.state.selectedTransaction.paymentStatus !== "Đã Thanh Toán" && {marginRight: 15}]}>
+                                            <TextNormal style={[styleBase.color2]}>Hoàn trả</TextNormal>
+                                        </TouchableOpacity>
+                                    }
+                                    {
+                                        this.state.selectedTransaction.paymentStatus !== "Đã Thanh Toán" &&
+                                        <TouchableOpacity onPress={() => {
+                                            this.onPurchase()
+                                        }}
+                                                          style={[styleHome.transactionButton, !this.state.selectedTransaction.hasOwnProperty("issue_refund") && {marginLeft: 15}]}>
+                                            <TextNormal style={[styleBase.color2]}>Xác nhận thanh toán</TextNormal>
+                                        </TouchableOpacity>
+                                    }
+                                </View>
+
                                 <View style={styleHome.modalItem}>
                                     <TextNormal style={styleHome.transactionItemName}>Thông tin</TextNormal>
                                     <View style={styleHome.chargeOption}>
@@ -292,14 +346,14 @@ class Transaction extends React.Component {
                                     <View style={styleHome.modalItem}>
                                         <TextNormal style={styleHome.transactionItemName} l>Hoàn trả</TextNormal>
                                         <View style={styleHome.chargeOption}>
-                                            {/*<Ionicons name={"ios-barcode-outline"}*/}
-                                            {/*style={[styleHome.listTransactionItemIcon]}/>*/}
+                                            <TextSmall style={styleHome.chargeOptionTitle}>Ngày hoàn
+                                                trả: {this.getTitleDate(this.state.selectedTransaction.issue_refund.refundDate) + " " + this.getTime(this.state.selectedTransaction.issue_refund.refundDate)}</TextSmall>
+                                        </View>
+                                        <View style={styleHome.chargeOption}>
                                             <TextSmall style={styleHome.chargeOptionTitle}>Số tiền hoàn
                                                 trả: {numberwithThousandsSeparator(this.state.selectedTransaction.issue_refund.amount)}đ</TextSmall>
                                         </View>
                                         <View style={styleHome.chargeOption}>
-                                            {/*<Ionicons name={"ios-barcode-outline"}*/}
-                                            {/*style={[styleHome.listTransactionItemIcon]}/>*/}
                                             <TextSmall style={styleHome.chargeOptionTitle}>Lý
                                                 do: {this.state.selectedTransaction.issue_refund.reason[0].name}</TextSmall>
                                         </View>
@@ -318,6 +372,21 @@ class Transaction extends React.Component {
                                     />
 
                                 </View>
+                                {
+                                    this.state.selectedTransaction.tax > 0 &&
+                                    <View style={styleHome.modalItem}>
+                                        <TextNormal style={styleHome.transactionItemName}>Thuế</TextNormal>
+                                        <View style={[styleHome.itemBar]}>
+                                            <View style={[styleHome.itemBarIcon]}>
+                                                <Ionicons name={"ios-paper-outline"} style={styleBase.vector26}/>
+                                            </View>
+                                            <View style={[styleHome.itemBarTitle]}>
+                                                <TextSmall style={{flex: 1}}>Thuế</TextSmall>
+                                                <TextSmall> {this.state.selectedTransaction.tax}%</TextSmall>
+                                            </View>
+                                        </View>
+                                    </View>
+                                }
                                 <View style={styleHome.modalItem}>
                                     <TextNormal style={styleHome.transactionItemName}>Tổng</TextNormal>
                                     <View style={[styleHome.itemBar]}>
@@ -347,13 +416,15 @@ const mapStateToProps = (state) => {
         transaction: state.transaction.transaction,
         transactionLoading: state.transaction.loading,
         transactionAmount: state.transaction.transactionAmount,
-        currentNumberOfTransaction: state.transaction.currentNumberOfTransaction
+        currentNumberOfTransaction: state.transaction.currentNumberOfTransaction,
     }
 };
 const mapDispatchToProps = {
     openPopup,
     renderPopup,
     getTransaction,
-    countTransaction
+    countTransaction,
+    commitPurchase,
+    cleanTransaction
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Transaction);

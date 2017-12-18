@@ -29,6 +29,26 @@ function getTransactionAction(payload) {
     }
 }
 
+function setTaxAction(payload) {
+    return {
+        type: TRANSACTION.SET_TAX,
+        payload
+    }
+}
+
+function commitPurchaseAction(payload) {
+    return {
+        type: TRANSACTION.COMMIT_PURCHASE,
+        payload
+    }
+}
+
+function cleanTransactionAction() {
+    return {
+        type: TRANSACTION.CLEAN_TRANSACTION,
+    }
+}
+
 export function getPayment(access_token) {
     return async (dispatch, getState) => {
         return new Promise(async (resolve, reject) => {
@@ -67,6 +87,22 @@ export function getTransaction(access_token, limit, skip) {
         })
     }
 }
+
+export function cleanTransaction() {
+    return async (dispatch, getState) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                dispatch(cleanTransactionAction());
+                resolve(true);
+            } catch (e) {
+                console.warn(e);
+                reject(false)
+            }
+
+        })
+    }
+}
+
 export function countTransaction(access_token) {
     return async (dispatch, getState) => {
         return new Promise(async (resolve, reject) => {
@@ -101,6 +137,11 @@ export function createTransaction(access_token, data) {
                         transaction: data,
                     })
                 });
+                if (result.status < 400) {
+                    await dispatch(cleanTransaction());
+                    await dispatch(countTransaction(access_token));
+                    dispatch(getTransaction(access_token, 10, 0))
+                }
                 resolve(result)
             } catch (e) {
                 console.warn(e);
@@ -110,6 +151,7 @@ export function createTransaction(access_token, data) {
         })
     }
 }
+
 export function issueRefund(access_token, data) {
     return async (dispatch, getState) => {
         return new Promise(async (resolve, reject) => {
@@ -126,6 +168,7 @@ export function issueRefund(access_token, data) {
                         refund: data,
                     })
                 });
+                console.warn(JSON.stringify(result));
                 resolve(result)
             } catch (e) {
                 console.warn(e);
@@ -133,5 +176,47 @@ export function issueRefund(access_token, data) {
             }
 
         })
+    }
+}
+
+export function commitPurchase(access_token, id) {
+    return async (dispatch, getState) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+
+                let {api} = url;
+                let result = await fetch(`${api}/api/transaction/commitPurchase?access_token=${access_token}&id=${id}`)
+                result = await result.json();
+                if (result.status < 400) {
+                    dispatch(commitPurchaseAction(id));
+                    resolve(result);
+                }
+
+            } catch (e) {
+                console.warn(e);
+                reject(false)
+            }
+
+        })
+    }
+}
+
+export function setTax(taxValue) {
+    return async (dispatch) => {
+        return new Promise((resolve, reject) => {
+            try {
+                if (taxValue >= 0 && taxValue <= 100) {
+                    dispatch(setTaxAction(taxValue));
+                    resolve(true)
+                } else {
+                    reject(false)
+                }
+
+            } catch (e) {
+                console.warn(e);
+                reject(false)
+            }
+        })
+
     }
 }
