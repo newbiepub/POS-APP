@@ -55,7 +55,7 @@ class Popup extends React.PureComponent {
                         <View
                             style={[styleBase.overlay, {position: 'absolute'}]}/>
                     </TouchableWithoutFeedback>
-                    <Animate.View animation={"bounceIn"} duration={300}
+                    <Animate.View animation={"zoomIn"} duration={500}
                                   style={[styleBase.container, styleBase.background4, {
                                       width: this.state.width> 800 ?  this.state.width * 85 / 100 : this.state.width,
                                       alignSelf: 'center'

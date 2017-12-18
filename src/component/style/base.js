@@ -10,6 +10,10 @@ const styleBase = EStyleSheet.create({
         backgroundColor: '#f4ad42'
     },
 
+    // Error and Warn
+    backgroundError: {
+        backgroundColor: "#d64242"
+    },
     //Blue
     color2: {
         color: '#6893d8'
@@ -48,8 +52,8 @@ const styleBase = EStyleSheet.create({
     container: {
         flex: 1
     },
-    bold:{
-      fontWeight:"600"
+    bold: {
+        fontWeight: "600"
     },
     fillParent: {
         position: "absolute",
@@ -87,6 +91,10 @@ const styleBase = EStyleSheet.create({
     borderBottomE5: {
         borderColor: "#e5e5e5", borderBottomWidth: 1
     },
+    borderRightE5: {
+        borderColor: "#e5e5e5",
+        borderRightWidth: 1
+    },
     overlay: {
         flex: 1,
         backgroundColor: "rgba(0,0,0,0.35)",
@@ -95,6 +103,9 @@ const styleBase = EStyleSheet.create({
         left: 0,
         bottom: 0,
         right: 0
+    },
+    width60: {
+        width: "60%"
     },
     vector14: {
         fontSize: 14,
@@ -136,6 +147,9 @@ const styleBase = EStyleSheet.create({
     },
     textE5: {
         color: "#e5e5e5"
+    },
+    textWhite: {
+        color: "#fff"
     },
     '@media (min-width: 768) and (max-width: 1024)': {
 

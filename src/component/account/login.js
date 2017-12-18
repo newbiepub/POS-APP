@@ -1,15 +1,15 @@
 import React, {PureComponent} from "react";
 import {
-    View,
+    ActivityIndicator,
     Dimensions,
     Image,
+    InteractionManager,
+    Platform,
+    ScrollView,
     Text,
     TextInput,
-    ScrollView,
     TouchableOpacity,
-    Platform,
-    ActivityIndicator,
-    InteractionManager
+    View
 } from "react-native";
 import * as Responsive from "react-native-responsive-dimensions";
 import styleBase from "../style/base";

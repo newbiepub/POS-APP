@@ -32,7 +32,7 @@ class LoadingOverlay extends React.Component {
             loadingIndicator =
                 <View style={[styleBase.overlay, styleBase.center, {backgroundColor: "rgba(0,0,0,0.85)"}]}>
                     <ActivityIndicator size="large"/>
-                    <Text style={[styleBase.font18, {marginTop: 15}]}>
+                    <Text style={[styleBase.font18, styleBase.textWhite, {marginTop: 15}]}>
                         {this.props.message}
                     </Text>
                 </View>

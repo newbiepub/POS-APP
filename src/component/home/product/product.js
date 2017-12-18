@@ -24,6 +24,7 @@ import CreateCategory from '../../popup/product/createCategory';
 import styleProduct from "../../style/product";
 import * as Animate from "react-native-animatable";
 import Swipeable from "../../swipeableList/swipeableList";
+import {numberwithThousandsSeparator} from "../../reusable/function";
 
 const TouchableOpacityAnimate = Animate.createAnimatableComponent(TouchableOpacity);
 
@@ -322,7 +323,7 @@ class ProductItem extends React.PureComponent {
                             </View>
                             <View style={[styleHome.itemBarTitle]}>
                                 <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
-                                <TextSmall> {item.price} giá</TextSmall>
+                                <TextSmall> {numberwithThousandsSeparator(item.price)} giá</TextSmall>
                             </View>
                         </View>
                     </TouchableWithoutFeedback>
