@@ -216,7 +216,6 @@ const styleHome = EStyleSheet.create({
         flex:1
     },
     transactionDiscountItem:{
-        marginLeft:"$widthSize",
         padding: 15,
         borderWidth: 1,
         borderTopWidth:0,

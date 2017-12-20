@@ -9,6 +9,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import ViewProduct from '../../popup/product/viewProduct';
 import {connect} from "react-redux";
 import {openPopup, renderPopup} from '../../../action/popup';
+import {numberwithThousandsSeparator} from '../../reusable/function';
 
 class Library extends React.PureComponent {
     constructor(props) {
@@ -218,7 +219,7 @@ class LibraryItems extends React.PureComponent {
                 </View>
                 <View style={[styleHome.itemBarTitle]}>
                     <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
-                    <TextSmall> {item.price} giá</TextSmall>
+                    <TextSmall> {item.allPrices.length >1 ? item.allPrices.length + " giá" : numberwithThousandsSeparator(item.price)+"đ" }</TextSmall>
                 </View>
             </View>
         </TouchableWithoutFeedback>

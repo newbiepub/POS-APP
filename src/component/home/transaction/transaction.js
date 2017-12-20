@@ -25,7 +25,7 @@ import CreateCategory from '../../popup/product/createCategory';
 import {numberwithThousandsSeparator} from '../../reusable/function';
 import moment from '../../momentJs';
 import IssueRefund from '../../popup/transaction/issueRefund';
-
+import * as Animate from "react-native-animatable";
 class Transaction extends React.Component {
     constructor(props) {
         super(props);
@@ -44,8 +44,7 @@ class Transaction extends React.Component {
         const transactionChanged = this.props.transaction !== nextProps.transaction;
         const selectedTransactionChanged = this.state.selectedTransaction !== nextState.selectedTransaction;
         const loadingChanged = this.state.isLoadmore !== nextState.isLoadmore;
-        const refreshChanged = this.state.refreshing !== nextState.refreshing;
-        return transactionChanged || selectedTransactionChanged || loadingChanged || refreshChanged
+        return transactionChanged || selectedTransactionChanged || loadingChanged
     }
 
 
@@ -106,73 +105,29 @@ class Transaction extends React.Component {
 
     previewListItemInTransaction(productItems) {
         let items = "";
-        let i = 0;
+        //let i = 0;
 
         for (data of productItems) {
             items = (items !== "" ? items + ", " : "" ) + data.name;
-            i++;
-            if (i === productItems.length) {
-                return items
-            }
+            //  i++;
+            // if (i === productItems.length) {
+            //
+            // }
         }
 
-
+        return items
     }
 
     _onRefresh() {
-        this.setState({refreshing: true});
+        //this.setState({refreshing: true});
         let a = this.props.cleanTransaction();
         let {access_token} = this.props.account;
         let b = this.props.getTransaction(access_token, 10, 0);
-        this.setState({refreshing: false});
+        //this.setState({refreshing: false});
     }
 
     _renderItem = ({item, index}) => (
-        <View>
-            <View style={[styleHome.itemBar]}>
-                <View style={[styleHome.itemBarIcon]}>
-                    <TextNormal style={styleBase.background2}>{item.name.substr(0, 2)}</TextNormal>
-                </View>
-
-                <View style={[styleHome.itemBarTitle]}>
-                    <View style={{flex: 1}}>
-                        <TextSmall>{item.name}</TextSmall>
-                        {
-                            item.quantity > 1 &&
-                            <TextSmall style={[styleBase.color6]}>x{item.quantity}</TextSmall>
-                        }
-                    </View>
-                    <TextSmall> {numberwithThousandsSeparator(item.totalPrice)}đ</TextSmall>
-                </View>
-
-            </View>
-            {
-                item.discount.length > 0 &&
-                <View style={styleHome.transactionDiscountItem}>
-                    <View style={{flexDirection: 'row'}}>
-                        <TextSmall style={{flex: 1}}>Giá gốc:</TextSmall>
-                        <TextSmall>{numberwithThousandsSeparator(item.price)}đ</TextSmall>
-                        {
-                            item.quantity > 1 &&
-                            <TextSmall style={[styleBase.color6]}> x{item.quantity}</TextSmall>
-                        }
-                    </View>
-
-                    {
-                        item.discount.map(discount => {
-                            return (
-                                <View key={discount._id} style={{flexDirection: 'row'}}>
-                                    <TextSmall style={{flex: 1}}>Khuyến
-                                        mãi:{discount.name}({discount.value}{discount.type === "percent" ? "%" : "đ"})</TextSmall>
-                                    <TextSmall>-{discount.type === "percent" ? numberwithThousandsSeparator(Math.floor(item.price * item.quantity * discount.value / 100)) : numberwithThousandsSeparator(discount.value * item.quantity)}đ</TextSmall>
-                                </View>
-
-                            )
-                        })
-                    }
-                </View>
-            }
-        </View>
+        <TransactionProduct item={item}/>
     );
 
     _renderListTransactionHeader = ({section}) => (
@@ -409,6 +364,84 @@ class Transaction extends React.Component {
     }
 }
 
+class TransactionProduct extends React.PureComponent {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isViewMore: false
+        }
+    }
+
+    render() {
+        let item = this.props.item;
+        return (
+            <View style={[styleHome.box]}>
+                <TouchableWithoutFeedback onPress={()=> {item.discount.length > 0 && this.setState({isViewMore: !this.state.isViewMore})}}>
+                    <View style={[styleHome.itemBar]}>
+                        <View style={[styleHome.itemBarIcon]}>
+                            <TextNormal style={styleBase.background2}>{item.name.substr(0, 2)}</TextNormal>
+                        </View>
+                        <View style={[styleHome.itemBarTitle]}>
+                            <View style={{flex: 1}}>
+                                <TextSmall>{item.name}</TextSmall>
+                                <View style={{flexDirection: 'row'}}>
+                                    {
+                                        item.quantity > 1 &&
+                                        <TextSmall style={[styleBase.color6]}>x{item.quantity} </TextSmall>
+                                    }
+                                    {
+                                        item.discount.length > 0 &&
+                                        <View style={{flexDirection:'row'}}>
+                                            <TextSmall>Khuyến mãi:</TextSmall>
+                                            {
+                                                item.discount.map(discount => {
+                                                    return (
+                                                        <View key={discount._id} style={{flexDirection: 'row'}}>
+                                                            <TextSmall>{discount.name}({discount.value}{discount.type === "percent" ? "%" : "đ"})</TextSmall>
+                                                        </View>
+
+                                                    )
+                                                })
+                                            }
+                                        </View>
+                                    }
+                                </View>
+                            </View>
+                            <TextSmall> {numberwithThousandsSeparator(item.totalPrice)}đ</TextSmall>
+                        </View>
+
+                    </View>
+                </TouchableWithoutFeedback>
+                {
+                    item.discount.length > 0 && this.state.isViewMore &&
+                    <Animate.View style={styleHome.transactionDiscountItem} animation={"bounceIn"} duration={750}>
+                        <View style={{flexDirection: 'row'}}>
+                            <TextSmall style={{flex: 1}}>Giá gốc:</TextSmall>
+                            <TextSmall>{numberwithThousandsSeparator(item.price)}đ</TextSmall>
+                            {
+                                item.quantity > 1 &&
+                                <TextSmall style={[styleBase.color6]}> x{item.quantity}</TextSmall>
+                            }
+                        </View>
+
+                        {
+                            item.discount.map(discount => {
+                                return (
+                                    <View key={discount._id} style={{flexDirection: 'row'}}>
+                                        <TextSmall style={{flex: 1}}>Khuyến
+                                            mãi:{discount.name}({discount.value}{discount.type === "percent" ? "%" : "đ"})</TextSmall>
+                                        <TextSmall>-{discount.type === "percent" ? numberwithThousandsSeparator(Math.floor(item.price * item.quantity * discount.value / 100)) : numberwithThousandsSeparator(discount.value * item.quantity)}đ</TextSmall>
+                                    </View>
+
+                                )
+                            })
+                        }
+                    </Animate.View>
+                }
+            </View>
+        )
+    }
+}
 
 const mapStateToProps = (state) => {
     return {
