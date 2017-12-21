@@ -5,7 +5,7 @@ import styleBase from "../../style/base";
 import styleHome from "../../style/home";
 import style from '../../style/POS';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import Entypo from 'react-native-vector-icons/Entypo';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import ViewProduct from '../../popup/product/viewProduct';
 import {connect} from "react-redux";
 import {openPopup, renderPopup} from '../../../action/popup';
@@ -15,10 +15,14 @@ class Library extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            currentViewLibrary: 'Danh sách',
+            listLibrary: [{id: 'list', name: 'Danh sách'}, {id: 'product', name: 'Mặt hàng'}, {
+                id: 'category', name: 'Loại hàng'
+            }, {id: 'discount', name: 'Khuyến mãi'}, {id: 'previewCategory', name: ''}, {
+                id: 'previewDiscount',
+                name: ''
+            }],
+            currentViewLibrary: {id: 'list', name: 'Danh sách'},
             searchText: '',
-            allProduct: this.props.dataProducts,
-            allDiscount: this.props.dataDiscounts
         }
     }
 
@@ -26,20 +30,27 @@ class Library extends React.PureComponent {
         try {
             let data = [];
             if (this.state.searchText !== '') {
-                if (this.state.currentViewLibrary === 'Danh sách' || this.state.currentViewLibrary === 'Mặt hàng') {
-                    this.state.allProduct.forEach((item) => {
+                if (this.state.currentViewLibrary.id === 'list' || this.state.currentViewLibrary.id === this.state.listLibrary[1].id) {
+                    for (item of this.props.product) {
                         if (item.hasOwnProperty("name") && item.name.includes(this.state.searchText)) {
                             data.push(item)
                         }
-                    });
+                    }
                 }
 
-                if (this.state.currentViewLibrary === 'Danh sách' || this.state.currentViewLibrary === 'Khuyến mãi') {
-                    this.state.allDiscount.forEach((item) => {
+                if (this.state.currentViewLibrary.id === this.state.listLibrary[3].id) {
+                    for (item of this.props.discount) {
                         if (item.hasOwnProperty("name") && item.name.includes(this.state.searchText)) {
                             data.push(item)
                         }
-                    });
+                    }
+                }
+                if (this.state.currentViewLibrary.id === this.state.listLibrary[2].id) {
+                    for (item of this.props.category) {
+                        if (item.hasOwnProperty("name") && item.name.includes(this.state.searchText)) {
+                            data.push(item)
+                        }
+                    }
                 }
             }
             return data;
@@ -51,6 +62,29 @@ class Library extends React.PureComponent {
 
     }
 
+    getProductWithCategory() {
+        let data = [];
+        for (item of this.props.product) {
+            if (this.state.currentViewLibrary.hasOwnProperty("data") && item.categoryId === this.state.currentViewLibrary.data) {
+                data.push(item)
+            }
+        }
+        return data
+    }
+
+    getProductWithDiscount() {
+        let data = [];
+        for (item of this.state.currentViewLibrary.data) {
+            for (product of this.props.product) {
+                if (item._id === product._id) {
+                    data.push(product);
+                    break;
+                }
+            }
+        }
+        return data
+    }
+
     componentWillMount() {
         this.getDataSearch();
     }
@@ -60,18 +94,25 @@ class Library extends React.PureComponent {
             <View style={[styleBase.background4, styleHome.container, styleHome.box]}>
                 {/*------Title------------*/}
                 <TouchableWithoutFeedback onPress={() => {
-                    this.setState({currentViewLibrary: 'Danh sách'})
+                    if (this.state.currentViewLibrary.id === this.state.listLibrary[4].id) {
+                        this.setState({currentViewLibrary: this.state.listLibrary[2]})
+                    } else if (this.state.currentViewLibrary.id === this.state.listLibrary[5].id) {
+                        this.setState({currentViewLibrary: this.state.listLibrary[3]})
+                    } else {
+                        this.setState({currentViewLibrary: this.state.listLibrary[0]})
+                    }
+
                 }}>
                     <View style={styleHome.titleBar}>
 
                         {
-                            this.state.currentViewLibrary !== 'Danh sách' &&
+                            this.state.currentViewLibrary.id !== this.state.listLibrary[0].id &&
                             <EvilIcons name="arrow-left"
                                        style={[styleHome.titleBarIconBack]}/>
                         }
 
                         <TextLarge>
-                            {this.state.currentViewLibrary}
+                            {this.state.currentViewLibrary.name}
                         </TextLarge>
 
 
@@ -99,25 +140,52 @@ class Library extends React.PureComponent {
                     </View>
 
                     {
-                        this.state.currentViewLibrary === 'Danh sách' &&
+                        this.state.currentViewLibrary.id === this.state.listLibrary[0].id &&
                         (
-                            <LibraryHome instant={this} data={this.getDataSearch()}/>
+                            <LibraryHome instant={this} data={this.getDataSearch()}
+                                         openPopup={() => this.props.openPopup()}
+                                         renderPopup={(item) => this.props.renderPopup(item)}/>
                         )
                     }
                     {
-                        this.state.currentViewLibrary === 'Mặt hàng' &&
+                        this.state.currentViewLibrary.id === this.state.listLibrary[1].id &&
                         (
                             <LibraryItems instant={this}
                                           openPopup={() => this.props.openPopup()}
                                           renderPopup={(item) => this.props.renderPopup(item)}
-                                          data={this.state.searchText === '' ? this.state.allProduct : this.getDataSearch()}/>
+                                          data={this.state.searchText === '' ? this.props.product : this.getDataSearch()}/>
                         )
                     }
                     {
-                        this.state.currentViewLibrary === 'Khuyến mãi' &&
+                        this.state.currentViewLibrary.id === this.state.listLibrary[2].id &&
+                        (
+                            <LibraryCategory instant={this}
+                                             data={this.state.searchText === '' ? this.props.category : this.getDataSearch()}/>
+                        )
+                    }
+                    {
+                        this.state.currentViewLibrary.id === this.state.listLibrary[4].id &&
                         (
                             <LibraryItems instant={this}
-                                          data={this.state.searchText === '' ? this.state.allDiscount : this.getDataSearch()}/>
+                                          openPopup={() => this.props.openPopup()}
+                                          renderPopup={(item) => this.props.renderPopup(item)}
+                                          data={this.state.searchText === '' ? this.getProductWithCategory() : this.getDataSearch()}/>
+                        )
+                    }
+                    {
+                        this.state.currentViewLibrary.id === this.state.listLibrary[5].id &&
+                        (
+                            <LibraryItems instant={this}
+                                          openPopup={() => this.props.openPopup()}
+                                          renderPopup={(item) => this.props.renderPopup(item)}
+                                          data={this.state.searchText === '' ? this.getProductWithDiscount() : this.getDataSearch()}/>
+                        )
+                    }
+                    {
+                        this.state.currentViewLibrary.id === this.state.listLibrary[3].id &&
+                        (
+                            <LibraryDiscount instant={this}
+                                             data={this.state.searchText === '' ? this.props.discount : this.getDataSearch()}/>
                         )
                     }
                 </View>
@@ -145,7 +213,7 @@ class LibraryHome extends React.PureComponent {
                         <View>
                             {/*------Items------------*/}
                             <TouchableWithoutFeedback onPress={() => {
-                                this.changeView('Mặt hàng')
+                                this.changeView(this.props.instant.state.listLibrary[1])
                             }}>
                                 <View style={styleHome.itemBar}>
                                     <View style={styleHome.itemBarIcon}>
@@ -161,7 +229,7 @@ class LibraryHome extends React.PureComponent {
                             </TouchableWithoutFeedback>
                             {/*------category------------*/}
                             <TouchableWithoutFeedback onPress={() => {
-                                this.changeView('Loại hàng')
+                                this.changeView(this.props.instant.state.listLibrary[2])
                             }}>
                                 <View style={styleHome.itemBar}>
                                     <View style={styleHome.itemBarIcon}>
@@ -178,7 +246,7 @@ class LibraryHome extends React.PureComponent {
                             </TouchableWithoutFeedback>
                             {/*------discount------------*/}
                             <TouchableWithoutFeedback onPress={() => {
-                                this.changeView('Khuyến mãi')
+                                this.changeView(this.props.instant.state.listLibrary[3])
                             }}>
                                 <View style={styleHome.itemBar}>
                                     <View style={styleHome.itemBarIcon}>
@@ -194,7 +262,8 @@ class LibraryHome extends React.PureComponent {
                                 </View>
                             </TouchableWithoutFeedback>
                         </View> :
-                        <LibraryItems data={this.props.data}/>
+                        <LibraryItems data={this.props.data} openPopup={() => this.props.openPopup()}
+                                      renderPopup={(item) => this.props.renderPopup(item)}/>
                 }
 
             </View>
@@ -211,25 +280,124 @@ class LibraryItems extends React.PureComponent {
         );
         this.props.openPopup();
     }
+
     _renderItem = ({item}) => (
-        <TouchableWithoutFeedback  onPress={() => this.onPressItem(item)}>
+        <TouchableWithoutFeedback onPress={() => this.onPressItem(item)}>
             <View style={[styleHome.itemBar]}>
                 <View style={[styleHome.itemBarIcon]}>
                     <TextNormal style={styleBase.background2}>{item.name.substr(0, 2)}</TextNormal>
                 </View>
                 <View style={[styleHome.itemBarTitle]}>
                     <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
-                    <TextSmall> {item.allPrices.length >1 ? item.allPrices.length + " giá" : numberwithThousandsSeparator(item.price)+"đ" }</TextSmall>
+                    <TextSmall> {item.allPrices.length > 1 ? item.allPrices.length + " giá" : numberwithThousandsSeparator(item.price) + "đ"}</TextSmall>
                 </View>
             </View>
         </TouchableWithoutFeedback>
     );
+
     render() {
 
 
         return (
             <View style={{flex: 1}}>
                 {/*------Items------------*/}
+                {
+                    this.props.data.length > 0 && this.props.data !== undefined ?
+                        <FlatList
+                            data={this.props.data}
+                            extraData={this.state}
+                            initialNumToRender={15}
+                            keyExtractor={(item) => item._id}
+                            renderItem={this._renderItem}
+                        /> :
+                        <NotFound/>
+                }
+
+
+            </View>
+        )
+    }
+}
+
+
+class LibraryCategory extends React.PureComponent {
+    onPress(item) {
+
+        this.props.instant.setState({
+            currentViewLibrary: {
+                id: this.props.instant.state.listLibrary[4].id,
+                name: item.name,
+                data: item._id
+            }
+        })
+    }
+
+    _renderItem = ({item}) => (
+        <TouchableWithoutFeedback onPress={() => this.onPress(item)}>
+            <View style={[styleHome.categoryBar]}>
+                <TextNormal style={{flex: 1}}>{item.name}</TextNormal>
+                <EvilIcons name="chevron-right" style={styleBase.vector32}/>
+            </View>
+        </TouchableWithoutFeedback>
+    );
+
+    render() {
+
+
+        return (
+            <View style={{flex: 1}}>
+                {/*------discount------------*/}
+                {
+                    this.props.data.length > 0 && this.props.data !== undefined ?
+                        <FlatList
+                            data={this.props.data}
+                            extraData={this.state}
+                            initialNumToRender={15}
+                            keyExtractor={(item) => item._id}
+                            renderItem={this._renderItem}
+                        /> :
+                        <NotFound/>
+                }
+
+
+            </View>
+        )
+    }
+}
+;
+
+class LibraryDiscount extends React.PureComponent {
+
+    onPressItem(item) {
+        this.props.instant.setState({
+            currentViewLibrary: {
+                id: this.props.instant.state.listLibrary[5].id,
+                name: item.name,
+                data: item.productItems
+            }
+        })
+    }
+
+    _renderItem = ({item}) => (
+        <TouchableWithoutFeedback onPress={() => this.onPressItem(item)}>
+            <View style={[styleHome.itemBar]}>
+                <View style={[styleHome.itemBarIcon]}>
+                    <Ionicons name={"ios-pricetags-outline"} style={styleBase.vector18}/>
+                </View>
+                <View style={[styleHome.itemBarTitle]}>
+                    <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
+                    <TextSmall> {numberwithThousandsSeparator(item.value)}{item.type === 'percent' ? "%" : "đ"}</TextSmall>
+                </View>
+            </View>
+        </TouchableWithoutFeedback>
+    );
+
+    render() {
+
+
+        return (
+            <View style={{flex: 1}}>
+                {/*------discount------------*/}
                 {
                     this.props.data.length > 0 && this.props.data !== undefined ?
                         <FlatList
@@ -263,8 +431,15 @@ class NotFound extends React.PureComponent {
     }
 }
 
+const mapStatetoProps = (state) => {
+    return {
+        category: state.product.category,
+        discount: state.product.discount,
+        product: state.product.allProduct
+    }
+}
 const mapDispatchToProps = {
     openPopup,
     renderPopup
 };
-export default connect(null, mapDispatchToProps)(Library);
+export default connect(mapStatetoProps, mapDispatchToProps)(Library);

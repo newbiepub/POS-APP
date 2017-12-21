@@ -242,7 +242,8 @@ const styleHome = EStyleSheet.create({
         height: '$widthSize',
         flexDirection: 'row',
         backgroundColor: '$color4',
-        alignItems: 'center'
+        alignItems: 'center',
+        paddingLeft:20
     },
     itemBar: {
         height: '$widthSize',
