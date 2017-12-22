@@ -1,10 +1,10 @@
 import React from "react";
 import {connect} from "react-redux";
 import {Dimensions, FlatList, Text, TouchableOpacity, View} from "react-native";
-import styleBase from "../style/base";
-import styleHome from "../style/home";
-import {closeMenu, goToRoute} from "../../action/route";
-import ModalWrapper from '../modalWrapper';
+import styleBase from "../../style/base";
+import styleHome from "../../style/home";
+import {closeMenu, goToRoute} from "../../../action/route";
+import ModalWrapper from '../../modalWrapper';
 
 class Menu extends React.Component {
     constructor(props) {
@@ -97,9 +97,9 @@ Menu.defaultProps = {
 
 const mapStateToProps = (state) => {
     return {
-        routeMap: state.route.routeMap,
-        currentRoute: state.route.currentRoute,
-        visible: state.route.menuVisible
+        routeMap: state.routeCompany.routeMap,
+        currentRoute: state.routeCompany.currentRoute,
+        visible: state.routeCompany.menuVisible
     }
 };
 const mapDispatchToProps = {

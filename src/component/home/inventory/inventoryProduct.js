@@ -26,9 +26,7 @@ class InventoryProduct extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        InteractionManager.runAfterInteractions(() => {
-            this.setState({product: nextProps.product})
-        })
+        this.setState({product: nextProps.product})
     }
 
     componentWillUnmount() {

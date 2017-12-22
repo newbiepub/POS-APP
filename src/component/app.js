@@ -1,15 +1,20 @@
 import React, {PureComponent} from "react";
-import {StatusBar, View, Platform} from "react-native";
+import {Platform, StatusBar, View} from "react-native";
 import {Navigator} from "react-native-deprecated-custom-components";
 import styleBase from "./style/base";
 import Login from "./account/login";
 import Home from './home/home';
-
 import EStyleSheet from "react-native-extended-stylesheet";
 import Popup from "./popup/popup";
+import {size} from './style/home';
+import LoginCompany from "./account/companyLogin";
+import {companyAuth} from "../action/accountCompany";
+import {connect} from "react-redux";
+import CompanyHome from "./company/home/companyHome";
+import * as _ from "lodash";
 
 EStyleSheet.build(); // Build Extended StyleSheet
-import {size} from './style/home';
+
 class App extends PureComponent {
     constructor(props) {
         super(props);
@@ -21,13 +26,28 @@ class App extends PureComponent {
             case "login":
                 return <Login navigator={navigator}/>;
             case "home":
-                return <Home navigator={navigator}/>
+                return <Home navigator={navigator}/>;
+            case "logincompany":
+                return <LoginCompany navigator={navigator}/>;
+            case "companyhome":
+                return <CompanyHome navigator={navigator}/>;
 
         }
     }
 
-    onWillFocus(route) {
+    async componentDidMount() {
+        try {
+            await companyAuth();
+        } catch(e) {
+            alert(e);
+            console.warn("Error - ComponentDidMount - app.js")
+        }
+    }
 
+    componentWillReceiveProps (nextProps) {
+        if(!_.isEqual(this.props.accountCompany.isLogin, nextProps.accountCompany.isLogin) && nextProps.accountCompany.isLogin) {
+            this.navigator.resetTo({id: "companyhome"});
+        }
     }
 
     configureScene(route, navigator) {
@@ -45,6 +65,10 @@ class App extends PureComponent {
             width: width,
             height: height
         }
+    }
+
+    onWillFocus() {
+
     }
 
     render() {
@@ -71,4 +95,12 @@ class App extends PureComponent {
     }
 }
 
-export default App;
+
+// Company Login
+const mapStateToProps = (state) =>{
+    return {
+        accountCompany: state.accountCompany
+    }
+};
+
+export default connect(mapStateToProps, null) (App);

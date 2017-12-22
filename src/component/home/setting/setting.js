@@ -35,6 +35,10 @@ class Setting extends React.PureComponent {
         ];
     }
 
+    componentWillUnmount() {
+        this.state.currentSetting = "Thuế";
+    }
+
     renderSectionHeader(title) {
         return (
             <View key={title} style={[{paddingHorizontal: 10}]}>

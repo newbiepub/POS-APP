@@ -18,6 +18,14 @@ function closeMenuAction() {
         type:ROUTE.CLOSE_MENU
     }
 }
+
+function changeRouteMapAction (payload) {
+    return {
+        type: ROUTE.CHANGE_ROUTE_MAP,
+        payload
+    }
+}
+
 export function openMenu() {
     return store.dispatch(openMenuAction());
 }
@@ -28,4 +36,8 @@ export function closeMenu() {
 
 export function goToRoute(routeId) {
     return store.dispatch(goToRouteAction(routeId));
+}
+
+export function changeRouteMap(routeMap) {
+    return store.dispatch(changeRouteMapAction(routeMap));
 }

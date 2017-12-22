@@ -5,10 +5,17 @@ export const ACCOUNT = {
     GET_CURRENT_USER: "GET_CURRENT_USER"
 };
 
+export const ACCOUNT_COMPANY = {
+    COMPANY_LOGIN: "COMPANY_LOGIN",
+    LOGOUT: "LOGOUT",
+    GET_CURRENT_COMPANY: "GET_CURRENT_COMPANY"
+};
+
 // Async Storage
 export const ASYNC_STORAGE = {
     USER_LOGGED_IN: "USER_LOGGED_IN",
-    AUTH_TOKEN: "AUTH_TOKEN"
+    AUTH_TOKEN: "AUTH_TOKEN",
+    COMPANY_AUTH: "COMPANY_AUTH"
 };
 
 //popup
@@ -22,7 +29,8 @@ export const POPUP = {
 export const ROUTE = {
     GO_TO_ROUTE: "GO_TO_ROUTE",
     OPEN_MENU: "OPEN_MENU",
-    CLOSE_MENU:"CLOSE_MENU"
+    CLOSE_MENU:"CLOSE_MENU",
+    CHANGE_ROUTE_MAP: "CHANGE_ROUTE_MAP"
 };
 
 //Inventory

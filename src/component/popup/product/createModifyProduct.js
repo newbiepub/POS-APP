@@ -35,6 +35,7 @@ class CreateItem extends React.Component {
             itemPrice: this.props.hasOwnProperty("item") ? this.props.item.prices[0].value : "",
             itemSKU: this.props.hasOwnProperty("item") ? this.props.item.prices[0].SKU : "",
             description: this.props.hasOwnProperty("item") ? this.props.item.description : "",
+            producer: this.props.hasOwnProperty("item") ? this.props.item.producer : "",
             unit: this.props.hasOwnProperty("item") ? this.props.item.unit : "",
             newItemName: "",
             newItemPrice: 0,
@@ -333,6 +334,18 @@ class AddItem extends React.PureComponent {
                                              value={this.props.productData.unit || ""}
                                              onChangeText={(text) => {
                                                  this.props.ChangeItem("unit", text)
+                                             }}
+                                             style={[styleModalItems.modalTextInput]}
+                            />
+                        </View>
+                        <View style={[styleModalItems.modalItem, styleModalItems.modalTextInput, {
+                            marginTop: 0,
+                            borderBottomWidth: 0
+                        }]}>
+                            <TextInputNormal placeholder={"Nhà Sản Xuất"}
+                                             value={this.props.productData.producer || ""}
+                                             onChangeText={(text) => {
+                                                 this.props.ChangeItem("producer", text)
                                              }}
                                              style={[styleModalItems.modalTextInput]}
                             />

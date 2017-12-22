@@ -72,6 +72,15 @@ const styleBase = EStyleSheet.create({
         flexGrow: 1,
         width: 0
     },
+    shadowBox: {
+        shadowRadius: 2,
+        shadowOffset:{
+            width: 0,
+            height: 2,
+        },
+        shadowColor: '#000',
+        shadowOpacity: 1,
+    },
     row: {
         flexDirection: "row"
     },
@@ -94,6 +103,9 @@ const styleBase = EStyleSheet.create({
     borderRightE5: {
         borderColor: "#e5e5e5",
         borderRightWidth: 1
+    },
+    borderButton: {
+        borderRadius: 4
     },
     overlay: {
         flex: 1,

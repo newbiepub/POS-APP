@@ -119,9 +119,13 @@ class LoginForm extends PureComponent {
         }
     }
 
+    onNavigateCompany() {
+        this.props.navigator.push({id: "logincompany"});
+    }
+
     render() {
         return (
-            <View style={[styleBase.centerVertical, styleBase.centerHorizontal]}>
+            <View style={[styleBase.centerVertical, styleBase.centerHorizontal, {position: "relative"}]}>
                 <TextInput
                     placeholder="Username"
                     placeholderTextColor="#999"
@@ -177,6 +181,11 @@ class LoginForm extends PureComponent {
 
                     </View>
                 </TouchableAnimate>
+                <View style={[styleBase.row, {position: "absolute", bottom: -100}]}>
+                    <Text style={[styleBase.textE5, styleBase.font16, {backgroundColor: "transparent"}]}>
+                        Đăng Nhập Tài Khoản<Text style={[styleBase.textE5, styleBase.bold, styleBase.font16, {backgroundColor: "transparent"}]} onPress={this.onNavigateCompany.bind(this)}> Quản Lý</Text>
+                    </Text>
+                </View>
             </View>
         )
     }

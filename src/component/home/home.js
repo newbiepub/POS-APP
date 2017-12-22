@@ -51,8 +51,8 @@ class Home extends React.Component {
 
         return (
             <View style={[styleBase.container]}>
-                <Menu visible={this.state.menuVisible} instant={this}/>
-                <Main/>
+                <Menu visible={this.state.menuVisible} instant={this} navigator={this.props.navigator}/>
+                <Main navigator={this.props.navigator}/>
             </View>
         )
     }
@@ -62,7 +62,6 @@ const mapStateToProps = (state) => {
     return {
         account: state.account,
         currentRoute: state.route.currentRoute,
-
     }
 };
 const mapDispatchToProps = {

@@ -18,8 +18,6 @@ class CreateModifyCategoryPopup extends React.Component {
             category: this.props.hasOwnProperty("category") ? this.props.category : {
                 name: '',
             },
-
-
         };
     }
 
@@ -46,8 +44,7 @@ class CreateModifyCategoryPopup extends React.Component {
 
 
     async pushNewProductInCategory(item) {
-        item.categoryId = await  this.props.category._id;
-
+        item.categoryId = await this.props.category._id;
     }
 
     _renderItem = ({item}) => (

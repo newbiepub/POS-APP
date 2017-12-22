@@ -222,7 +222,7 @@ class AllProduct extends React.PureComponent {
         return (
             <ScrollView style={[styleHome.scrollView]}>
                 <TouchableOpacity onPress={this.createItem.bind(this)}
-                                  style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
+                                  style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center, {marginTop: 20}]}>
                     <TextNormal style={[styleBase.color2]}>Thêm hàng</TextNormal>
                 </TouchableOpacity>
                 <View style={[styleHome.listItem, styleHome.borderTop,]}>
@@ -359,7 +359,7 @@ class Category extends React.PureComponent {
             <ScrollView>
                 <View style={[styleHome.scrollView]}>
                     <TouchableWithoutFeedback onPress={() => this.createCategory()}>
-                        <View style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
+                        <View style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center, {marginTop: 20}]}>
                             <TextNormal style={[styleBase.color2]}>Thêm loại</TextNormal>
                         </View>
                     </TouchableWithoutFeedback>
