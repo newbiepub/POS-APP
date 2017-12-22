@@ -29,7 +29,8 @@ class CreateItem extends React.Component {
                 categoryId: '',
                 categoryName: '',
                 description: "",
-                unit: ""
+                unit: "",
+                quantity: 0
             },
             itemName: this.props.hasOwnProperty("item") ? this.props.item.name : "",
             itemPrice: this.props.hasOwnProperty("item") ? this.props.item.prices[0].value : "",
@@ -99,7 +100,7 @@ class CreateItem extends React.Component {
                         })
                     });
                     response = await response.json();
-                    if(response.success) {
+                    if (response.success) {
                         Alert.alert("Thành Công", "Thêm Sản Phẩm Mới Thành Công !!");
                     }
                 } else {
@@ -109,7 +110,7 @@ class CreateItem extends React.Component {
             } else {
                 return Alert.alert("Thông báo", "Đã có lỗi xảy ra");
             }
-        } catch(e) {
+        } catch (e) {
             loadingOverlay.stopLoading();
         }
     }
@@ -117,10 +118,10 @@ class CreateItem extends React.Component {
     async onUpdateProduct() {
         let loadingOverlay = this.refs.loadingOverlay;
         try {
-            let { name, price, unit } = this.state.productData,
+            let {name, price, unit} = this.state.productData,
                 {account} = this.props;
 
-            if(loadingOverlay) {
+            if (loadingOverlay) {
                 loadingOverlay.setLoading();
                 if (name && price && unit) {
                     let response = await fetch(`${config.api}/api/product/update?access_token=${account.access_token}`, {
@@ -135,7 +136,7 @@ class CreateItem extends React.Component {
                         })
                     });
                     response = await response.json();
-                    if(response.success) {
+                    if (response.success) {
                         Alert.alert("Thành Công", "Cập nhật sản phẩm thành công !!");
                     }
                 } else {
@@ -145,7 +146,7 @@ class CreateItem extends React.Component {
             } else {
                 return Alert.alert("Thông báo", "Đã có lỗi xảy ra");
             }
-        } catch(e) {
+        } catch (e) {
             loadingOverlay.stopLoading();
         }
     }
@@ -231,6 +232,24 @@ class AddItem extends React.PureComponent {
 
     changeView(id, name) {
         this.props.instant.setState({currentView: name});
+    }
+
+    onSubQuantity() {
+        try {
+            let quantity = +this.props.productData.quantity || 0;
+            this.props.ChangeItem("quantity", quantity > 0 ? quantity - 1 : 0);
+        } catch (e) {
+            console.warn("error - onSubQuantity - createModifyProduct");
+        }
+    }
+
+    onAddQuantity() {
+        try {
+            let quantity = +this.props.productData.quantity || 0;
+            this.props.ChangeItem("quantity", ++quantity);
+        } catch (e) {
+            console.warn("error - onAddQuantity - createModifyProduct");
+        }
     }
 
     render() {
@@ -337,6 +356,28 @@ class AddItem extends React.PureComponent {
                                              }}
                                              style={[styleModalItems.modalTextInput]}
                             />
+                        </View>
+                        <View style={[{marginTop: 20}]}>
+                            <Text style={[styleBase.font18, styleBase.text4, styleBase.bold, {marginBottom: 20}]}>
+                                Số Lượng
+                            </Text>
+                            <View style={[styleBase.row, styleBase.centerHorizontal,{justifyContent: "space-between"}]}>
+                                <TouchableOpacity
+                                    onPress={this.onSubQuantity.bind(this)}
+                                    style={[styleBase.background5, styleBase.center, {paddingVertical: 5, paddingHorizontal: 15}]}>
+                                    <Ionicons name="ios-remove-outline" style={[styleBase.font32]}/>
+                                </TouchableOpacity>
+                                <View>
+                                    <Text style={[styleBase.font16, styleBase.text4]}>
+                                        {this.props.productData.quantity}
+                                    </Text>
+                                </View>
+                                <TouchableOpacity
+                                    onPress={this.onAddQuantity.bind(this)}
+                                    style={[styleBase.background5, styleBase.center, {paddingVertical: 5, paddingHorizontal: 15}]}>
+                                    <Ionicons name="ios-add-outline" style={[styleBase.font32]}/>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                         <View style={[styleModalItems.modalItem, styleModalItems.modalTextInput, {
                             marginTop: 0,

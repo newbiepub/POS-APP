@@ -47,7 +47,7 @@ export function getProduct(access_token) {
                         await variant.push(item)
                     }
                 });
-                for (itemProduct of product) {
+                for (let itemProduct of product) {
                     itemProduct["allPrices"] = await [{
                         _id: itemProduct._id,
                         name: itemProduct.name,
@@ -55,7 +55,7 @@ export function getProduct(access_token) {
                         unit: itemProduct.unit,
 
                     }]
-                    for (itemVariant of variant) {
+                    for (let itemVariant of variant) {
                         if (itemVariant.productVariantParent === itemProduct._id) {
                             await itemProduct["allPrices"].push({
                                 _id: itemVariant._id,

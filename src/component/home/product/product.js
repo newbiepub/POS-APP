@@ -352,10 +352,7 @@ class Category extends React.PureComponent {
     );
 
     render() {
-
-
         return (
-
             <ScrollView>
                 <View style={[styleHome.scrollView]}>
                     <TouchableWithoutFeedback onPress={() => this.createCategory()}>
@@ -377,7 +374,6 @@ class Category extends React.PureComponent {
                                     renderItem={this._renderItem}
                                 />
                         }
-
                     </View>
                 </View>
 
@@ -385,7 +381,6 @@ class Category extends React.PureComponent {
         )
     }
 }
-
 
 class CategoryPreview extends React.PureComponent {
     constructor(props) {
@@ -397,7 +392,7 @@ class CategoryPreview extends React.PureComponent {
     }
 
     modifyCategory() {
-        this.props.renderPopup(<CreateCategory allProduct={this.props.allProduct} category={this.props.category}/>);
+        this.props.renderPopup(<CreateCategory allProduct={this.props.allProduct} category={this.props.category} type="update"/>);
         this.props.openPopup();
     }
 
@@ -431,24 +426,21 @@ class CategoryPreview extends React.PureComponent {
     render() {
 
         return (
-            <ScrollView>
-                <View style={[styleHome.scrollView]}>
-                    <TouchableOpacity onPress={this.modifyCategory.bind(this)}
-                                      style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
-                        <TextNormal style={[styleBase.color2]}>Thêm hàng</TextNormal>
-                    </TouchableOpacity>
-                    <View style={[styleHome.listItem, styleHome.borderTop]}>
-                        <FlatList
-                            data={this.state.productInCategory}
-                            extraData={this.state}
-                            initialNumToRender={15}
-                            keyExtractor={(item) => item._id}
-                            renderItem={this._renderItem}
-                        />
-                    </View>
+            <View style={[styleHome.scrollView]}>
+                <TouchableOpacity onPress={this.modifyCategory.bind(this)}
+                                  style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center, {marginTop: 20}]}>
+                    <TextNormal style={[styleBase.color2]}>Thêm hàng</TextNormal>
+                </TouchableOpacity>
+                <View style={[styleHome.listItem, styleHome.borderTop]}>
+                    <FlatList
+                        data={this.state.productInCategory}
+                        extraData={this.state}
+                        initialNumToRender={15}
+                        keyExtractor={(item) => item._id}
+                        renderItem={this._renderItem}
+                    />
                 </View>
-
-            </ScrollView>
+            </View>
 
         )
     }
