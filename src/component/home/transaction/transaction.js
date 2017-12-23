@@ -96,7 +96,7 @@ class Transaction extends React.Component {
 
     getTitleDate(date) {
 
-        return moment(date).format(`dddd,DD [tháng] 12 [năm] YYYY `)
+        return moment(date).format(`dddd,DD [tháng] MM [năm] YYYY `)
     }
 
     getTime(date) {

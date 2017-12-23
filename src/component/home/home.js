@@ -6,8 +6,8 @@ import {connect} from 'react-redux';
 import * as _ from "lodash";
 import Menu from './menu';
 
-import {getProduct,getDiscount} from '../../action/product';
-import {getPayment, getTransaction,countTransaction} from '../../action/transaction';
+import {getProduct, getDiscount} from '../../action/product';
+import {getPayment, getTransaction, countTransaction} from '../../action/transaction';
 import {getInventoryProduct} from '../../action/inventory';
 
 class Home extends React.Component {
@@ -19,6 +19,7 @@ class Home extends React.Component {
 
     }
 
+
     async componentWillMount() {
         //console.warn(JSON.stringify(this.props.account));
         let {access_token} = this.props.account;
@@ -27,14 +28,16 @@ class Home extends React.Component {
         this.props.getProduct(access_token);
         this.props.getPayment(access_token);
         this.props.getDiscount(access_token);
-         this.props.getTransaction(access_token,10,0);
+        this.props.getTransaction(access_token, 10, 0);
 
     }
 
 
     shouldComponentUpdate(nextProps, nextState) {
         const changeRoute = this.props.currentRoute !== nextProps.currentRoute;
-        return changeRoute
+        const transactionChanged = this.props.transaction !== nextProps.transaction;
+
+        return changeRoute || transactionChanged
     }
 
     componentWillReceiveProps(nextProps) {
