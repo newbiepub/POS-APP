@@ -1,5 +1,6 @@
-import {PRODUCT} from '../constant/constant';
+import {ASYNC_STORAGE, PRODUCT} from '../constant/constant';
 import url from '../config';
+import { AsyncStorage } from 'react-native';
 
 function getProductAction(payload) {
     return {
@@ -26,6 +27,12 @@ export function getProduct(access_token) {
     return async (dispatch, getState) => {
         return new Promise(async (resolve, reject) => {
             try {
+
+                if(access_token == undefined) {
+                    let token = await AsyncStorage.getItem(ASYNC_STORAGE.AUTH_TOKEN);
+                    access_token = token.access_token;
+                }
+
                 let {api} = url;
                 let responseProduct = await fetch(`${api}/api/product/getProduct?access_token=${access_token}`);
                 responseProduct = await responseProduct.json();

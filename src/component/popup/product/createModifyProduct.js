@@ -1,5 +1,8 @@
 import React from "react";
-import {Dimensions, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, View, Alert} from "react-native";
+import {
+    Dimensions, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, View, Alert,
+    TextInput
+} from "react-native";
 import {TextInputNormal, TextInputPriceMask, TextLarge, TextSmall} from '../../reusable/text';
 import styleBase from "../../style/base";
 import styleHome from '../../style/home';
@@ -15,6 +18,9 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import styleSetting from "../../style/setting";
 import config from "../../../config";
 import LoadingOverlay from "../../loadingOverlay/loadingOverlay";
+import {numberwithThousandsSeparator} from "../../reusable/function";
+import * as _ from "lodash";
+import {getProduct} from "../../../action/product";
 
 class CreateItem extends React.Component {
     constructor(props) {
@@ -25,7 +31,7 @@ class CreateItem extends React.Component {
             width,
             productData: this.props.hasOwnProperty("productData") ? this.props.productData : {
                 name: "",
-                price: 0,
+                price: [],
                 categoryId: '',
                 categoryName: '',
                 description: "",
@@ -33,8 +39,7 @@ class CreateItem extends React.Component {
                 quantity: 0
             },
             itemName: this.props.hasOwnProperty("item") ? this.props.item.name : "",
-            itemPrice: this.props.hasOwnProperty("item") ? this.props.item.prices[0].value : "",
-            itemSKU: this.props.hasOwnProperty("item") ? this.props.item.prices[0].SKU : "",
+            itemPrice: this.props.hasOwnProperty("item") ? this.props.item.price[0].value : "",
             description: this.props.hasOwnProperty("item") ? this.props.item.description : "",
             producer: this.props.hasOwnProperty("item") ? this.props.item.producer : "",
             unit: this.props.hasOwnProperty("item") ? this.props.item.unit : "",
@@ -52,7 +57,7 @@ class CreateItem extends React.Component {
     }
 
     componentDidMount() {
-        this.productVariant = this.getVariantProduct((this.state.productData._id || ""), this.props.variantProduct); // Update Product Variant To Parent Component
+        this.productVariant = this.getVariantProduct(this.props.productData); // Update Product Variant To Parent Component
     }
 
     ChangeItem(name, text) {
@@ -71,14 +76,8 @@ class CreateItem extends React.Component {
         }
     }
 
-    getVariantProduct(id, allVariant) {
-        let variant = [];
-        allVariant.forEach(async (item) => {
-            if (id === item.productVariantParent) {
-                await variant.push(item);
-            }
-        });
-        return variant;
+    getVariantProduct(item) {
+        return item != undefined ? (item.price || []) : [];
     }
 
     async onCreateProduct() {
@@ -101,7 +100,12 @@ class CreateItem extends React.Component {
                     });
                     response = await response.json();
                     if (response.success) {
-                        Alert.alert("Thành Công", "Thêm Sản Phẩm Mới Thành Công !!");
+                        Alert.alert("Thành Công", "Thêm Sản Phẩm Mới Thành Công !!", [
+                            {text: "OK", onPress: () => {
+                                this.props.closePopup();
+                                this.props.getProduct();
+                            }}
+                        ]);
                     }
                 } else {
                     return Alert.alert("Thông báo", "Xin mời nhập giá và tên sản phẩm");
@@ -111,6 +115,7 @@ class CreateItem extends React.Component {
                 return Alert.alert("Thông báo", "Đã có lỗi xảy ra");
             }
         } catch (e) {
+            Alert.alert("Thất bại", "Đã có lỗi xảy ra");
             loadingOverlay.stopLoading();
         }
     }
@@ -120,7 +125,6 @@ class CreateItem extends React.Component {
         try {
             let {name, price, unit} = this.state.productData,
                 {account} = this.props;
-
             if (loadingOverlay) {
                 loadingOverlay.setLoading();
                 if (name && price && unit) {
@@ -131,13 +135,18 @@ class CreateItem extends React.Component {
                             "Content-Type": 'application/json'
                         },
                         body: JSON.stringify({
-                            ...this.state.productData,
+                            ..._.omit(this.state.productData, ['price']),
                             productVariant: this.productVariant
                         })
                     });
                     response = await response.json();
                     if (response.success) {
-                        Alert.alert("Thành Công", "Cập nhật sản phẩm thành công !!");
+                        Alert.alert("Thành Công", "Cập nhật sản phẩm thành công !!", [
+                            {text: "OK", onPress: () => {
+                                this.props.closePopup();
+                                this.props.getProduct();
+                            }}
+                        ]);
                     }
                 } else {
                     return Alert.alert("Thông báo", "Xin mời nhập giá và tên sản phẩm");
@@ -147,6 +156,7 @@ class CreateItem extends React.Component {
                 return Alert.alert("Thông báo", "Đã có lỗi xảy ra");
             }
         } catch (e) {
+            Alert.alert("Thất bại", "Đã có lỗi xảy ra");
             loadingOverlay.stopLoading();
         }
     }
@@ -219,14 +229,19 @@ class CreateItem extends React.Component {
     }
 }
 
-class AddItem extends React.PureComponent {
+class AddItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             width: this.props.width,
             idAddItem: false,
+            quantity: this.props.productData.quantity || 0,
+            contentWidth: 50
         }
+    }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        return !_.isEqual(this.state, nextState) || !_.isEqual(this.props.productData, nextProps.productData);
     }
 
 
@@ -237,19 +252,44 @@ class AddItem extends React.PureComponent {
     onSubQuantity() {
         try {
             let quantity = +this.props.productData.quantity || 0;
-            this.props.ChangeItem("quantity", quantity > 0 ? quantity - 1 : 0);
+            this.setState({quantity: quantity > 0 ? --quantity : 0}, () => {
+                this.props.ChangeItem("quantity", this.state.quantity);
+            });
         } catch (e) {
             console.warn("error - onSubQuantity - createModifyProduct");
+        }
+    }
+
+    onChangeQuantity(data) {
+        try {
+            let newNum = data.replace(/\./g, '').replace(/^0+/, '');
+            if (isNaN(newNum) !== true) {
+                let quantity = +newNum || 0;
+                this.setState({quantity: quantity > 0 ? quantity : 0}, () => {
+                    this.props.ChangeItem("quantity", );
+                });
+            }
+        } catch (e) {
+            console.warn("error - onChangeQuantity - createModifyProduct");
         }
     }
 
     onAddQuantity() {
         try {
             let quantity = +this.props.productData.quantity || 0;
-            this.props.ChangeItem("quantity", ++quantity);
+            this.setState({quantity: ++quantity}, () => {
+                this.props.ChangeItem("quantity", this.state.quantity);
+            });
         } catch (e) {
             console.warn("error - onAddQuantity - createModifyProduct");
         }
+    }
+
+    /**
+     * On Change Content Width
+     * */
+    onChangeContentWidth(contentWidth) {
+        alert(JSON.stringify(contentWidth));
     }
 
     render() {
@@ -299,20 +339,6 @@ class AddItem extends React.PureComponent {
                                 <EvilIcons name="chevron-right" style={styleBase.vector32}/>
                             </View>
                         </TouchableWithoutFeedback>
-                        {/*----------------price and SKU-------------------*/}
-                        <View style={[styleModalItems.modalItem, styleModalItems.modalTextInput, {
-                            marginTop: 0,
-                            borderBottomWidth: 0
-                        }]}>
-                            <TextInputPriceMask placeholder={"0đ"}
-                                                value={this.props.productData.price.toString() || ""}
-                                                keyboardType={'numeric'}
-                                                onChangeText={(num) => {
-                                                    this.props.ChangeItem("price", num)
-                                                }}
-                                                style={[styleModalItems.modalTextInput, {flex: 1}]}
-                            />
-                        </View>
                         {/*--------------------add price --------------------*/}
                         <View style={[styleModalItems.modalItem, styleModalItems.modalTextInput, {
                             marginTop: 0,
@@ -367,10 +393,13 @@ class AddItem extends React.PureComponent {
                                     style={[styleBase.background5, styleBase.center, {paddingVertical: 5, paddingHorizontal: 15}]}>
                                     <Ionicons name="ios-remove-outline" style={[styleBase.font32]}/>
                                 </TouchableOpacity>
-                                <View>
-                                    <Text style={[styleBase.font16, styleBase.text4]}>
-                                        {this.props.productData.quantity}
-                                    </Text>
+                                <View style={[styleBase.center, styleBase.row]}>
+                                    <TextInput
+                                        keyboardType="numeric"
+                                        onChangeText={(quantity) => this.onChangeQuantity(quantity)}
+                                        onContentSizeChange={(e) => this.onChangeContentWidth(e.nativeEvent)}
+                                        value={`${numberwithThousandsSeparator(this.state.quantity)}`}
+                                        style={[styleBase.font16, styleBase.text4, {width: this.state.contentWidth}]}/>
                                 </View>
                                 <TouchableOpacity
                                     onPress={this.onAddQuantity.bind(this)}
@@ -516,11 +545,11 @@ class RowComponent extends React.Component {
                     <TextInputNormal placeholder={"Tên"}
                                      value={this.state.name}
                                      onChangeText={(name) => {
-                                         this.setState({name});
-
-                                         let listPrice = this.props.instance.state.data; // Get List Price
-                                         listPrice[this.props.index] = {name: this.state.name, price: this.state.price};
-                                         this.props.instance.setState({data: listPrice}); // Update List Price
+                                         this.setState({name}, () => {
+                                             let listPrice = this.props.instance.state.data; // Get List Price
+                                             listPrice[this.props.index] = {name: this.state.name, price: this.state.price};
+                                             this.props.instance.setState({data: listPrice}); // Update List Price
+                                         });
                                      }}
                                      style={[styleModalItems.modalTextInput, {flex: 1}]}
                     />
@@ -531,14 +560,14 @@ class RowComponent extends React.Component {
                                             onChangeText={(price) => {
                                                 price = parseInt(price);
                                                 if (price >= 0) {
-                                                    this.setState({price}); // Update Price
-
-                                                    let listPrice = this.props.instance.state.data; // Get List Price
-                                                    listPrice[this.props.index] = {
-                                                        name: this.state.name,
-                                                        price: this.state.price
-                                                    };
-                                                    this.props.instance.setState({data: listPrice}); // Update List Price
+                                                    this.setState({price}, () => {
+                                                        let listPrice = this.props.instance.state.data; // Get List Price
+                                                        listPrice[this.props.index] = {
+                                                            name: this.state.name,
+                                                            price: this.state.price
+                                                        };
+                                                        this.props.instance.setState({data: listPrice}); // Update List Price
+                                                    }); // Update Price
                                                 }
                                             }}
                                             style={[styleModalItems.modalTextInput, {flex: 1}]}
@@ -612,7 +641,8 @@ class AddPrice extends React.Component {
 }
 
 const mapDispatchToProps = {
-    closePopup
+    closePopup,
+    getProduct
 };
 const mapStateToProps = (state) => {
     return {

@@ -325,7 +325,7 @@ class ProductItem extends React.PureComponent {
                             </View>
                             <View style={[styleHome.itemBarTitle]}>
                                 <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
-                                <TextSmall> {item.allPrices.length >1 ? item.allPrices.length + " giá" : numberwithThousandsSeparator(item.price)+"đ" }</TextSmall>
+                                <TextSmall> {item.price.length >1 ? item.price.length + " giá" : numberwithThousandsSeparator(item.price[0].price || 0)+"đ"}</TextSmall>
                             </View>
                         </View>
                     </TouchableWithoutFeedback>
@@ -417,7 +417,7 @@ class CategoryPreview extends React.PureComponent {
                 </View>
                 <View style={styleHome.itemBarTitle}>
                     <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
-                    <TextSmall> {item.price}đ</TextSmall>
+                    <TextSmall> {item.price.length > 1 ? `${item.price.length} giá`: `${item.price[0].price}đ`}</TextSmall>
                 </View>
             </View>
         </TouchableWithoutFeedback>
@@ -445,7 +445,6 @@ class CategoryPreview extends React.PureComponent {
         )
     }
 }
-
 
 class DiscountItem extends React.PureComponent {
     constructor(props) {
@@ -556,7 +555,7 @@ class Discount extends React.PureComponent {
         return (
             <ScrollView style={[styleHome.scrollView]}>
                 <TouchableOpacity onPress={this.createItem.bind(this)}
-                                  style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center]}>
+                                  style={[styleHome.boxPadding, styleHome.box, styleBase.background5, styleBase.center, {marginTop: 20}]}>
                     <TextNormal style={[styleBase.color2]}>Thêm khuyến mãi</TextNormal>
                 </TouchableOpacity>
                 <View style={[styleHome.listItem, styleHome.borderTop,]}>
