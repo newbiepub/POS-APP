@@ -14,6 +14,7 @@ import PriceGrid from '../../home/product/price/priceGrid';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import {createTransaction, getTransaction} from '../../../action/transaction';
 import {clearCart} from '../../../action/cart';
+import {updateInventoryAfterCharge} from '../../../action/inventory';
 
 class Charge extends React.Component {
     constructor(props) {
@@ -64,6 +65,8 @@ class Charge extends React.Component {
         this.setState({
             onProgressing: true
         })
+
+
         let transaction = {
             productItems: this.state.productItems,
             totalPrice: this.state.totalPrice,
@@ -77,6 +80,7 @@ class Charge extends React.Component {
         let result = await this.props.createTransaction(access_token, transaction);
         if (result.status < 400) {
             this.props.clearCart();
+            this.props.updateInventoryAfterCharge(this.state.productItems)
             Alert.alert(
                 'Thành công',
                 'Bạn đã thanh toán thành công !',
@@ -89,6 +93,9 @@ class Charge extends React.Component {
         }
         else
             Alert.alert("Thất bại", "Đã có lỗi xảy ra !!");
+        this.setState({
+            onProgressing: false
+        })
     }
 
     closePopup() {
@@ -455,6 +462,7 @@ const mapDispatchToProps = {
     closePopup,
     createTransaction,
     clearCart,
+    updateInventoryAfterCharge,
     getTransaction
 };
 const mapStateToProps = (state) => {

@@ -403,7 +403,6 @@ class Category extends React.PureComponent {
         super(props);
         this.state = {
             categoryName: '',
-            listCategory: [{name: 'Không'}, {name: 'kho'}, {name: 'long'}],
             checkedCategory: this.props.category || ''
         }
     }

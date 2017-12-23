@@ -5,6 +5,17 @@ const initialState = {
     ingredient: []
 };
 
+function updateProductAfterCharge(state, productItems) {
+    for (item of state) {
+        for (product of productItems) {
+            if (item._id === product._id) {
+                item.quantity = item.quantity - product.quantity
+            }
+        }
+
+    }
+}
+
 export default function (state = initialState, action = {}) {
     switch (action.type) {
         case INVENTORY.GET_INVENTORY_PRODUCT: {
@@ -19,6 +30,14 @@ export default function (state = initialState, action = {}) {
                 ingredient: action.payload || []
             }
         }
-        default: return {...state}
+        case INVENTORY.UPDATE_INVENTORY_AFTER_CHARGE: {
+            updateProductAfterCharge(state.product, action.payload)
+            return {
+                ...state,
+                product: [...state.product]
+            }
+        }
+        default:
+            return {...state}
     }
 }
