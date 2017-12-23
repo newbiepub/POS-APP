@@ -31,45 +31,24 @@ export function getProduct(access_token) {
                 responseProduct = await responseProduct.json();
                 let responseCategory = await fetch(`${api}/api/category/getCategory?access_token=${access_token}`);
                 responseCategory = await responseCategory.json();
-                let product = [], variant = [], categoryLength = responseCategory.length;
-                responseProduct.forEach(async (item) => {
-                    if (item.hasOwnProperty("productVariantParent") === false) {
-                        if (item.hasOwnProperty("categoryId")) {
-                            for (var i = 0; i < categoryLength; i++) {
-                                if (item.categoryId === responseCategory[i]._id) {
-                                    item["categoryName"] = responseCategory[i].name;
-                                }
-                            }
-                        }
-
-                        await product.push(item)
-                    } else {
-                        await variant.push(item)
-                    }
-                });
-                for (let itemProduct of product) {
-                    itemProduct["allPrices"] = await [{
-                        _id: itemProduct._id,
-                        name: itemProduct.name,
-                        price: itemProduct.price,
-                        unit: itemProduct.unit,
-
-                    }]
-                    for (let itemVariant of variant) {
-                        if (itemVariant.productVariantParent === itemProduct._id) {
-                            await itemProduct["allPrices"].push({
-                                _id: itemVariant._id,
-                                name: itemVariant.name,
-                                price: itemVariant.price,
-                                unit: itemVariant.unit,
-                            });
-                        }
-
-                    }
-                }
-
+                let product = [], categoryLength = responseCategory.length;
+                // responseProduct.forEach(async (item) => {
+                //     if (item.hasOwnProperty("productVariantParent") === false) {
+                //         if (item.hasOwnProperty("categoryId")) {
+                //             for (var i = 0; i < categoryLength; i++) {
+                //                 if (item.categoryId === responseCategory[i]._id) {
+                //                     item["categoryName"] = responseCategory[i].name;
+                //                 }
+                //             }
+                //         }
+                //
+                //         await product.push(item)
+                //     } else {
+                //         await variant.push(item)
+                //     }
+                // });
                 dispatch(getCategoryAction(responseCategory));
-                dispatch(getProductAction({product, variant}));
+                dispatch(getProductAction(responseProduct));
                 resolve(true)
             } catch (e) {
                 console.warn(e);

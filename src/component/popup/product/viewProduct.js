@@ -18,13 +18,14 @@ class ViewItem extends React.Component {
         super(props);
         var {width, height} = Dimensions.get('window');
         this.state = {
-            currentPrice: this.props.hasOwnProperty("existData") ? this.props.existData.productCharge : this.props.productData.allPrices[0],
+            currentPrice: this.props.hasOwnProperty("existData") ? this.props.existData.productCharge : this.props.productData.price[0],
             productInfo: this.props.hasOwnProperty("existData") ? this.props.existData.productInfo : this.props.productData,
             itemQuantity: this.props.hasOwnProperty("existData") ? this.props.existData.quantity : 1,
             discount: [],
             discountAmount: 0,
             discountPercent: 0,
-            note: ""
+            note: "",
+            quantityAvailable: {quantity: 0, unit: ''}
         };
     }
 
@@ -58,7 +59,7 @@ class ViewItem extends React.Component {
                 }
             }
         }
-
+        this.getQuantityInInventory()
 
     }
 
@@ -84,10 +85,23 @@ class ViewItem extends React.Component {
         this.closePopup()
     }
 
+    getQuantityInInventory() {
+        for (item of this.props.inventoryProduct) {
+            if (item._id === this.state.productInfo._id) {
+                this.setState({
+                    quantityAvailable: {
+                        quantity: item.quantity,
+                        unit: item.unit
+                    }
+                })
+            }
+        }
+    }
+
     async adjustItemInCart() {
         let a = await  this.props.addToCart({
             oldId: this.props.existData.productCharge._id,
-            productCharge: this.state.currentPrice,
+            price: this.state.currentPrice,
             quantity: this.state.itemQuantity,
             discount: this.state.discount,
             totalPrice: (this.state.currentPrice.price - this.getCashDiscount(this.state.discountAmount, this.state.discountPercent, this.state.currentPrice.price)) * this.state.itemQuantity,
@@ -99,7 +113,7 @@ class ViewItem extends React.Component {
 
     async adjustCustomAmountInCart() {
         let a = await  this.props.addToCart({
-            productCharge: {
+            price: {
                 _id: this.props.existData.productCharge._id,
                 name: this.state.currentPrice.name !== "" ? this.state.currentPrice.name : "ghi chú",
                 price: this.state.currentPrice.price,
@@ -142,7 +156,7 @@ class ViewItem extends React.Component {
                     </TouchableWithoutFeedback>
 
                     <View style={[{flex: 1, flexDirection: 'row'}]}>
-                        <TextLarge>{this.state.currentPrice.name || ""}</TextLarge>
+                        <TextLarge>{this.state.productInfo.name || ""}</TextLarge>
                         <TextLarge>  {numberwithThousandsSeparator((this.state.currentPrice.price - this.getCashDiscount(this.state.discountAmount, this.state.discountPercent, this.state.currentPrice.price)) * this.state.itemQuantity) || ""}
                             đ</TextLarge>
                     </View>
@@ -151,7 +165,8 @@ class ViewItem extends React.Component {
                             (
                                 this.props.existData.hasOwnProperty("customAmount") ?
                                     <TouchableWithoutFeedback onPress={() => {
-                                        this.adjustCustomAmountInCart()
+                                        if (this.state.currentPrice.price > 0)
+                                            this.adjustCustomAmountInCart()
                                     }}>
                                         <View
                                             style={styleHome.modalButtonSubmit}>
@@ -160,7 +175,8 @@ class ViewItem extends React.Component {
                                         </View>
                                     </TouchableWithoutFeedback> :
                                     <TouchableWithoutFeedback onPress={() => {
-                                        this.adjustItemInCart()
+                                        if (this.state.itemQuantity > 0)
+                                            this.adjustItemInCart()
                                     }}>
                                         <View
                                             style={styleHome.modalButtonSubmit}>
@@ -171,7 +187,8 @@ class ViewItem extends React.Component {
                             )
                             :
                             <TouchableWithoutFeedback onPress={() => {
-                                this.addToCart()
+                                if (this.state.itemQuantity > 0)
+                                    this.addToCart()
                             }}>
                                 <View
                                     style={styleHome.modalButtonSubmit}>
@@ -193,7 +210,7 @@ class ViewItem extends React.Component {
 
                         <View style={[styleHome.paddingModal, {flex: 1}]}>
                             {/*-----------------List---------------------------*/}
-                            <ListPrice productListPrice={this.state.productInfo.allPrices}
+                            <ListPrice productListPrice={this.state.productInfo.price}
                                        instant={this} {...this.state}/>
 
 
@@ -201,7 +218,8 @@ class ViewItem extends React.Component {
                             <TextNormal style={[styleModalItems.marginVertical, styleModalItems.modalItem]}>GHI CHÚ
                                 VÀ
                                 SỐ
-                                LƯỢNG</TextNormal>
+                                LƯỢNG
+                                ({this.state.quantityAvailable.quantity === 0 ? "Hết hàng" : `Hiện có: ${this.state.quantityAvailable.quantity} ${this.state.quantityAvailable.unit}`})</TextNormal>
                             <TextInputNormal placeholder={"Ghi chú"} value={this.state.note}
                                              onChangeText={(text) => this.setState({note: text})}
                                              style={styleModalItems.marginVertical}/>
@@ -213,16 +231,18 @@ class ViewItem extends React.Component {
                                     </View>
                                 </TouchableWithoutFeedback>
                                 <View style={[styleBase.center, {flex: 1}]}>
-                                    <TextInputNumber value={this.state.itemQuantity.toString()}
-                                                     style={{textAlign: 'center', width: 100}}
-                                                     placeholder={this.state.itemQuantity.toString()}
-                                                     onChangeText={(text) => {
+                                    <TextInputNumber
+                                        value={this.state.quantityAvailable.quantity > 0 ? this.state.itemQuantity.toString() : "0"}
+                                        style={{textAlign: 'center', width: 100}}
+                                        maxValue={this.state.quantityAvailable.quantity}
+                                        placeholder={this.state.itemQuantity.toString()}
+                                        onChangeText={(text) => {
 
-                                                         this.setState({itemQuantity: text > 0 ? text : 1})
-                                                     }}/>
+                                            this.setState({itemQuantity: text})
+                                        }}/>
                                 </View>
                                 <TouchableWithoutFeedback
-                                    onPress={() => this.setState({itemQuantity: this.state.itemQuantity + 1})}>
+                                    onPress={() => this.state.itemQuantity < this.state.quantityAvailable.quantity && this.setState({itemQuantity: this.state.itemQuantity + 1})}>
                                     <View style={[styleHome.boxPadding, styleHome.box]}>
                                         <TextLarge>+</TextLarge>
                                     </View>
@@ -292,24 +312,29 @@ class ListPrice extends React.PureComponent {
         let margin = 20;
         let priceItemWidth = (this.state.width - 20) / 2;
         try {
-            var listPrice = this.props.productListPrice.map((data) => {
-                return (
-                    <TouchableWithoutFeedback key={data._id}
-                                              onPress={() => this.changeType(data)}>
-                        <View
-                            style={[styleHome.box, styleHome.boxPadding, styleModalItems.marginVertical, styleModalItems.choosePriceItem, {
-                                flexDirection: 'row',
-                                width: priceItemWidth
-                            }, this.props.productListPrice.indexOf(data) % 2 === 0 && {marginRight: margin}, this.props.instant.state.currentPrice._id === data._id && styleBase.background3]}>
-                            <TextSmall numberOfLines={2}
-                                       style={[styleBase.bold, this.props.instant.state.currentPrice._id === data._id && styleBase.color4, {flex: 1}]}>{data.name}</TextSmall>
-                            <TextSmall numberOfLines={2}
-                                       style={this.props.instant.state.currentPrice._id === data._id && styleBase.color4}>{numberwithThousandsSeparator(data.price)}đ/{data.unit}</TextSmall>
-                        </View>
-                    </TouchableWithoutFeedback>
-                )
+            if (this.props.productListPrice.length > 0) {
+                var listPrice = this.props.productListPrice.map((data) => {
+                    return (
+                        <TouchableWithoutFeedback key={data._id}
+                                                  onPress={() => this.changeType(data)}>
+                            <View
+                                style={[styleHome.box, styleHome.boxPadding, styleModalItems.marginVertical, styleModalItems.choosePriceItem, {
+                                    flexDirection: 'row',
+                                    width: priceItemWidth
+                                }, this.props.productListPrice.indexOf(data) % 2 === 0 && {marginRight: margin}, this.props.instant.state.currentPrice._id === data._id && styleBase.background3]}>
+                                <TextSmall numberOfLines={2}
+                                           style={[styleBase.bold, this.props.instant.state.currentPrice._id === data._id && styleBase.color4, {flex: 1}]}>{data.name}</TextSmall>
+                                <TextSmall numberOfLines={2}
+                                           style={this.props.instant.state.currentPrice._id === data._id && styleBase.color4}>{numberwithThousandsSeparator(data.price)}đ</TextSmall>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    )
 
-            })
+                })
+            }else
+            return <View></View>
+
+
         }
         catch
             (e) {
@@ -344,7 +369,8 @@ const mapDispatchToProps = {
 const mapStateToProps = (state) => {
     return {
         account: state.account,
-        discount: state.product.discount
+        discount: state.product.discount,
+        inventoryProduct: state.inventory.product
     }
 };
 

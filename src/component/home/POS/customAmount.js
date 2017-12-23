@@ -54,7 +54,7 @@ class CustomAmount extends React.Component {
 
     addToCart() {
         this.props.addToCart({
-            productCharge: {
+            price: {
                 _id: new Date(),
                 name: this.state.title !== "" ? this.state.title : "ghi chú",
                 price: this.state.customAmount,

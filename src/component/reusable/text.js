@@ -40,12 +40,30 @@ export class TextInputNumber extends React.PureComponent {
         }
     }
 
-    getNumberInput(num) {
-        let newNum = num.replace(/\./g, '').replace(/^0+/, '');
-        if (isNaN(newNum) !== true) {
-            this.setState({localValue: newNum});
-            return newNum;
+    getNumberInput(text) {
+        let newText = '';
+        let numbers = '0123456789';
+        for (let i = 0; i < text.length; i++) {
+            if (numbers.indexOf(text[i]) > -1) {
+                if (newText === '' && text[i] == 0) {
+
+                } else {
+                    newText = newText + text[i];
+
+                }
+
+            }
         }
+        if (newText < 1) {
+            newText = 0
+        }
+        if(this.props.hasOwnProperty("maxValue"))
+        {
+            if (newText > this.props.maxValue) {
+                newText = this.props.maxValue
+            }
+        }
+       return newText
     }
 
     render() {

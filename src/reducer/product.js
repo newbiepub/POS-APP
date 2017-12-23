@@ -3,7 +3,6 @@ import {PRODUCT} from "../constant/constant";
 const initialState = {
     loading: true,
     allProduct: [],
-    variantProduct: [],
     discount: [],
     category: []
 };
@@ -21,8 +20,7 @@ function productReducer(initialState) {
             case PRODUCT.GET_PRODUCT : {
                 return {
                     ...state,
-                    allProduct: action.payload.product,
-                    variantProduct: action.payload.variant,
+                    allProduct: action.payload,
                     loading: false
                 }
             }
