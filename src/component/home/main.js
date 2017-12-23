@@ -3,6 +3,7 @@ import {View} from "react-native";
 import styleBase from "../style/base";
 import POS from './POS/pointOfSale';
 import Transaction from './transaction/transaction';
+import Report from './report/report';
 import Product from './product/product';
 import Setting from './setting/setting';
 import Inventory from "./inventory/inventory";
@@ -35,6 +36,15 @@ class Main extends React.Component {
                     this.props.currentRoute === "transaction" &&
                     <Animate.View animation={"fadeIn"} duration={750} style={{flex: 1}}>
                         <Transaction openMenu={() => {
+                            this.props.openMenu()
+                        }}/>
+                    </Animate.View>
+
+                }
+                {
+                    this.props.currentRoute === "report" &&
+                    <Animate.View animation={"fadeIn"} duration={750} style={{flex: 1}}>
+                        <Report openMenu={() => {
                             this.props.openMenu()
                         }}/>
                     </Animate.View>
