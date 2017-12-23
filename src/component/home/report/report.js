@@ -27,7 +27,6 @@ import Swipeable from "../../swipeableList/swipeableList";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {numberwithThousandsSeparator} from "../../reusable/function";
 
-import {VictoryBar} from 'victory-native';
 class Report extends Component {
     constructor(props) {
         super(props);
@@ -136,7 +135,6 @@ class Report extends Component {
                     </View>
 
                     <View style={{flex: 1}}>
-                        <VictoryBar />
                     </View>
                 </View>
             </View>
