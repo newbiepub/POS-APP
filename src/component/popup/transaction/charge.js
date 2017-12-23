@@ -40,11 +40,13 @@ class Charge extends React.Component {
         let totalPrice = 0;
         this.props.cart.forEach(async (item) => {
             await itemInCart.push({
-                name: item.hasOwnProperty("productInfo") && item.productCharge._id !== item.productInfo._id ? `${item.productInfo.name}(${item.productCharge.name})` : item.productCharge.name,
-                price: item.productCharge.price,
+                _id: !item.hasOwnProperty("customAmount") ? item.productInfo._id : undefined,
+                name: !item.hasOwnProperty("customAmount") ? `${item.productInfo.name}(${item.price.name})` : item.productInfo.name,
+                price: item.price.price,
                 quantity: item.quantity,
-                unit: item.productCharge.unit,
-                discount: item.discount,
+                unit: item.productInfo.unit,
+                customAmount: item.hasOwnProperty("customAmount") ? true : undefined,
+                discount: !item.hasOwnProperty("customAmount") ? item.discount : [],
                 totalPrice: item.totalPrice
             });
             totalPrice += await item.totalPrice;

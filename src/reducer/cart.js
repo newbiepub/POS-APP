@@ -8,24 +8,23 @@ export default productReducer(initialState);
 
 function addToCart(currentCart, product) {
 
-    if (product.hasOwnProperty("oldId") && product.oldId !== product._id) {
-
-        for (item of currentCart) {
-
-            if (product.oldId === item.productCharge._id && product.oldId !== product.productCharge._id) {
-                currentCart.splice(currentCart.indexOf(item), 1);
-                break;
-            }
-        }
-    }
     for (item of currentCart) {
 
-        if (product.productCharge._id === item.productCharge._id) {
-            return item.quantity = product.quantity, item.totalPrice = product.totalPrice, item.productCharge = product.productCharge, item.discount =
-                product.discount, item.productInfo = product.productInfo;
-
+        if (product.productInfo._id === item.productInfo._id ) {
+            let index = currentCart.indexOf(item);
+            currentCart.splice(index, 1);
+            return currentCart.splice(index, 0, product);
         }
     }
+
+    // for (item of currentCart) {
+    //
+    //     if (product.price._id === item.price._id) {
+    //         return item.quantity = product.quantity, item.totalPrice = product.totalPrice, item.productCharge = product.productCharge, item.discount =
+    //             product.discount, item.productInfo = product.productInfo;
+    //
+    //     }
+    // }
     return currentCart.push(product)
 
 }
@@ -33,7 +32,7 @@ function addToCart(currentCart, product) {
 function removeItemInCart(currentCart, id) {
     for (item of currentCart) {
 
-        if (id === item.productCharge._id) {
+        if (id === item.productInfo._id) {
             currentCart.splice(currentCart.indexOf(item), 1);
             break;
         }

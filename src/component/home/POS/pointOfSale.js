@@ -13,6 +13,7 @@ import {numberwithThousandsSeparator} from '../../reusable/function';
 import {clearCart} from '../../../action/cart';
 import ViewProduct from '../../popup/product/viewProduct';
 import ChargeView from '../../popup/transaction/charge';
+
 class POS extends React.Component {
     constructor(props) {
         super(props);
@@ -52,7 +53,7 @@ class POS extends React.Component {
     charge() {
         this.props.openPopup();
         this.props.renderPopup(
-            <ChargeView />
+            <ChargeView/>
         );
     }
 
@@ -138,11 +139,13 @@ class POS extends React.Component {
         let currentView = this.state.currentView;
         try {
             var listCurrentSale = this.props.cart.map((data, index) => {
+               // console.warn(JSON.stringify(data))
                 return (
                     <TouchableWithoutFeedback key={index} onPress={() => this.adjustItemInCart(data)}>
                         <View style={{flexDirection: 'row', padding: 10, alignItems: "center"}}>
                             <View style={{flex: 1}}>
-                                <TextNormal numberOfLines={2}>{data.productCharge.name}</TextNormal>
+                                <TextNormal
+                                    numberOfLines={2}>{data.productInfo.name}{data.price.name && `(${data.price.name})`}</TextNormal>
                                 {
                                     data.quantity > 1 &&
                                     <TextSmall style={styleBase.color6}>x{data.quantity}</TextSmall>

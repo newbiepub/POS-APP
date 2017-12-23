@@ -56,13 +56,17 @@ class CustomAmount extends React.Component {
         this.props.addToCart({
             price: {
                 _id: new Date(),
-                name: this.state.title !== "" ? this.state.title : "ghi chú",
                 price: this.state.customAmount,
-                unit: 'cái',
+
             },
             quantity: 1,
             customAmount: true,
-            totalPrice: this.state.customAmount
+            totalPrice: this.state.customAmount,
+            productInfo:{
+                _id: new Date(),
+                name: this.state.title !== "" ? this.state.title : "ghi chú",
+                unit: 'cái',
+            }
         });
         this.setState(
             {
@@ -88,9 +92,9 @@ class CustomAmount extends React.Component {
                                              this.setState({title: text});
                                              if (this.props.hasOwnProperty("existData")) {
                                                  this.props.instance.setState({
-                                                     currentPrice:{
-                                                         ...this.props.instance.state.currentPrice,
-                                                         name: text
+                                                     productInfo:{
+                                                         ...this.props.instance.state.productInfo,
+                                                         name:text
                                                      }
                                                  })
                                              }

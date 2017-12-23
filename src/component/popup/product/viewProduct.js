@@ -18,7 +18,7 @@ class ViewItem extends React.Component {
         super(props);
         var {width, height} = Dimensions.get('window');
         this.state = {
-            currentPrice: this.props.hasOwnProperty("existData") ? this.props.existData.productCharge : this.props.productData.price[0],
+            currentPrice: this.props.hasOwnProperty("existData") ? this.props.existData.price : this.props.productData.price[0],
             productInfo: this.props.hasOwnProperty("existData") ? this.props.existData.productInfo : this.props.productData,
             itemQuantity: this.props.hasOwnProperty("existData") ? this.props.existData.quantity : 1,
             discount: [],
@@ -69,7 +69,7 @@ class ViewItem extends React.Component {
 
     async addToCart() {
         let a = await  this.props.addToCart({
-            productCharge: this.state.currentPrice,
+            price: this.state.currentPrice,
             quantity: this.state.itemQuantity,
             discount: this.state.discount,
             totalPrice: (this.state.currentPrice.price - this.getCashDiscount(this.state.discountAmount, this.state.discountPercent, this.state.currentPrice.price)) * this.state.itemQuantity,
@@ -100,7 +100,6 @@ class ViewItem extends React.Component {
 
     async adjustItemInCart() {
         let a = await  this.props.addToCart({
-            oldId: this.props.existData.productCharge._id,
             price: this.state.currentPrice,
             quantity: this.state.itemQuantity,
             discount: this.state.discount,
@@ -114,14 +113,16 @@ class ViewItem extends React.Component {
     async adjustCustomAmountInCart() {
         let a = await  this.props.addToCart({
             price: {
-                _id: this.props.existData.productCharge._id,
-                name: this.state.currentPrice.name !== "" ? this.state.currentPrice.name : "ghi chú",
                 price: this.state.currentPrice.price,
-                unit: 'cái',
             },
             quantity: 1,
             customAmount: true,
-            totalPrice: this.state.currentPrice.price
+            totalPrice: this.state.currentPrice.price,
+            productInfo:{
+                _id: this.props.existData.productInfo._id,
+                name: this.state.productInfo.name !== "" ? this.state.productInfo.name : "ghi chú",
+                unit: 'cái',
+            }
         });
         this.closePopup()
     }
@@ -201,8 +202,8 @@ class ViewItem extends React.Component {
                 </View>
                 {this.props.hasOwnProperty("customAmount") ?
                     <CustomAmount existData={{
-                        _id: this.props.existData.productCharge._id,
-                        name: this.state.currentPrice.name,
+                        _id: this.props.existData.productInfo._id,
+                        name: this.state.productInfo.name,
                         price: this.state.currentPrice.price
                     }} adjustCustomAmount={(data) => console.warn(JSON.stringify(data))} instance={this}/>
                     :
@@ -267,7 +268,7 @@ class ViewItem extends React.Component {
                             {
                                 this.props.hasOwnProperty("existData") &&
                                 <TouchableWithoutFeedback onPress={() => {
-                                    this.removeItemInCart(this.props.existData.productCharge._id)
+                                    this.removeItemInCart(this.props.existData.productInfo._id)
                                 }}>
                                     <View style={styleHome.buttonDelete}>
                                         <TextNormal style={styleBase.color4}>Xoá</TextNormal>
@@ -325,7 +326,7 @@ class ListPrice extends React.PureComponent {
                                 <TextSmall numberOfLines={2}
                                            style={[styleBase.bold, this.props.instant.state.currentPrice._id === data._id && styleBase.color4, {flex: 1}]}>{data.name}</TextSmall>
                                 <TextSmall numberOfLines={2}
-                                           style={this.props.instant.state.currentPrice._id === data._id && styleBase.color4}>{numberwithThousandsSeparator(data.price)}đ</TextSmall>
+                                           style={this.props.instant.state.currentPrice._id === data._id && styleBase.color4}>{numberwithThousandsSeparator(data.price)}đ/{this.props.instant.state.productInfo.unit}</TextSmall>
                             </View>
                         </TouchableWithoutFeedback>
                     )
