@@ -311,7 +311,7 @@ class ByProduct extends React.Component {
                                                                                 duration: 2000,
                                                                                 onLoad: {duration: 1000}
                                                                             }}
-                                                                            barRatio={100}
+
                                                                             labels={(d) => `${d.y}`}
                                                                             // y={(data) => data.y}
                                                                             x={(data) => this.splitLabel(data.x)}
@@ -321,8 +321,7 @@ class ByProduct extends React.Component {
                                                                                     fill: "black",
                                                                                     fontSize: 16,
                                                                                     lineHeight: 2
-                                                                                },
-                                                                                x: {textAlign: 'center', margin: 100}
+                                                                                }
                                                                             }}
                                                                             data={this.state.dataByQuantity}
                                                                         />
@@ -334,7 +333,7 @@ class ByProduct extends React.Component {
 
                                                                     <VictoryChart
                                                                         theme={VictoryTheme.material}
-
+                                                                        domainPadding={{x: [25, 25]}}
                                                                         height={this.state.heightChart}
                                                                     >
                                                                         <VictoryBar
