@@ -72,7 +72,7 @@ class ByDate extends React.Component {
     getWidthChart(event) {
         var {width, height} = event.nativeEvent.layout;
         this.setState({
-            widthChart: width * 80 / 100,
+            widthChart: width,
             heightChart: height * 90 / 100
         })
     }
@@ -102,69 +102,36 @@ class ByDate extends React.Component {
                                 {
                                     this.props.transaction.length > 0 ?
                                         <View>
-                                            {
-                                                this.state.length < 3 ?
-                                                    <View style={{flexDirection: 'row'}}>
 
-                                                        <TextNormal>Tiền</TextNormal>
-                                                        <VictoryChart
-                                                            theme={VictoryTheme.material}
-                                                            width={this.state.widthChart}
-                                                            domainPadding={{x: [25, 25]}}
-                                                            height={this.state.heightChart}
-                                                        >
-                                                            <VictoryBar
-                                                                animate={{
-                                                                    duration: 2000,
-                                                                    onLoad: {duration: 1000}
-                                                                }}
-                                                                labels={(d) => `${numberwithThousandsSeparator(d.y)}đ`}
-                                                                y={(data) => data.y}
-                                                                x={(data) => data.x}
-                                                                style={{
-                                                                    data: {fill: "#c43a31", width: 50}, labels: {
-                                                                        fill: "black",
-                                                                        fontSize: 16,
-                                                                        lineHeight: 2
-                                                                    },
-                                                                }}
-                                                                data={this.state.data}
-                                                            />
+                                            <ScrollView horizontal={true} style={{flexDirection: 'row'}}>
+                                                <TextNormal>Tiền</TextNormal>
+                                                <VictoryChart
+                                                    theme={VictoryTheme.material}
+                                                    width={this.state.widthChart * (this.state.length / 4)}
+                                                    domainPadding={{x: [25, 25]}}
+                                                    height={this.state.heightChart}
+                                                >
+                                                    <VictoryBar
+                                                        animate={{
+                                                            duration: 2000,
+                                                            onLoad: {duration: 1000}
+                                                        }}
+                                                        labels={(d) => `${numberwithThousandsSeparator(d.y)}đ`}
+                                                        y={(data) => data.y}
+                                                        x={(data) => data.x}
+                                                        style={{
+                                                            data: {fill: "#c43a31", width: 50}, labels: {
+                                                                fill: "black",
+                                                                fontSize: 16,
+                                                                lineHeight: 2
+                                                            },
+                                                        }}
+                                                        data={this.state.data}
+                                                    />
 
-                                                        </VictoryChart>
-
-                                                    </View> :
-                                                    <ScrollView horizontal={true} style={{flexDirection: 'row'}}>
-                                                        <TextNormal>Tiền</TextNormal>
-                                                        <VictoryChart
-                                                            theme={VictoryTheme.material}
-                                                            width={this.state.widthChart* (this.state.length/3) }
-                                                            domainPadding={{x: [25, 25]}}
-                                                            height={this.state.heightChart}
-                                                        >
-                                                            <VictoryBar
-                                                                animate={{
-                                                                    duration: 2000,
-                                                                    onLoad: {duration: 1000}
-                                                                }}
-                                                                labels={(d) => `${numberwithThousandsSeparator(d.y)}đ`}
-                                                                y={(data) => data.y}
-                                                                x={(data) => data.x}
-                                                                style={{
-                                                                    data: {fill: "#c43a31", width: 50}, labels: {
-                                                                        fill: "black",
-                                                                        fontSize: 16,
-                                                                        lineHeight: 2
-                                                                    },
-                                                                }}
-                                                                data={this.state.data}
-                                                            />
-
-                                                        </VictoryChart>
-                                                    </ScrollView>
-
-                                            }
-                                            <TextNormal style={{textAlign: 'right'}}>Ngày</TextNormal>
+                                                </VictoryChart>
+                                            </ScrollView>
+                                            <TextNormal style={{textAlign: 'center'}}>Mặt hàng</TextNormal>
                                         </View>
                                         :
                                         <View style={[styleBase.center, {flex: 1}]}>
