@@ -152,6 +152,7 @@ class ByCategory extends React.Component {
                                                             theme={VictoryTheme.material}
                                                             width={this.state.widthChart}
                                                             height={this.state.heightChart}
+                                                            domainPadding={{x: [25, 25]}}
                                                         >
                                                             <VictoryBar
                                                                 animate={{
@@ -178,6 +179,7 @@ class ByCategory extends React.Component {
                                                         <TextNormal>Tiền</TextNormal>
                                                         <VictoryChart
                                                             theme={VictoryTheme.material}
+                                                            domainPadding={{x: [25, 25]}}
                                                             height={this.state.heightChart}
                                                         >
                                                             <VictoryBar

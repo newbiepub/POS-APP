@@ -110,6 +110,7 @@ class ByDate extends React.Component {
                                                         <VictoryChart
                                                             theme={VictoryTheme.material}
                                                             width={this.state.widthChart}
+                                                            domainPadding={{x: [25, 25]}}
                                                             height={this.state.heightChart}
                                                         >
                                                             <VictoryBar
@@ -137,6 +138,7 @@ class ByDate extends React.Component {
                                                         <TextNormal>Tiền</TextNormal>
                                                         <VictoryChart
                                                             theme={VictoryTheme.material}
+                                                            domainPadding={{x: [25, 25]}}
                                                             height={this.state.heightChart}
                                                         >
                                                             <VictoryBar
