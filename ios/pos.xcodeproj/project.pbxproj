@@ -535,6 +535,7 @@
 			isa = PBXGroup;
 			children = (
 				EAF1BA7799EC4A28A681CB84 /* libRNVectorIcons.a */,
+				A7112E67839D466EB8BFEE64 /* libRNSVG.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";

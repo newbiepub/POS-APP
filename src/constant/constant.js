@@ -66,3 +66,8 @@ export const CART = {
     CLEAR_CART: "CLEAR_CART",
     REMOVE_CART: "REMOVE_CART",
 };
+
+// invoice
+export const INVOICE = {
+    GET_INVOICE: "GET_INVOICE"
+};

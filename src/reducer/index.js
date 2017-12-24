@@ -8,6 +8,7 @@ import cart from './cart';
 import inventory from "./inventory";
 import accountCompany from "./accountCompany";
 import routeCompany from "./routeCompany";
+import invoice from "./invoice";
 
 const appReducers = combineReducers({
     account,
@@ -18,7 +19,8 @@ const appReducers = combineReducers({
     cart,
     inventory,
     accountCompany,
-    routeCompany
+    routeCompany,
+    invoice
 });
 
 export default appReducers;

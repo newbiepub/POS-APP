@@ -7,6 +7,7 @@ import Report from './report/report';
 import Product from './product/product';
 import Setting from './setting/setting';
 import Inventory from "./inventory/inventory";
+import Invoice from "./invoice/invoice";
 import {connect} from 'react-redux';
 import * as Animate from "react-native-animatable";
 import {openMenu} from '../../action/route';
@@ -72,6 +73,14 @@ class Main extends React.Component {
                     this.props.currentRoute === "inventory" &&
                     <Animate.View style={{flex: 1}}>
                         <Inventory
+                            openMenu={this.props.openMenu.bind(this)}
+                            navigator={this.props.navigator}/>
+                    </Animate.View>
+                }
+                {
+                    this.props.currentRoute === "invoice" &&
+                    <Animate.View style={{flex: 1}}>
+                        <Invoice
                             openMenu={this.props.openMenu.bind(this)}
                             navigator={this.props.navigator}/>
                     </Animate.View>
