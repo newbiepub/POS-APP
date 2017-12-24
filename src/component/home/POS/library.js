@@ -289,7 +289,7 @@ class LibraryItems extends React.PureComponent {
                 </View>
                 <View style={[styleHome.itemBarTitle]}>
                     <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
-                    <TextSmall> {item.allPrices.length > 1 ? item.allPrices.length + " giá" : numberwithThousandsSeparator(item.price) + "đ"}</TextSmall>
+                    <TextSmall> {item.price.length > 1 ? item.price.length + " giá" : numberwithThousandsSeparator(item.price[0].price) + "đ"}</TextSmall>
                 </View>
             </View>
         </TouchableWithoutFeedback>

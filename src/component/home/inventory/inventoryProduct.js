@@ -119,7 +119,7 @@ class InventoryProductItem extends React.Component {
                 </View>
                 <View style={[{flex: 0.33}, styleBase.center]}>
                     <Text style={[styleBase.font16, styleBase.text4]}>
-                        {numberwithThousandsSeparator(this.props.item.price) + "đ"}
+                        {numberwithThousandsSeparator(this.props.item.price[0].price) + "đ"}
                     </Text>
                 </View>
                 <View style={[{flex: 0.33}, styleBase.centerVertical]}>

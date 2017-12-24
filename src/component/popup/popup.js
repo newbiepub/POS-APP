@@ -57,7 +57,7 @@ class Popup extends React.PureComponent {
                     </TouchableWithoutFeedback>
                     <Animate.View animation={"zoomIn"} duration={500}
                                   style={[styleBase.container, styleBase.background4, {
-                                      width: this.state.width> 800 ?  this.state.width * 85 / 100 : this.state.width,
+                                      width: this.state.width> 867 ?  this.state.width * 85 / 100 : this.state.width,
                                       alignSelf: 'center'
                                   }]}>
                         {Object.keys(this.props.renderModal).length > 0 &&
