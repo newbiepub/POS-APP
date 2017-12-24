@@ -1,6 +1,6 @@
 import React from "react";
 import styleBase from "../style/base";
-import {Text, TextInput, TouchableOpacity, View, Alert, Platform} from "react-native";
+import {Text, TextInput, TouchableOpacity, View, Alert, Platform, Image, Dimensions, InteractionManager} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {companyLogin} from "../../action/accountCompany";
 import KeyboardSpacer from "react-native-keyboard-spacer"
@@ -9,11 +9,31 @@ import {connect} from "react-redux";
 class LoginCompany extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            onChangeDimension: false
+        }
+    }
+
+    changeDimensions() {
+        InteractionManager.runAfterInteractions(() => {
+            this.setState({onChangeDimension: !this.state.onChangeDimension});
+        })
+    }
+
+    componentWillMount() {
+        Dimensions.addEventListener("change", this.changeDimensions.bind(this));
+    }
+
+    componentWillUnmount() {
+        Dimensions.removeEventListener("change", this.changeDimensions.bind(this));
     }
 
     render() {
         return (
             <View style={[styleBase.container, styleBase.background5, styleBase.center, styleBase.shadowBox]}>
+                <Image source={require("../../asset/img/adminBackground.jpg")}
+                       resizeMode="cover"
+                       style={[styleBase.fillParent,{width: Dimensions.get('window').width, height: Dimensions.get("window").height}]}/>
                 <View style={[{height: 380, minWidth: 400}, styleBase.background4]}>
                     <View style={[styleBase.center, {marginTop: 30, paddingHorizontal: 20}]}>
                         <Text style={[styleBase.text4, styleBase.font16]}>

@@ -23,7 +23,7 @@ class Home extends React.Component {
     async componentWillMount() {
         //console.warn(JSON.stringify(this.props.account));
         let {access_token} = this.props.account;
-        getInventoryProduct(access_token)
+        getInventoryProduct(access_token);
         let a = await this.props.countTransaction(access_token);
         this.props.getProduct(access_token);
         this.props.getPayment(access_token);

@@ -45,6 +45,7 @@ export async function companyAuth () {
     try {
         let token = await AsyncStorage.getItem(ASYNC_STORAGE.COMPANY_AUTH);
         if(token) {
+            token = JSON.parse(token);
             let response = await fetch(`${config.api}/company/auth`, {
                 method: "POST",
                 headers: {

@@ -46,3 +46,25 @@ export async function deleteInvoice (item) {
         throw e;
     }
 }
+
+export async function sendEmail(email, invoice) {
+    try {
+        let token = await require("react-native").AsyncStorage.getItem(ASYNC_STORAGE.AUTH_TOKEN);
+        token = JSON.parse(token);
+        let response = await fetch(`${config.api}/api/invoice/sendEmail`, {
+            method: "POST",
+            headers: {
+                'access-token': token.access_token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({customerEmail: email, invoice})
+        });
+        response = await response.json();
+        if(response.error) {
+            throw new Error(response.error.message);
+        }
+        return response;
+    } catch(e) {
+        throw e;
+    }
+}

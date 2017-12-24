@@ -1,11 +1,11 @@
 import React from "react";
-import {Text, TouchableOpacity, View, WebView, Alert} from "react-native";
+import {Text, TouchableOpacity, View, WebView, Alert, AlertIOS} from "react-native";
 import styleBase from "../../style/base";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import moment from "../../momentJs";
 import {closePopup} from "../../../action/popup";
 import {connect} from "react-redux";
-import {deleteInvoice, getInvoice} from "../../../action/invoice";
+import {deleteInvoice, getInvoice, sendEmail} from "../../../action/invoice";
 import LoadingOverlay from "../../loadingOverlay/loadingOverlay";
 
 class ViewInvoice extends React.Component {
@@ -49,6 +49,27 @@ class ViewInvoice extends React.Component {
         ])
     }
 
+     async sendEmail(email) {
+        try {
+            if((new RegExp(/[A-Z0-9._%+-]+@[A-Z0-9-]+.+.[A-Z]{2,4}/igm)).test(email)) {
+                await sendEmail(email, this.props.invoice);
+                Alert.alert("Thành Công","Hoá đơn đã được gửi đi", [
+                    {
+                        text: "OK", onPress: () => {this.props.closePopup()}
+                    }
+                ]);
+            } else {
+                Alert.alert("Thông báo", "Email không hợp lệ");
+            }
+        } catch (e) {
+            alert(e);
+        }
+    }
+
+    onSendEmail() {
+        AlertIOS.prompt("Mời nhập email khách hàng", null, this.sendEmail.bind(this))
+    }
+
     render() {
         return (
             <View style={[styleBase.container]}>
@@ -60,7 +81,9 @@ class ViewInvoice extends React.Component {
                             In Hoá Đơn
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styleBase.center,
+                    <TouchableOpacity
+                        onPress={this.onSendEmail.bind(this)}
+                        style={[styleBase.center,
                         {flex: 0.5, paddingVertical: 10, marginHorizontal: 20, marginVertical: 15}, styleBase.background2]}>
                         <Text style={[styleBase.font16, styleBase.textWhite]}>
                             Gửi E-Mail cho khách hàng
