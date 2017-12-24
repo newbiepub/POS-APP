@@ -144,7 +144,7 @@ class ByCategory extends React.Component {
                                     this.props.transaction.length > 0 ?
                                         < View>
                                             {
-                                                this.state.length < 5 ?
+                                                this.state.length < 3 ?
                                                     <View style={{flexDirection: 'row'}}>
 
                                                         <TextNormal>Tiền</TextNormal>
@@ -179,6 +179,7 @@ class ByCategory extends React.Component {
                                                         <TextNormal>Tiền</TextNormal>
                                                         <VictoryChart
                                                             theme={VictoryTheme.material}
+                                                            width={this.state.widthChart* (this.state.length/3) }
                                                             domainPadding={{x: [25, 25]}}
                                                             height={this.state.heightChart}
                                                         >
