@@ -1,16 +1,13 @@
 import React, {Component} from "react";
 import {
     ActivityIndicator,
-    FlatList,
-    InteractionManager,
+
     ScrollView,
-    Text,
-    TextInput,
+
     TouchableOpacity,
-    TouchableWithoutFeedback,
+
     View,
-    Animated,
-    Picker
+
 } from "react-native";
 import {TextLarge, TextNormal, TextSmall} from '../../reusable/text';
 import styleHome from "../../style/home";
@@ -19,16 +16,10 @@ import {connect} from 'react-redux';
 import Entypo from 'react-native-vector-icons/Entypo';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {openPopup, renderPopup} from '../../../action/popup';
-import CreateModifyProductPopup from '../../popup/product/createModifyProduct';
-import CreateCategory from '../../popup/product/createCategory';
-import CreateDiscount from '../../popup/product/createDiscount';
-import styleProduct from "../../style/product";
-import * as Animate from "react-native-animatable";
-import Swipeable from "../../swipeableList/swipeableList";
-import Ionicons from 'react-native-vector-icons/Ionicons';
+
 import {numberwithThousandsSeparator} from "../../reusable/function";
 import {VictoryBar, VictoryPie, VictoryChart, VictoryGroup, VictoryTheme, VictoryLabel} from "victory-native";
-import moment from '../../momentJs'
+
 
 class ByProduct extends React.Component {
 
@@ -47,14 +38,19 @@ class ByProduct extends React.Component {
 
     componentWillMount() {
         let transaction = this.props.transaction;
-        this.getDataByProduct(transaction)
+        if (transaction.length > 0) {
+            this.getDataByProduct(transaction)
+        }
+
     }
 
     async componentWillReceiveProps(nextProps) {
 
         if (nextProps.hasOwnProperty("transaction")) {
-            let transaction = nextProps.transaction;
-            this.getDataByProduct(transaction)
+            let transaction = this.props.transaction;
+            if (transaction.length > 0) {
+                this.getDataByProduct(transaction)
+            }
         }
     }
 
@@ -71,12 +67,12 @@ class ByProduct extends React.Component {
                             _id: product._id
                         })
                     } else {
-                        for (item of dataByQuantity) {
-                            if (item._id === product._id) {
-                                item.y = item.y + product.quantity;
+                        for (itemData of dataByQuantity) {
+                            if (itemData._id === product._id) {
+                                itemData.y = itemData.y + product.quantity;
                                 break;
                             } else {
-                                if (dataByQuantity.indexOf(item) === dataByQuantity.length - 1) {
+                                if (dataByQuantity.indexOf(itemData) === dataByQuantity.length - 1) {
                                     dataByQuantity.push({
                                         y: product.quantity,
                                         x: product.name,
@@ -226,145 +222,158 @@ class ByProduct extends React.Component {
                             </View> :
                             <View>
                                 {
-                                    this.state.length < 5 ?
-                                        <View style={{flexDirection: 'row'}}>
+                                    this.props.transaction.length > 0 ?
+                                        <View>
                                             {
-                                                this.state.criteria === "Theo số lượng" ?
-                                                    <View>
-                                                        <TextNormal>Số lượng</TextNormal>
+                                                this.state.length < 3 ?
+                                                    <View style={{flexDirection: 'row'}}>
+                                                        {
+                                                            this.state.criteria === "Theo số lượng" ?
+                                                                <View>
+                                                                    <TextNormal>Số lượng</TextNormal>
 
-                                                        <VictoryChart
-                                                            theme={VictoryTheme.material}
+                                                                    <VictoryChart
+                                                                        theme={VictoryTheme.material}
+                                                                        width={this.state.widthChart}
+                                                                        domainPadding={{x: [25, 25]}}
+                                                                        height={this.state.heightChart}
+                                                                    >
+                                                                        <VictoryBar
+                                                                            animate={{
+                                                                                duration: 2000,
+                                                                                onLoad: {duration: 1000}
+                                                                            }}
+                                                                            labels={(d) => `${d.y}`}
+                                                                            // y={(data) => data.y}
+                                                                            x={(data) => this.splitLabel(data.x)}
+                                                                            style={{
+                                                                                data: {fill: "#c43a31", width: 50},
+                                                                                labels: {
+                                                                                    fill: "black",
+                                                                                    fontSize: 16,
+                                                                                    lineHeight: 2
+                                                                                },
+                                                                                x: {textAlign: 'center'}
+                                                                            }}
+                                                                            data={this.state.dataByQuantity}
+                                                                        />
 
-                                                            height={this.state.heightChart}
-                                                        >
-                                                            <VictoryBar
-                                                                animate={{
-                                                                    duration: 2000,
-                                                                    onLoad: {duration: 1000}
-                                                                }}
-                                                                labels={(d) => `${d.y}`}
-                                                                // y={(data) => data.y}
-                                                                x={(data) => this.splitLabel(data.x)}
-                                                                style={{
-                                                                    data: {fill: "#c43a31", width: 80},
-                                                                    labels: {
-                                                                        fill: "black",
-                                                                        fontSize: 15,
-                                                                        lineHeight: 2
-                                                                    },
-                                                                    x: {textAlign: 'center'}
-                                                                }}
-                                                                data={this.state.dataByQuantity}
-                                                            />
+                                                                    </VictoryChart>
+                                                                </View> :
+                                                                <View>
+                                                                    <TextNormal>Tiền</TextNormal>
 
-                                                        </VictoryChart>
+                                                                    <VictoryChart
+                                                                        theme={VictoryTheme.material}
+                                                                        width={this.state.width}
+                                                                        domainPadding={{x: [25, 25]}}
+                                                                        height={this.state.heightChart}
+                                                                    >
+                                                                        <VictoryBar
+                                                                            animate={{
+                                                                                duration: 2000,
+                                                                                onLoad: {duration: 1000}
+                                                                            }}
+                                                                            labels={(d) => `${numberwithThousandsSeparator(d.y)}đ`}
+                                                                            // y={(data) => data.y}
+                                                                            x={(data) => this.splitLabel(data.x)}
+                                                                            style={{
+                                                                                data: {fill: "#c43a31", width: 50},
+                                                                                labels: {
+                                                                                    fill: "black",
+                                                                                    fontSize: 16,
+                                                                                    lineHeight: 2
+                                                                                },
+                                                                                x: {textAlign: 'center',}
+                                                                            }}
+                                                                            data={this.state.dataByPrice}
+                                                                        />
+
+                                                                    </VictoryChart>
+                                                                </View>
+                                                        }
+
+
                                                     </View> :
-                                                    <View>
-                                                        <TextNormal>Tiền</TextNormal>
+                                                    <ScrollView horizontal={true} style={{flexDirection: 'row'}}>
+                                                        {
+                                                            this.state.criteria === "Theo số lượng" ?
+                                                                <View>
+                                                                    <TextNormal>Số lượng</TextNormal>
 
-                                                        <VictoryChart
-                                                            theme={VictoryTheme.material}
+                                                                    <VictoryChart
+                                                                        theme={VictoryTheme.material}
+                                                                        width={this.state.widthChart* (this.state.length/3) }
+                                                                        domainPadding={{x: [25, 25]}}
+                                                                        height={this.state.heightChart}
+                                                                    >
+                                                                        <VictoryBar
+                                                                            animate={{
+                                                                                duration: 2000,
+                                                                                onLoad: {duration: 1000}
+                                                                            }}
 
-                                                            height={this.state.heightChart}
-                                                        >
-                                                            <VictoryBar
-                                                                animate={{
-                                                                    duration: 2000,
-                                                                    onLoad: {duration: 1000}
-                                                                }}
-                                                                labels={(d) => `${d.y}đ`}
-                                                                // y={(data) => data.y}
-                                                                x={(data) => this.splitLabel(data.x)}
-                                                                style={{
-                                                                    data: {fill: "#c43a31", width: 80},
-                                                                    labels: {
-                                                                        fill: "black",
-                                                                        fontSize: 15,
-                                                                        lineHeight: 2
-                                                                    },
-                                                                    x: {textAlign: 'center'}
-                                                                }}
-                                                                data={this.state.dataByPrice}
-                                                            />
+                                                                            labels={(d) => `${d.y}`}
+                                                                            // y={(data) => data.y}
+                                                                            x={(data) => this.splitLabel(data.x)}
+                                                                            style={{
+                                                                                data: {fill: "#c43a31", width: 50},
+                                                                                labels: {
+                                                                                    fill: "black",
+                                                                                    fontSize: 16,
+                                                                                    lineHeight: 2
+                                                                                }
+                                                                            }}
+                                                                            data={this.state.dataByQuantity}
+                                                                        />
 
-                                                        </VictoryChart>
-                                                    </View>
-                                            }
+                                                                    </VictoryChart>
+                                                                </View> :
+                                                                <View>
+                                                                    <TextNormal>Tiền</TextNormal>
+
+                                                                    <VictoryChart
+                                                                        theme={VictoryTheme.material}
+                                                                        width={this.state.widthChart* (this.state.length/3) }
+                                                                        domainPadding={{x: [25, 25]}}
+                                                                        height={this.state.heightChart}
+                                                                    >
+                                                                        <VictoryBar
+                                                                            animate={{
+                                                                                duration: 2000,
+                                                                                onLoad: {duration: 1000}
+                                                                            }}
+                                                                            labels={(d) => `${numberwithThousandsSeparator(d.y)}đ`}
+                                                                            // y={(data) => data.y}
+                                                                            x={(data) => this.splitLabel(data.x)}
+                                                                            style={{
+                                                                                data: {fill: "#c43a31", width: 50},
+                                                                                labels: {
+                                                                                    fill: "black",
+                                                                                    fontSize: 16,
+                                                                                    lineHeight: 2
+                                                                                },
+                                                                                x: {textAlign: 'center'}
+                                                                            }}
+                                                                            data={this.state.dataByPrice}
+                                                                        />
+
+                                                                    </VictoryChart>
+                                                                </View>
+
+                                                        }
 
 
-                                        </View> :
-                                        <ScrollView horizontal={true} style={{flexDirection: 'row'}}>
-                                            {
-                                                this.state.criteria === "Theo số lượng" ?
-                                                    <View>
-                                                        <TextNormal>Số lượng</TextNormal>
-
-                                                        <VictoryChart
-                                                            theme={VictoryTheme.material}
-
-                                                            height={this.state.heightChart}
-                                                        >
-                                                            <VictoryBar
-                                                                animate={{
-                                                                    duration: 2000,
-                                                                    onLoad: {duration: 1000}
-                                                                }}
-                                                                labels={(d) => `${d.y}`}
-                                                                // y={(data) => data.y}
-                                                                x={(data) => this.splitLabel(data.x)}
-                                                                style={{
-                                                                    data: {fill: "#c43a31", width: 80},
-                                                                    labels: {
-                                                                        fill: "black",
-                                                                        fontSize: 15,
-                                                                        lineHeight: 2
-                                                                    },
-                                                                    x: {textAlign: 'center'}
-                                                                }}
-                                                                data={this.state.dataByQuantity}
-                                                            />
-
-                                                        </VictoryChart>
-                                                    </View> :
-                                                    <View>
-                                                        <TextNormal>Tiền</TextNormal>
-
-                                                        <VictoryChart
-                                                            theme={VictoryTheme.material}
-
-                                                            height={this.state.heightChart}
-                                                        >
-                                                            <VictoryBar
-                                                                animate={{
-                                                                    duration: 2000,
-                                                                    onLoad: {duration: 1000}
-                                                                }}
-                                                                labels={(d) => `${d.y}đ`}
-                                                                // y={(data) => data.y}
-                                                                x={(data) => this.splitLabel(data.x)}
-                                                                style={{
-                                                                    data: {fill: "#c43a31", width: 80},
-                                                                    labels: {
-                                                                        fill: "black",
-                                                                        fontSize: 15,
-                                                                        lineHeight: 2
-                                                                    },
-                                                                    x: {textAlign: 'center'}
-                                                                }}
-                                                                data={this.state.dataByPrice}
-                                                            />
-
-                                                        </VictoryChart>
-                                                    </View>
+                                                    </ScrollView>
 
                                             }
-
-
-                                        </ScrollView>
-
+                                            <TextNormal style={{textAlign: 'right'}}>Mặt hàng</TextNormal>
+                                        </View>
+                                        :
+                                        <View style={[styleBase.center, {flex: 1}]}>
+                                            <TextNormal>Không có dữ liệu</TextNormal>
+                                        </View>
                                 }
-                                <TextNormal style={{textAlign: 'right'}}>Mặt hàng</TextNormal>
                             </View>
 
                     }
