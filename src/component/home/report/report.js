@@ -1,12 +1,6 @@
 import React, {Component} from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    InteractionManager,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
+
     TouchableWithoutFeedback,
     View,
     Animated,
@@ -17,20 +11,12 @@ import styleHome from "../../style/home";
 import styleBase from "../../style/base";
 import {connect} from 'react-redux';
 import Entypo from 'react-native-vector-icons/Entypo';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
+
 import {openPopup, renderPopup} from '../../../action/popup';
-import CreateModifyProductPopup from '../../popup/product/createModifyProduct';
-import CreateCategory from '../../popup/product/createCategory';
-import CreateDiscount from '../../popup/product/createDiscount';
-import styleProduct from "../../style/product";
-import * as Animate from "react-native-animatable";
-import Swipeable from "../../swipeableList/swipeableList";
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {numberwithThousandsSeparator} from "../../reusable/function";
+
 import ByDate from './byDate';
 import ByProduct from './byProduct';
-import {VictoryBar, VictoryPie, VictoryChart, VictoryGroup, VictoryTheme, VictoryAxis} from "victory-native";
-import moment from '../../momentJs'
+import ByCategory from './byCategory'
 
 class Report extends Component {
     constructor(props) {
@@ -46,18 +32,14 @@ class Report extends Component {
             byProduct: []
         }
     }
-    //
+    // //
     // shouldComponentUpdate(nextProps) {
     //     const transactionChanged = this.props.transaction !== nextProps.transaction;
     //     const loadingChanged = this.props.loading !== nextProps.loading;
     //     const selectedChanged = this.props.selected !== nextProps.selected;
     //     return transactionChanged || loadingChanged || selectedChanged
     // }
-
-    async componentWillMount() {
-        let data = [];
-
-    }
+    //
 
     onSelection(id) {
         this.setState({
@@ -116,6 +98,10 @@ class Report extends Component {
                         {
                             this.state.selected.id === this.state.list[0].id &&
                             <ByProduct instance={this}/>
+                        }
+                        {
+                            this.state.selected.id === this.state.list[1].id &&
+                            <ByCategory instance={this}/>
                         }
                         {
                             this.state.selected.id === this.state.list[2].id &&

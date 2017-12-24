@@ -1,31 +1,19 @@
 import React, {Component} from "react";
 import {
     ActivityIndicator,
-    FlatList,
-    InteractionManager,
+
     ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
+
     View,
-    Animated,
-    Picker
+
 } from "react-native";
 import {TextLarge, TextNormal, TextSmall} from '../../reusable/text';
 import styleHome from "../../style/home";
 import styleBase from "../../style/base";
 import {connect} from 'react-redux';
-import Entypo from 'react-native-vector-icons/Entypo';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
+
 import {openPopup, renderPopup} from '../../../action/popup';
-import CreateModifyProductPopup from '../../popup/product/createModifyProduct';
-import CreateCategory from '../../popup/product/createCategory';
-import CreateDiscount from '../../popup/product/createDiscount';
-import styleProduct from "../../style/product";
-import * as Animate from "react-native-animatable";
-import Swipeable from "../../swipeableList/swipeableList";
-import Ionicons from 'react-native-vector-icons/Ionicons';
+
 import {numberwithThousandsSeparator} from "../../reusable/function";
 import {VictoryBar, VictoryPie, VictoryChart, VictoryGroup, VictoryTheme, VictoryAxis} from "victory-native";
 import moment from '../../momentJs'
@@ -43,14 +31,18 @@ class ByDate extends React.Component {
     }
 
     componentWillMount() {
+
         let transaction = this.props.transaction;
-        this.getDataByDate(transaction)
+        if (transaction.length > 0) {
+            this.getDataByDate(transaction)
+        }
+
     }
 
     async componentWillReceiveProps(nextProps) {
 
-        if (nextProps.hasOwnProperty("transaction")) {
-            let transaction = nextProps.transaction;
+        let transaction = this.props.transaction;
+        if (transaction.length > 0) {
             this.getDataByDate(transaction)
         }
     }
@@ -108,54 +100,76 @@ class ByDate extends React.Component {
                             </View> :
                             <View>
                                 {
-                                    this.state.length < 5 ?
-                                        <View style={{flexDirection: 'row'}}>
+                                    this.props.transaction.length > 0 ?
+                                        <View>
+                                            {
+                                                this.state.length < 5 ?
+                                                    <View style={{flexDirection: 'row'}}>
 
-                                            <TextNormal>Tiền</TextNormal>
-                                            <VictoryChart
-                                                theme={VictoryTheme.material}
-                                                width={this.state.widthChart}
-                                                height={this.state.heightChart}
-                                            >
-                                                <VictoryBar
-                                                    animate={{
-                                                        duration: 2000,
-                                                        onLoad: {duration: 1000}
-                                                    }}
-                                                    labels={(d) => `${d.y}đ`}
-                                                    y={(data) => data.y}
-                                                    x={(data) => data.x}
-                                                    style={{data: {fill: "#c43a31", width: 50}}}
-                                                    data={this.state.data}
-                                                />
+                                                        <TextNormal>Tiền</TextNormal>
+                                                        <VictoryChart
+                                                            theme={VictoryTheme.material}
+                                                            width={this.state.widthChart}
+                                                            height={this.state.heightChart}
+                                                        >
+                                                            <VictoryBar
+                                                                animate={{
+                                                                    duration: 2000,
+                                                                    onLoad: {duration: 1000}
+                                                                }}
+                                                                labels={(d) => `${numberwithThousandsSeparator(d.y)}đ`}
+                                                                y={(data) => data.y}
+                                                                x={(data) => data.x}
+                                                                style={{
+                                                                    data: {fill: "#c43a31", width: 50}, labels: {
+                                                                        fill: "black",
+                                                                        fontSize: 16,
+                                                                        lineHeight: 2
+                                                                    },
+                                                                }}
+                                                                data={this.state.data}
+                                                            />
 
-                                            </VictoryChart>
+                                                        </VictoryChart>
 
-                                        </View> :
-                                        <ScrollView horizontal={true} style={{flexDirection: 'row'}}>
-                                            <TextNormal>Tiền</TextNormal>
-                                            <VictoryChart
-                                                theme={VictoryTheme.material}
-                                                height={this.state.heightChart}
-                                            >
-                                                <VictoryBar
-                                                    animate={{
-                                                        duration: 2000,
-                                                        onLoad: {duration: 1000}
-                                                    }}
-                                                    labels={(d) => `${d.y}đ`}
-                                                    y={(data) => data.y}
-                                                    x={(data) => data.x}
-                                                    style={{data: {fill: "#c43a31", width: 50}}}
-                                                    data={this.state.data}
-                                                />
+                                                    </View> :
+                                                    <ScrollView horizontal={true} style={{flexDirection: 'row'}}>
+                                                        <TextNormal>Tiền</TextNormal>
+                                                        <VictoryChart
+                                                            theme={VictoryTheme.material}
+                                                            height={this.state.heightChart}
+                                                        >
+                                                            <VictoryBar
+                                                                animate={{
+                                                                    duration: 2000,
+                                                                    onLoad: {duration: 1000}
+                                                                }}
+                                                                labels={(d) => `${numberwithThousandsSeparator(d.y)}đ`}
+                                                                y={(data) => data.y}
+                                                                x={(data) => data.x}
+                                                                style={{
+                                                                    data: {fill: "#c43a31", width: 50}, labels: {
+                                                                        fill: "black",
+                                                                        fontSize: 16,
+                                                                        lineHeight: 2
+                                                                    },
+                                                                }}
+                                                                data={this.state.data}
+                                                            />
 
-                                            </VictoryChart>
-                                        </ScrollView>
+                                                        </VictoryChart>
+                                                    </ScrollView>
 
+                                            }
+                                            <TextNormal style={{textAlign: 'right'}}>Ngày</TextNormal>
+                                        </View>
+                                        :
+                                        <View style={[styleBase.center, {flex: 1}]}>
+                                            <TextNormal>Không có dữ liệu</TextNormal>
+                                        </View>
                                 }
-                                <TextNormal style={{textAlign: 'right'}}>Ngày</TextNormal>
                             </View>
+
                     }
                 </View>
             </View>
