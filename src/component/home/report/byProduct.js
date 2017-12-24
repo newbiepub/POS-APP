@@ -27,7 +27,7 @@ import * as Animate from "react-native-animatable";
 import Swipeable from "../../swipeableList/swipeableList";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {numberwithThousandsSeparator} from "../../reusable/function";
-import {VictoryBar, VictoryPie, VictoryChart, VictoryGroup, VictoryTheme, VictoryAxis} from "victory-native";
+import {VictoryBar, VictoryPie, VictoryChart, VictoryGroup, VictoryTheme, VictoryLabel} from "victory-native";
 import moment from '../../momentJs'
 
 class ByProduct extends React.Component {
@@ -35,154 +35,341 @@ class ByProduct extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            slectedDate: '',
-            listDate: [],
-            loading: this.props.instance.props.loading,
-            listByDate: [],
-            byProduct:[]
+            length: 0,
+            dataByPrice: [],
+            dataByQuantity: [],
+            widthChart: 0,
+            heightChart: 0,
+            criteria: 'Theo số lượng',
+            isSelectCriteria: false
         }
     }
 
-    async  componentWillMount()
-    {
-        await this.getListDate(this.props.instance.props.transaction);
-
-        this.getDataByProduct(this.props.instance.props.transaction)
+    componentWillMount() {
+        let transaction = this.props.transaction;
+        this.getDataByProduct(transaction)
     }
+
     async componentWillReceiveProps(nextProps) {
-        if (this.state.loading !== nextProps.instance.props.loading) {
-            this.setState({
-                loading: nextProps.instance.props.loading
-            })
-        }
-        if (nextProps.instance.props.hasOwnProperty("transaction")) {
-            let transaction = nextProps.instance.props.transaction;
-            let listDate = await this.getListDate(transaction);
-            await this.setState({
-                listDate: listDate,
-                selected: listDate[0]
-            })
-            console.warn(JSON.stringify(this.state.slectedDate));
+
+        if (nextProps.hasOwnProperty("transaction")) {
+            let transaction = nextProps.transaction;
             this.getDataByProduct(transaction)
         }
     }
 
-    async getListDate(transaction) {
-        return new Promise((resolve,reject)=>{
-            let data = [];
-            for (item of transaction) {
-                data.push(item.title);
-
-            }
-            setTimeout(async () => {
-                resolve(data)
-            }, 0)
-        })
-
-    }
 
     getDataByProduct(transaction) {
-        let data = [];
-
+        let dataByQuantity = [];
         for (itemDate of transaction) {
-            console.warn( this.state.slectedDate)
-            if (itemDate.title === this.state.slectedDate) {
-                console.warn(JSON.stringify(itemDate.data))
-                for (product of itemDate.data) {
-                    for (item of product.productItems) {
-                        if (data.length > 0) {
-                            for (item of data) {
-                                if (item._id === product._id) {
-                                    item.totalPrice =
-                                        item.totalPrice + product.totalPrice;
-                                    item.quantity =
-                                        item.quantity + product.quantity;
-
-                                } else {
-                                    data.push({
-                                        _id: product._id,
-                                        name: product.name,
-                                        totalPrice: product.totalPrice,
-                                        quantity: product.quantity
+            for (tran of itemDate.data) {
+                for (product of tran.productItems) {
+                    if (dataByQuantity.length === 0) {
+                        dataByQuantity.push({
+                            y: product.quantity,
+                            x: product.name,
+                            _id: product._id
+                        })
+                    } else {
+                        for (item of dataByQuantity) {
+                            if (item._id === product._id) {
+                                item.y = item.y + product.quantity;
+                                break;
+                            } else {
+                                if (dataByQuantity.indexOf(item) === dataByQuantity.length - 1) {
+                                    dataByQuantity.push({
+                                        y: product.quantity,
+                                        x: product.name,
+                                        _id: product._id
                                     })
                                 }
                             }
-                        } else {
-                            data.push({
-                                _id: product._id,
-                                name: product.name,
-                                totalPrice: product.totalPrice,
-                                quantity: product.quantity
-                            })
                         }
                     }
-
-
                 }
             }
 
+
         }
-        let result = []
-        for (item of data) {
-            result.push({
-                label: item.name,
-                y: item.quantity
-            })
+        this.setState({
+            length: dataByQuantity.length,
+            dataByQuantity: dataByQuantity
+        });
+        let dataByPrice = [];
+        for (itemDate of transaction) {
+            for (tran of itemDate.data) {
+                for (product of tran.productItems) {
+                    if (dataByPrice.length === 0) {
+                        dataByPrice.push({
+                            y: product.totalPrice,
+                            x: product.name,
+                            _id: product._id
+                        })
+                    } else {
+                        for (item of dataByPrice) {
+                            if (item._id === product._id) {
+                                item.y = item.y + product.totalPrice;
+                                break;
+                            } else {
+                                if (dataByPrice.indexOf(item) === dataByPrice.length - 1) {
+                                    dataByPrice.push({
+                                        y: product.totalPrice,
+                                        x: product.name,
+                                        _id: product._id
+                                    })
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
         }
-        setTimeout(() => {
-            console.warn(JSON.stringify(result))
-            this.setState({
-                byProduct: result
-            })
-        }, 100)
+        this.setState({
+            dataByPrice: dataByPrice
+        })
+
 
     }
 
-    render() {
-        let listOption = this.state.listDate.map(item => {
-            return (
-                <Picker.Item key={item} label={moment(item).format(`dddd,DD [tháng] MM [năm] YYYY `)} value={item}/>
-            )
-        })
-        return (
-
-            <View style={{flex: 1, padding: 50}}>
-                {
-                    this.props.instance.props.loading ?
-                        <View style={[styleBase.center, {flex: 1}]}>
-                            <ActivityIndicator size={"large"}/>
-                        </View> :
-                        <View>
-                            <Picker
-                                selectedValue={this.state.slectedDate}
-                                onValueChange={(itemValue, itemIndex) => this.setState({slectedDate: itemValue})}>
-                                {listOption}
-
-                            </Picker>
-                            <ScrollView horizontal={true}>
-                                <VictoryChart
-                                    domainPadding={{x: 40}}
-                                >
-                                    <VictoryBar
-                                        data={this.state.byProduct}
-                                    />
-                                    <VictoryAxis
-                                        label="Mặt hàng"
-                                        style={{
-                                            axisLabel: {padding: 30}
-                                        }}
-                                    />
-                                    <VictoryAxis dependentAxis
-                                                 style={{
-                                                     axisLabel: {padding: 40, fontSize: 20,},
-                                                 }}
-                                    />
-                                </VictoryChart>
-                            </ScrollView>
-
-                        </View>
+    splitLabel(s) {
+        let index = 0
+        for (var i = 0, len = s.length; i < len; i++) {
+            if (s.charAt(i) === " ") {
+                if (index > 7) {
+                    s = s.substr(0, i) + '\n' + s.substr(i + 1);
+                    i++;
+                    index = 0
                 }
+            }
+            index++;
+        }
+        return s
+    }
 
+    getWidthChart(event) {
+        var {width, height} = event.nativeEvent.layout;
+        this.setState({
+            widthChart: width * 80 / 100,
+            heightChart: height * 90 / 100
+        })
+    }
+
+    render() {
+
+        return (
+            <View style={{flex: 1}}>
+                {/*Header*/}
+
+                <View
+                    style={[styleHome.header, styleHome.boxPadding, {zIndex: 5}]}>
+
+                    <TextLarge style={[styleBase.color3, {flex: 1}]}>Theo mặt hàng</TextLarge>
+                    <TouchableOpacity onPress={() => this.setState({isSelectCriteria: !this.state.isSelectCriteria})}>
+                        <View style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            width: 200,
+                            paddingLeft: 10,
+                            justifyContent: 'flex-end'
+                        }}>
+                            <TextNormal style={[styleBase.color3]}>{this.state.criteria}</TextNormal>
+                            <EvilIcons name="chevron-down" style={styleBase.vector32}/>
+                        </View>
+                    </TouchableOpacity>
+
+                    {
+                        this.state.isSelectCriteria &&
+                        <TouchableOpacity style={{
+                            position: 'absolute',
+                            right: 0,
+                            top: 70,
+                            padding: 25,
+                            zIndex: 10,
+                            paddingLeft: 10,
+                            backgroundColor: '#e5e5e5',
+                            width: 215,
+
+                        }} onPress={() => {
+                            this.state.criteria === "Theo số lượng" ? this.setState({
+                                    criteria: "Theo tiền",
+                                    isSelectCriteria: false
+                                }) :
+                                this.setState({
+                                    criteria: "Theo số lượng",
+                                    isSelectCriteria: false
+                                })
+
+                            this.getDataByProduct(this.props.transaction)
+                        }}>
+                            <View>
+                                <TextNormal style={{
+                                    backgroundColor: 'transparent',
+                                    textAlign: 'right'
+                                }}>{this.state.criteria === "Theo số lượng" ? "Theo tiền" : "Theo số lượng"}</TextNormal>
+                            </View>
+                        </TouchableOpacity>
+
+                    }
+
+
+                </View>
+                <View onLayout={(event) => {
+                    this.getWidthChart(event)
+                }} style={{flex: 1, padding: 15, zIndex: 1}}>
+
+                    {
+                        this.props.loading ?
+                            <View style={[styleBase.center, {flex: 1}]}>
+                                <ActivityIndicator size={"large"}/>
+                            </View> :
+                            <View>
+                                {
+                                    this.state.length < 5 ?
+                                        <View style={{flexDirection: 'row'}}>
+                                            {
+                                                this.state.criteria === "Theo số lượng" ?
+                                                    <View>
+                                                        <TextNormal>Số lượng</TextNormal>
+
+                                                        <VictoryChart
+                                                            theme={VictoryTheme.material}
+
+                                                            height={this.state.heightChart}
+                                                        >
+                                                            <VictoryBar
+                                                                animate={{
+                                                                    duration: 2000,
+                                                                    onLoad: {duration: 1000}
+                                                                }}
+                                                                labels={(d) => `${d.y}`}
+                                                                // y={(data) => data.y}
+                                                                x={(data) => this.splitLabel(data.x)}
+                                                                style={{
+                                                                    data: {fill: "#c43a31", width: 80},
+                                                                    labels: {
+                                                                        fill: "black",
+                                                                        fontSize: 15,
+                                                                        lineHeight: 2
+                                                                    },
+                                                                    x: {textAlign: 'center'}
+                                                                }}
+                                                                data={this.state.dataByQuantity}
+                                                            />
+
+                                                        </VictoryChart>
+                                                    </View> :
+                                                    <View>
+                                                        <TextNormal>Tiền</TextNormal>
+
+                                                        <VictoryChart
+                                                            theme={VictoryTheme.material}
+
+                                                            height={this.state.heightChart}
+                                                        >
+                                                            <VictoryBar
+                                                                animate={{
+                                                                    duration: 2000,
+                                                                    onLoad: {duration: 1000}
+                                                                }}
+                                                                labels={(d) => `${d.y}đ`}
+                                                                // y={(data) => data.y}
+                                                                x={(data) => this.splitLabel(data.x)}
+                                                                style={{
+                                                                    data: {fill: "#c43a31", width: 80},
+                                                                    labels: {
+                                                                        fill: "black",
+                                                                        fontSize: 15,
+                                                                        lineHeight: 2
+                                                                    },
+                                                                    x: {textAlign: 'center'}
+                                                                }}
+                                                                data={this.state.dataByPrice}
+                                                            />
+
+                                                        </VictoryChart>
+                                                    </View>
+                                            }
+
+
+                                        </View> :
+                                        <ScrollView horizontal={true} style={{flexDirection: 'row'}}>
+                                            {
+                                                this.state.criteria === "Theo số lượng" ?
+                                                    <View>
+                                                        <TextNormal>Số lượng</TextNormal>
+
+                                                        <VictoryChart
+                                                            theme={VictoryTheme.material}
+
+                                                            height={this.state.heightChart}
+                                                        >
+                                                            <VictoryBar
+                                                                animate={{
+                                                                    duration: 2000,
+                                                                    onLoad: {duration: 1000}
+                                                                }}
+                                                                labels={(d) => `${d.y}`}
+                                                                // y={(data) => data.y}
+                                                                x={(data) => this.splitLabel(data.x)}
+                                                                style={{
+                                                                    data: {fill: "#c43a31", width: 80},
+                                                                    labels: {
+                                                                        fill: "black",
+                                                                        fontSize: 15,
+                                                                        lineHeight: 2
+                                                                    },
+                                                                    x: {textAlign: 'center'}
+                                                                }}
+                                                                data={this.state.dataByQuantity}
+                                                            />
+
+                                                        </VictoryChart>
+                                                    </View> :
+                                                    <View>
+                                                        <TextNormal>Tiền</TextNormal>
+
+                                                        <VictoryChart
+                                                            theme={VictoryTheme.material}
+
+                                                            height={this.state.heightChart}
+                                                        >
+                                                            <VictoryBar
+                                                                animate={{
+                                                                    duration: 2000,
+                                                                    onLoad: {duration: 1000}
+                                                                }}
+                                                                labels={(d) => `${d.y}đ`}
+                                                                // y={(data) => data.y}
+                                                                x={(data) => this.splitLabel(data.x)}
+                                                                style={{
+                                                                    data: {fill: "#c43a31", width: 80},
+                                                                    labels: {
+                                                                        fill: "black",
+                                                                        fontSize: 15,
+                                                                        lineHeight: 2
+                                                                    },
+                                                                    x: {textAlign: 'center'}
+                                                                }}
+                                                                data={this.state.dataByPrice}
+                                                            />
+
+                                                        </VictoryChart>
+                                                    </View>
+
+                                            }
+
+
+                                        </ScrollView>
+
+                                }
+                                <TextNormal style={{textAlign: 'right'}}>Mặt hàng</TextNormal>
+                            </View>
+
+                    }
+
+                </View>
             </View>
         )
     }

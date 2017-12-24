@@ -35,50 +35,27 @@ class ByDate extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            slectedDate: '',
-            listDate: [],
-            loading: this.props.instance.props.loading,
-            listByDate: [],
+            length: 0,
             data: [],
             widthChart: 0,
             heightChart: 0
         }
     }
 
-    async componentWillMount() {
-        await this.getListDate(this.props.instance.props.transaction);
-
-        this.getDataByProduct(this.props.instance.props.transaction)
+    componentWillMount() {
+        let transaction = this.props.transaction;
+        this.getDataByDate(transaction)
     }
 
     async componentWillReceiveProps(nextProps) {
-        if (this.state.loading !== nextProps.instance.props.loading) {
-            this.setState({
-                loading: nextProps.instance.props.loading
-            })
-        }
+
         if (nextProps.hasOwnProperty("transaction")) {
             let transaction = nextProps.transaction;
-
-            this.getDataByProduct(transaction)
+            this.getDataByDate(transaction)
         }
     }
 
-    async getListDate(transaction) {
-        return new Promise((resolve, reject) => {
-            let data = [];
-            for (item of transaction) {
-                data.push(item.title);
-
-            }
-            setTimeout(async () => {
-                resolve(data)
-            }, 0)
-        })
-
-    }
-
-    getDataByProduct(transaction) {
+    getDataByDate(transaction) {
         let data = [];
 
         for (itemDate of transaction) {
@@ -89,11 +66,13 @@ class ByDate extends React.Component {
             data.push({
                 y: totalPrice,
                 x: moment(itemDate.title).format(`DD/MM/YYYY `),
-                label: moment(itemDate.title).format(`DD/MM/YYYY `)
             })
 
         }
-        return data
+        this.setState({
+            data: data,
+            length: data.length
+        })
 
     }
 
@@ -107,49 +86,78 @@ class ByDate extends React.Component {
     }
 
     render() {
-        let listOption = this.state.listDate.map(item => {
-            return (
-                <Picker.Item key={item} label={moment(item).format(`dddd,DD [tháng] MM [năm] YYYY `)} value={item}/>
-            )
-        })
+
         return (
+            <View style={{flex: 1}}>
+                {/*Header*/}
 
-            <View onLayout={(event) => {
-                this.getWidthChart(event)
-            }} style={{flex: 1,padding:15}}>
-                {
-                    this.props.loading ?
-                        <View style={[styleBase.center, {flex: 1}]}>
-                            <ActivityIndicator size={"large"}/>
-                        </View> :
-                        <View>
-                            <View style={{flexDirection: 'row'}}>
-                                <TextNormal>Tiền</TextNormal>
+                <View
+                    style={[styleHome.header, styleHome.boxPadding]}>
 
-                                <VictoryChart
-                                    theme={VictoryTheme.material}
-                                    width={this.state.widthChart}
-                                    height={this.state.heightChart}
-                                >
-                                    <VictoryBar
-                                        animate={{
-                                            duration: 2000,
-                                            onLoad: {duration: 1000}
-                                        }}
+                    <TextLarge style={[styleBase.color3]}>Theo ngày</TextLarge>
 
-                                        y={(data) => data.y}
-                                        x={(data) => data.x}
-                                        style={{data: {fill: "#c43a31", width: 50}}}
-                                        data={this.getDataByProduct(this.props.transaction)}
-                                    />
+                </View>
+                <View onLayout={(event) => {
+                    this.getWidthChart(event)
+                }} style={{flex: 1, padding: 15}}>
 
-                                </VictoryChart>
+                    {
+                        this.props.loading ?
+                            <View style={[styleBase.center, {flex: 1}]}>
+                                <ActivityIndicator size={"large"}/>
+                            </View> :
+                            <View>
+                                {
+                                    this.state.length < 5 ?
+                                        <View style={{flexDirection: 'row'}}>
 
+                                            <TextNormal>Tiền</TextNormal>
+                                            <VictoryChart
+                                                theme={VictoryTheme.material}
+                                                width={this.state.widthChart}
+                                                height={this.state.heightChart}
+                                            >
+                                                <VictoryBar
+                                                    animate={{
+                                                        duration: 2000,
+                                                        onLoad: {duration: 1000}
+                                                    }}
+                                                    labels={(d) => `${d.y}đ`}
+                                                    y={(data) => data.y}
+                                                    x={(data) => data.x}
+                                                    style={{data: {fill: "#c43a31", width: 50}}}
+                                                    data={this.state.data}
+                                                />
+
+                                            </VictoryChart>
+
+                                        </View> :
+                                        <ScrollView horizontal={true} style={{flexDirection: 'row'}}>
+                                            <TextNormal>Tiền</TextNormal>
+                                            <VictoryChart
+                                                theme={VictoryTheme.material}
+                                                height={this.state.heightChart}
+                                            >
+                                                <VictoryBar
+                                                    animate={{
+                                                        duration: 2000,
+                                                        onLoad: {duration: 1000}
+                                                    }}
+                                                    labels={(d) => `${d.y}đ`}
+                                                    y={(data) => data.y}
+                                                    x={(data) => data.x}
+                                                    style={{data: {fill: "#c43a31", width: 50}}}
+                                                    data={this.state.data}
+                                                />
+
+                                            </VictoryChart>
+                                        </ScrollView>
+
+                                }
+                                <TextNormal style={{textAlign: 'right'}}>Ngày</TextNormal>
                             </View>
-                            <TextNormal style={{textAlign:'right'}}>Ngày</TextNormal>
-                        </View>
-                }
-
+                    }
+                </View>
             </View>
         )
     }

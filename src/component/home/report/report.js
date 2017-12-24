@@ -28,6 +28,7 @@ import Swipeable from "../../swipeableList/swipeableList";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {numberwithThousandsSeparator} from "../../reusable/function";
 import ByDate from './byDate';
+import ByProduct from './byProduct';
 import {VictoryBar, VictoryPie, VictoryChart, VictoryGroup, VictoryTheme, VictoryAxis} from "victory-native";
 import moment from '../../momentJs'
 
@@ -40,10 +41,7 @@ class Report extends Component {
                 name: 'Theo ngày'
             }],
             searchText: '',
-            selected: {
-                id: 'byDate',
-                name: 'Theo ngày'
-            },
+            selected: {id: 'byProduct', name: 'Theo mặt hàng'},
             loading: true,
             byProduct: []
         }
@@ -111,26 +109,14 @@ class Report extends Component {
                 </View>
                 {/*----------------rightSide--------------------*/}
                 <View style={[{flex: 7}]}>
-                    {/*Header*/}
 
-                    <View
-                        style={[styleHome.header, styleHome.boxPadding]}>
 
-                        {
-                            this.state.selected.id === 'previewCategory' &&
-                            <TouchableWithoutFeedback onPress={() => {
-                                this.setState({
-                                    selected: {id: 'category', name: 'Loại hàng'},
-                                })
-                            }}>
-                                <EvilIcons name="arrow-left"
-                                           style={[styleHome.titleBarIconBack]}/>
-                            </TouchableWithoutFeedback>
-                        }
-                        <TextLarge style={[styleBase.color3]}>{this.state.selected.name}</TextLarge>
-                    </View>
 
                     <View style={{flex: 1}}>
+                        {
+                            this.state.selected.id === this.state.list[0].id &&
+                            <ByProduct instance={this}/>
+                        }
                         {
                             this.state.selected.id === this.state.list[2].id &&
                             <ByDate instance={this}/>
