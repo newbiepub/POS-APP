@@ -188,7 +188,7 @@ class ViewItem extends React.Component {
                             )
                             :
                             <TouchableWithoutFeedback onPress={() => {
-                                if (this.state.itemQuantity > 0)
+                                if (this.state.quantityAvailable.quantity > 0)
                                     this.addToCart()
                             }}>
                                 <View
