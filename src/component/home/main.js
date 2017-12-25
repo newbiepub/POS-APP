@@ -1,10 +1,9 @@
-import React, {PureComponent} from "react";
+import React from "react";
 import {View} from "react-native";
 import styleBase from "../style/base";
 import POS from './POS/pointOfSale';
 import Transaction from './transaction/transaction';
 import Report from './report/report';
-import Product from './product/product';
 import Setting from './setting/setting';
 import Inventory from "./inventory/inventory";
 import Invoice from "./invoice/invoice";
@@ -52,15 +51,6 @@ class Main extends React.Component {
 
                 }
                 {
-                    this.props.currentRoute === "item" &&
-                    <Animate.View style={{flex: 1}}>
-                        <Product openMenu={() => {
-                            this.props.openMenu()
-                        }}/>
-                    </Animate.View>
-
-                }
-                {
                     this.props.currentRoute === "setting" &&
                     <Animate.View style={{flex: 1}}>
                         <Setting openMenu={() => {
@@ -100,6 +90,5 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
     getProduct,
     openMenu
-
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

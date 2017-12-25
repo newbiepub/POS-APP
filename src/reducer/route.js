@@ -7,10 +7,9 @@ const initialState = {
         {id: "invoice",name: "Hoá đơn"},
         {id: "transaction", name: "Giao dịch"},
         {id: "report", name: "Báo cáo"},
-        {id: "item", name: "Mặt hàng"},
         {id: "inventory", name: "Kho hàng"},
         {id: "setting", name: "Cài đặt"},
-      /*  {id: "help", name: "Trợ giúp"}*/
+        {id: "help", name: "Trợ giúp"}
     ],
     menuVisible: false
 };

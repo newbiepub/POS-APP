@@ -29,7 +29,7 @@ class POS extends React.Component {
                         </View>
                     </View>
                 </View>
-                <POSGrid/>
+                <POSGrid {...this.props}/>
             </View>
         )
     }

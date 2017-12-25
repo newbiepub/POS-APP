@@ -12,6 +12,8 @@ import {companyAuth} from "../action/accountCompany";
 import {connect} from "react-redux";
 import CompanyHome from "./company/home/companyHome";
 import * as _ from "lodash";
+import {ASYNC_STORAGE} from "../constant/constant";
+import POSDetail from "./company/POSDetail/POSDetail";
 
 EStyleSheet.build(); // Build Extended StyleSheet
 
@@ -31,6 +33,8 @@ class App extends PureComponent {
                 return <LoginCompany navigator={navigator}/>;
             case "companyhome":
                 return <CompanyHome navigator={navigator}/>;
+            case "posdetail":
+                return <POSDetail employeeId={route.employeeId} navigator={navigator}/>
 
         }
     }

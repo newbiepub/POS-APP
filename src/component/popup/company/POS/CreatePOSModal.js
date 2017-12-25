@@ -4,7 +4,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import styleBase from "../../../style/base";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {TextInputNormal, TextInputPriceMask} from "../../../reusable/text";
-import {createEmployee} from "../../../../action/employeeCompany";
+import {createEmployee, getEmployee} from "../../../../action/employeeCompany";
 import LoadingOverlay from "../../../loadingOverlay/loadingOverlay";
 
 class CreatePOSModal extends React.Component {
@@ -37,7 +37,10 @@ class CreatePOSModal extends React.Component {
             await createEmployee(this.item);
             Alert.alert("Thành Công", "Đã tạo điểm bán hàng thành công", [
                 {
-                    text: "OK", onPress: () => {this.props.closePopup()}
+                    text: "OK", onPress: () => {
+                        this.props.closePopup();
+                        getEmployee()
+                    }
                 }
             ]);
             loadingOverlay.stopLoading();

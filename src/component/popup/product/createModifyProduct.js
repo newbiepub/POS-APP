@@ -20,7 +20,7 @@ import config from "../../../config";
 import LoadingOverlay from "../../loadingOverlay/loadingOverlay";
 import {numberwithThousandsSeparator} from "../../reusable/function";
 import * as _ from "lodash";
-import {getProduct} from "../../../action/product";
+import {getProduct} from "../../../action/productCompany";
 
 class CreateItem extends React.Component {
     constructor(props) {
@@ -88,7 +88,7 @@ class CreateItem extends React.Component {
             if (loadingOverlay) {
                 loadingOverlay.setLoading();
                 if (name && price && unit) {
-                    let response = await fetch(`${config.api}/api/product/create?access_token=${account.access_token}`, {
+                    let response = await fetch(`${config.api}/company/api/product/create?access_token=${account.access_token}`, {
                         method: "POST",
                         headers: {
                             "Content-Type": 'application/json'
@@ -128,7 +128,7 @@ class CreateItem extends React.Component {
             if (loadingOverlay) {
                 loadingOverlay.setLoading();
                 if (name && price && unit) {
-                    let response = await fetch(`${config.api}/api/product/update?access_token=${account.access_token}`, {
+                    let response = await fetch(`${config.api}/company/api/product/update?access_token=${account.access_token}`, {
                         method: "POST",
                         headers: {
                             "Accept": "application/json",
@@ -646,7 +646,7 @@ const mapDispatchToProps = {
 };
 const mapStateToProps = (state) => {
     return {
-        account: state.account,
+        account: state.accountCompany,
         category: state.product.category,
         variantProduct: state.product.variantProduct
     }

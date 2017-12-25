@@ -9,6 +9,7 @@ import Menu from './menu';
 import {getProduct, getDiscount} from '../../action/product';
 import {getPayment, getTransaction, countTransaction} from '../../action/transaction';
 import {getInventoryProduct} from '../../action/inventory';
+import {ASYNC_STORAGE} from "../../constant/constant";
 
 class Home extends React.Component {
     constructor(props) {
@@ -29,7 +30,6 @@ class Home extends React.Component {
         this.props.getPayment(access_token);
         this.props.getDiscount(access_token);
         this.props.getTransaction(access_token, 10, 0);
-
     }
 
 

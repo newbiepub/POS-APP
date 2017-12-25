@@ -4,6 +4,7 @@ const initialState = {
     currentRoute: "POS",
     routeMap: [
         {id: "POS", name: "Điểm bán hàng"},
+        {id: "item", name: "Mặt hàng"},
         {id: "report",name: "Thống kê"},
         {id: "setting",name: "Cài Đặt"}
     ],

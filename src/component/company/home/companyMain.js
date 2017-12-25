@@ -7,11 +7,18 @@ import * as Animate from "react-native-animatable";
 import {openMenu} from "../../../action/route";
 import POS from "../POS/POS";
 import Report from "../report/report";
-
+import Product from "../../home/product/product"
+import {getProduct} from "../../../action/productCompany";
+import {getEmployee} from "../../../action/employeeCompany";
 
 class Main extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         return this.props.currentRoute !== nextProps.currentRoute;
+    }
+
+    async componentWillMount() {
+        await this.props.getProduct();
+        await getEmployee();
     }
 
     render() {
@@ -24,10 +31,18 @@ class Main extends React.Component {
                         <POS openMenu={() => {
                             this.props.openMenu()
                         }} title="Quản Lý Điểm Bán Hàng"
-                                 navigator={this.props.navigator}/>
+                             navigator={this.props.navigator}/>
                     </Animate.View>
                 }
+                {
+                    this.props.currentRoute === "item" &&
+                    <Animate.View style={{flex: 1}}>
+                        <Product openMenu={() => {
+                            this.props.openMenu()
+                        }}/>
+                    </Animate.View>
 
+                }
                 {
                     this.props.currentRoute === "setting" &&
                     <Animate.View style={{flex: 1}}>
@@ -44,7 +59,7 @@ class Main extends React.Component {
                         <Report openMenu={() => {
                             this.props.openMenu()
                         }} title="Thống Kê"
-                                 navigator={this.props.navigator}/>
+                                navigator={this.props.navigator}/>
                     </Animate.View>
                 }
             </View>
@@ -60,6 +75,7 @@ const mapStateToProps = (state) => {
     }
 };
 const mapDispatchToProps = {
-    openMenu
+    openMenu,
+    getProduct
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

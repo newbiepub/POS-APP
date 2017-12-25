@@ -9,9 +9,9 @@ import {connect} from "react-redux";
 import {closePopup} from '../../../action/popup';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as _ from "lodash";
-import {createCategory, removeCategory, updateCategory} from "../../../action/category";
+import {createCategory, removeCategory, updateCategory} from "../../../action/categoryCompany";
 import LoadingOverlay from "../../loadingOverlay/loadingOverlay";
-import {getProduct} from "../../../action/product";
+import {getProduct} from "../../../action/productCompany";
 
 class CreateModifyCategoryPopup extends React.Component {
     constructor(props) {
@@ -264,7 +264,7 @@ const mapDispatchToProps = {
 };
 const mapStateToProps = (state) => {
     return {
-        account: state.account
+        account: state.accountCompany
     }
 };
 

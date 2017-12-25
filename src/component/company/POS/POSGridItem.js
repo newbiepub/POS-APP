@@ -11,21 +11,28 @@ class POSGridItem extends React.Component {
 
     static propTypes = {
         item: React.PropTypes.object,
-        instance: React.PropTypes.object
+        instance: React.PropTypes.object,
+        onPressItem: React.PropTypes.func
+    };
+
+    static defaultProps = {
+        onPressItem: () => {}
     };
 
     render() {
         return (
-            <TouchableOpacity style={[styleBase.backgroundSuccess, styleHome.posItem]}>
+            <TouchableOpacity
+                onPress={() => this.props.onPressItem(this.props.item)}
+                style={[styleBase.backgroundSuccess, styleHome.posItem]}>
                 <View style={[styleBase.row, {overflow: "hidden"}]}>
-                    <FontAwesome name="desktop" style={[styleBase.textE5, {fontSize: 100}]}/>
+                    <FontAwesome name="desktop" style={[styleBase.textE5, {fontSize: 80}]}/>
                     <View style={{paddingHorizontal: 15}}>
                         <View style={[styleBase.row]}>
                             <Text style={[{fontSize: 14}, styleBase.text4, styleBase.bold]}>
                                 Điểm bán hàng:
                             </Text>
                             <Text numberOfLines={1} style={[styleBase.text4, {marginLeft: 5, fontSize: 14}]}>
-                                {this.props.item.name}
+                                {this.props.item.hasOwnProperty("employeeProfile") ? (this.props.item.employeeProfile.name || "") : ''}
                             </Text>
                         </View>
                         <View style={[styleBase.row]}>
@@ -33,7 +40,7 @@ class POSGridItem extends React.Component {
                                 Vốn:
                             </Text>
                             <Text style={[styleBase.text4, {marginLeft: 5, fontSize: 14}]}>
-                                {this.props.item.fund}
+                                adsasd
                             </Text>
                         </View>
                         <View style={[styleBase.row]}>
@@ -41,7 +48,7 @@ class POSGridItem extends React.Component {
                                 Doanh thu:
                             </Text>
                             <Text style={[styleBase.text4, {marginLeft: 5, fontSize: 14}]}>
-                                {this.props.item.benefit}
+                                adssad
                             </Text>
                         </View>
                     </View>

@@ -12,37 +12,22 @@ class POSGrid extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            pos: [
-                {
-                    name: "POS-1",
-                    fund: 9000,
-                    benefit: 15000,
-                    isActive: false
-                },
-                {
-                    name: "POS-2",
-                    fund: 8000,
-                    benefit: 14000,
-                    isActive: true
-                },
-                {
-                    name: "POS-3",
-                    fund: 7000,
-                    benefit: 12000,
-                    isActive: true
-                },
-                {
-                    name: "POS-4",
-                    fund: 6000,
-                    benefit: 10000,
-                    isActive: true
-                }
-            ]
+            pos: this.props.employees.data
         }
     }
 
+    componentWillReceiveProps (nextProps) {
+        this.setState({pos: nextProps.employees.data})
+    }
+
+    onPressItem(item) {
+        this.props.navigator.push({id: "posdetail"}, {
+            employeeId: item._id
+        })
+    }
+
     renderItem(item, index) {
-        return <POSGridItem key={index} item={item} instance={this}/>
+        return <POSGridItem key={index} item={item} instance={this} onPressItem={this.onPressItem.bind(this)}/>
     }
 
     onCreatePOS() {
@@ -69,10 +54,17 @@ class POSGrid extends React.Component {
     }
 }
 
+
+const mapStateToProps = (state) => {
+    return {
+        employees: state.employeeCompany
+    }
+};
+
 const mapDispatchToProps = {
     closePopup,
     openPopup,
     renderPopup
 };
 
-export default connect(null, mapDispatchToProps)(POSGrid);
+export default connect(mapStateToProps, mapDispatchToProps)(POSGrid);
