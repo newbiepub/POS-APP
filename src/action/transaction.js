@@ -1,6 +1,6 @@
-import {TRANSACTION} from '../constant/constant';
+import {TRANSACTION,ASYNC_STORAGE} from '../constant/constant';
 import url from '../config';
-
+import {AsyncStorage} from 'react-native';
 function getPaymentMethodAction(payload) {
     return {
         type: TRANSACTION.GET_PAYMENT_METHOD,
@@ -29,9 +29,9 @@ function getTransactionAction(payload) {
     }
 }
 
-function setTaxAction(payload) {
+function getCurrentTaxAction(payload) {
     return {
-        type: TRANSACTION.SET_TAX,
+        type: TRANSACTION.GET_CURRENT_TAX,
         payload
     }
 }
@@ -201,22 +201,23 @@ export function commitPurchase(access_token, id) {
     }
 }
 
-export function setTax(taxValue) {
-    return async (dispatch) => {
-        return new Promise((resolve, reject) => {
+export function getCurrentTax() {
+    return async (dispatch, getState) => {
+        return new Promise(async (resolve, reject) => {
             try {
-                if (taxValue >= 0 && taxValue <= 100) {
-                    dispatch(setTaxAction(taxValue));
-                    resolve(true)
-                } else {
-                    reject(false)
-                }
-
+                let token = await AsyncStorage.getItem(ASYNC_STORAGE.AUTH_TOKEN);
+                token = JSON.parse(token);
+                let {api} = url;
+                let result = await fetch(`${api}/api/transaction/getTax?access_token=${token.access_token}`);
+                result = await result.json();
+                dispatch(getCurrentTaxAction(result));
+                resolve(true);
             } catch (e) {
                 console.warn(e);
-                reject(false)
-            }
-        })
 
+            }
+
+        })
     }
+
 }

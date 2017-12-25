@@ -23,9 +23,12 @@ const styleSetting = EStyleSheet.create({
         borderColor: "#d64242"
     },
     taxList: {
-        marginTop: 50,
+        marginTop: 10,
         marginBottom: 20,
-        paddingHorizontal: 50,
+        paddingHorizontal: 20,
+    },
+    taxHistory:{
+        padding:20
     },
     addTaxButton: {
         paddingVertical: 20,

@@ -7,7 +7,7 @@ import * as Animate from "react-native-animatable";
 import {openMenu} from "../../../action/route";
 import POS from "../POS/POS";
 import Report from "../report/report";
-import Product from "../../home/product/product"
+import Product from "../product/product"
 import {getProduct} from "../../../action/productCompany";
 import {getEmployee} from "../../../action/employeeCompany";
 
@@ -59,7 +59,7 @@ class Main extends React.Component {
                         <Report openMenu={() => {
                             this.props.openMenu()
                         }} title="Thống Kê"
-                                navigator={this.props.navigator}/>
+                                 navigator={this.props.navigator}/>
                     </Animate.View>
                 }
             </View>
@@ -75,7 +75,7 @@ const mapStateToProps = (state) => {
     }
 };
 const mapDispatchToProps = {
-    openMenu,
-    getProduct
+    getProduct,
+    openMenu
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

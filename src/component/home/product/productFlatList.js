@@ -1,12 +1,12 @@
 import React from "react";
 import {connect} from "react-redux";
 import {ActivityIndicator, Text, FlatList, View, TouchableWithoutFeedback, Dimensions} from "react-native";
-import ViewProduct from '../../../popup/product/viewProduct';
+import ViewProduct from '../../popup/product/viewProduct';
 
-import styleBase from "../../../style/base";
-import styleProduct from "../../../style/product";
-import {size} from '../../../style/home';
-import {openPopup, renderPopup} from '../../../../action/popup';
+import styleBase from "../../style/base";
+import styleProduct from "../../style/product";
+import {size} from '../../style/home';
+import {openPopup, renderPopup} from '../../../action/popup';
 
 class ProductFlatList extends React.Component {
     constructor(props) {

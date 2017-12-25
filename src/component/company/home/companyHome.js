@@ -7,7 +7,7 @@ import * as _ from "lodash";
 import Menu from "../menu/menu";
 import Main from "./companyMain";
 import {getCurrentCompany} from "../../../action/accountCompany";
-
+import {getCurrentTax} from '../../../action/taxCompany';
 class CompanyHome extends React.Component {
     constructor(props) {
         super(props);
@@ -19,6 +19,7 @@ class CompanyHome extends React.Component {
     async componentWillMount() {
         let {access_token} = this.props.account;
         await getCurrentCompany()
+        await this.props.getCurrentTax()
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -53,5 +54,7 @@ const mapStateToProps = (state) => {
         currentRoute: state.routeCompany.currentRoute,
     }
 };
-
-export default connect(mapStateToProps, null)(CompanyHome);
+const mapDispatchToProps = {
+    getCurrentTax
+};
+export default connect(mapStateToProps, mapDispatchToProps)(CompanyHome);

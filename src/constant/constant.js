@@ -60,7 +60,7 @@ export const TRANSACTION = {
     GET_PAYMENT_STATUS: "GET_PAYMENT_STATUS",
     GET_TRANSACTION: "GET_TRANSACTION",
     COUNT_TRANSACTION: "COUNT_TRANSACTION",
-    SET_TAX: "SET_TAX",
+    GET_CURRENT_TAX: "GET_CURRENT_TAX",
     COMMIT_PURCHASE: "COMMIT_PURCHASE",
     CLEAN_TRANSACTION: "CLEAN_TRANSACTION",
 };
@@ -74,4 +74,12 @@ export const CART = {
 // invoice
 export const INVOICE = {
     GET_INVOICE: "GET_INVOICE"
+};
+
+//========================================================COMPANY================================================//
+
+// tax
+export const TAX = {
+    GET_TAX_HISTORY: "GET_TAX_HISTORY",
+    GET_CURRENT_TAX: "GET_CURRENT_TAX"
 };
