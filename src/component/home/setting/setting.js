@@ -138,7 +138,7 @@ class Setting extends React.PureComponent {
                         <TextLarge style={[styleBase.color3]}>{this.state.currentSetting}</TextLarge>
                     </View>
                     <View style={[styleBase.grow, {borderLeftWidth: 1, borderColor: "#e5e5e5"}]}>
-                        <SettingMain setting={this.state.currentSetting}/>
+                        <SettingMain {...this.props} setting={this.state.currentSetting}/>
                     </View>
                 </View>
             </Animate.View>

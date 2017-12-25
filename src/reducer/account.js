@@ -37,9 +37,7 @@ function accountReducer(initialState) {
                     return initialState;
                 }
                 default:
-                    return {
-                        ...state
-                    }
+                    return state
             }
         }
     }

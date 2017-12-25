@@ -18,7 +18,6 @@ export async function getInvoice() {
         if(response.error) {
             throw new Error(response.error.message);
         }
-
         return (!store.getState().invoice.data.length && !response.length) ? store.dispatch(getInvoiceAction("No Data")) : store.dispatch(getInvoiceAction(response));
     } catch (e) {
         throw e;

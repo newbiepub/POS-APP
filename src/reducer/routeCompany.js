@@ -1,4 +1,4 @@
-import {ROUTE} from "../constant/constant";
+import {ACCOUNT_COMPANY, ROUTE} from "../constant/constant";
 
 const initialState = {
     currentRoute: "POS",
@@ -39,10 +39,11 @@ function routeReducer(initialState) {
                     routeMap: action.payload
                 }
             }
+            case ACCOUNT_COMPANY.LOGOUT: {
+                return initialState;
+            }
             default: {
-                return {
-                    ...state
-                }
+                return state
             }
         }
     }

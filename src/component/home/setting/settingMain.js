@@ -12,13 +12,13 @@ class SettingMain extends React.PureComponent {
     renderSetting () {
         switch (this.props.setting) {
             case "Thuế": {
-                return <Taxes/>
+                return <Taxes {...this.props}/>
             }
             case "Quản lý tiền": {
-                return <CashManagement/>
+                return <CashManagement {...this.props}/>
             }
             default:
-                return <View/>
+                return <View {...this.props}/>
         }
     }
 

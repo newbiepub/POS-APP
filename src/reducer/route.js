@@ -1,4 +1,4 @@
-import {ROUTE} from "../constant/constant";
+import {ACCOUNT, ROUTE} from "../constant/constant";
 
 const initialState = {
     currentRoute: "POS",
@@ -10,7 +10,7 @@ const initialState = {
         {id: "item", name: "Mặt hàng"},
         {id: "inventory", name: "Kho hàng"},
         {id: "setting", name: "Cài đặt"},
-        {id: "help", name: "Trợ giúp"}
+      /*  {id: "help", name: "Trợ giúp"}*/
     ],
     menuVisible: false
 };
@@ -44,6 +44,8 @@ function routeReducer(initialState) {
                     routeMap: action.payload
                 }
             }
+            case ACCOUNT.LOGOUT:
+                return initialState;
             default: {
                 return {
                     ...state

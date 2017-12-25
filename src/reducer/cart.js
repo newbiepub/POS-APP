@@ -1,4 +1,4 @@
-import {CART} from "../constant/constant";
+import {ACCOUNT, CART} from "../constant/constant";
 
 const initialState = {
     currentCart: []
@@ -62,6 +62,8 @@ function productReducer(initialState) {
                     currentCart: [...state.currentCart]
                 }
             }
+            case ACCOUNT.LOGOUT:
+                return initialState;
             default: {
                 return {
                     ...state

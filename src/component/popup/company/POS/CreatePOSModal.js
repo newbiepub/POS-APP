@@ -1,9 +1,11 @@
 import React from "react";
-import {Text, TouchableOpacity, View} from "react-native";
+import {Text, TouchableOpacity, View, Alert} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import styleBase from "../../../style/base";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {TextInputNormal, TextInputPriceMask} from "../../../reusable/text";
+import {createEmployee} from "../../../../action/employeeCompany";
+import LoadingOverlay from "../../../loadingOverlay/loadingOverlay";
 
 class CreatePOSModal extends React.Component {
     constructor(props) {
@@ -26,8 +28,22 @@ class CreatePOSModal extends React.Component {
         }
     };
 
-    onCreateItem() {
-        alert(JSON.stringify(this.item, null, 4));
+    async onCreateItem() {
+        try {
+            let { loadingOverlay } = this.refs;
+            loadingOverlay.setLoading();
+            if(!this.item.username) return Alert.alert("Cảnh báo", "Tên đăng nhập bắt buộc");
+            if(!this.item.password) return Alert.alert("Cảnh báo", "Mật khẩu bắt buộc");
+            await createEmployee(this.item);
+            Alert.alert("Thành Công", "Đã tạo điểm bán hàng thành công", [
+                {
+                    text: "OK", onPress: () => {this.props.closePopup()}
+                }
+            ]);
+            loadingOverlay.stopLoading();
+        } catch(e) {
+            alert(e);
+        }
     }
 
     render() {
@@ -35,6 +51,7 @@ class CreatePOSModal extends React.Component {
             <View style={[styleBase.container]}>
                 <ModalHeader {...this.props} onCreateItem={this.onCreateItem.bind(this)}/>
                 <POSForm {...this.props} instance={this} item={this.props.item}/>
+                <LoadingOverlay ref="loadingOverlay"/>
             </View>
         )
     }
@@ -65,7 +82,7 @@ class POSForm extends React.Component {
                         placeholder="Tên đăng nhập"
                         onChangeText={(username) => {
                             this.setState({username});
-                            instance.item.username = username;
+                            instance.item.username = username.toLowerCase();
                         }}
                         value={this.state.username}
                     />

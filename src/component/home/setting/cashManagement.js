@@ -9,7 +9,7 @@ class CashManagement extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            initialPrice: ""
+            initialPrice: this.props.account.user.fund || 0
         }
     }
 
@@ -47,6 +47,7 @@ class CashManagement extends React.PureComponent {
                                            ]}
                                        value={numberwithThousandsSeparator(this.state.initialPrice)}
                                        placeholderTextColor="#999"
+                                       editable={false}
                                        placeholder="0"/>
                             <Text style={[styleBase.font16, {color: "#999"}]}>
                                 đ

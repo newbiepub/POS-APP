@@ -1,4 +1,4 @@
-import {INVOICE} from "../constant/constant";
+import {ACCOUNT, INVOICE} from "../constant/constant";
 
 const initialState = {
     data: []
@@ -12,6 +12,8 @@ export default function (state = initialState, action = {}) {
                 data: action.payload
             }
         }
+        case ACCOUNT.LOGOUT:
+            return initialState;
         default: return {...state}
     }
 }

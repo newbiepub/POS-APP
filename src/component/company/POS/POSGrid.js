@@ -15,26 +15,26 @@ class POSGrid extends React.Component {
             pos: [
                 {
                     name: "POS-1",
-                    sold: 9000,
-                    inStock: 15000,
+                    fund: 9000,
+                    benefit: 15000,
                     isActive: false
                 },
                 {
                     name: "POS-2",
-                    sold: 8000,
-                    inStock: 14000,
+                    fund: 8000,
+                    benefit: 14000,
                     isActive: true
                 },
                 {
                     name: "POS-3",
-                    sold: 7000,
-                    inStock: 12000,
+                    fund: 7000,
+                    benefit: 12000,
                     isActive: true
                 },
                 {
                     name: "POS-4",
-                    sold: 6000,
-                    inStock: 10000,
+                    fund: 6000,
+                    benefit: 10000,
                     isActive: true
                 }
             ]

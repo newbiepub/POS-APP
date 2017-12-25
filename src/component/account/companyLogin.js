@@ -77,7 +77,7 @@ class LoginForm extends React.Component {
         try {
             let validate  = this.validateEmailAndPassword();
             if(validate) {
-                await companyLogin(this.state.email, this.state.password);
+                await companyLogin(this.state.email.toLowerCase(), this.state.password);
                 return this.setState({isLogin: false});
             }
             Alert.alert("Thông Báo", "Email hoặc mật khẩu không hợp lệ");

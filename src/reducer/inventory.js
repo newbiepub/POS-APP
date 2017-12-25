@@ -1,4 +1,4 @@
-import {INVENTORY} from "../constant/constant";
+import {ACCOUNT, INVENTORY} from "../constant/constant";
 
 const initialState = {
     product: [],
@@ -37,6 +37,8 @@ export default function (state = initialState, action = {}) {
                 product: [...state.product]
             }
         }
+        case ACCOUNT.LOGOUT:
+            return initialState;
         default:
             return {...state}
     }

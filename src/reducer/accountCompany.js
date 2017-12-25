@@ -23,6 +23,9 @@ export default function (state = initialState, action = {}) {
                 company: action.payload
             }
         }
+        case ACCOUNT_COMPANY.LOGOUT: {
+            return initialState;
+        }
         default: return {...state}
     }
 }

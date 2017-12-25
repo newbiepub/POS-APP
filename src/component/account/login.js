@@ -109,7 +109,7 @@ class LoginForm extends PureComponent {
             if (!this.state.password.length) return alert("Xin mời nhập password");
             this.setState({isLogin: true});
             let {login} = this.props;
-            login(this.state.username, this.state.password, (e) => {
+            login(this.state.username.toLowerCase(), this.state.password, (e) => {
                 alert("Đăng Nhập Thất Bại");
                 this.setState({isLogin: false})
             })

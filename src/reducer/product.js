@@ -1,4 +1,4 @@
-import {PRODUCT} from "../constant/constant";
+import {ACCOUNT, PRODUCT} from "../constant/constant";
 
 const initialState = {
     loading: true,
@@ -37,6 +37,8 @@ function productReducer(initialState) {
                     discount: action.payload
                 }
             }
+            case ACCOUNT.LOGOUT:
+                return initialState;
             default: {
                 return {
                     ...state

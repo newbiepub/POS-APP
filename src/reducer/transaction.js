@@ -1,4 +1,4 @@
-import {TRANSACTION} from "../constant/constant";
+import {ACCOUNT, TRANSACTION} from "../constant/constant";
 import moment from '../component/momentJs'
 
 const initialState = {
@@ -106,6 +106,8 @@ function transactionReducer(initialState) {
                     loading: true
                 }
             }
+            case ACCOUNT.LOGOUT:
+                return initialState;
             default: {
                 return {
                     ...state

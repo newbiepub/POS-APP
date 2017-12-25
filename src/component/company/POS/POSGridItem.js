@@ -19,41 +19,41 @@ class POSGridItem extends React.Component {
             <TouchableOpacity style={[styleBase.backgroundSuccess, styleHome.posItem]}>
                 <View style={[styleBase.row, {overflow: "hidden"}]}>
                     <FontAwesome name="desktop" style={[styleBase.textE5, {fontSize: 100}]}/>
-                    <View>
+                    <View style={{paddingHorizontal: 15}}>
                         <View style={[styleBase.row]}>
-                            <Text>
+                            <Text style={[{fontSize: 14}, styleBase.text4, styleBase.bold]}>
                                 Điểm bán hàng:
                             </Text>
-                            <Text numberOfLines={1}>
+                            <Text numberOfLines={1} style={[styleBase.text4, {marginLeft: 5, fontSize: 14}]}>
                                 {this.props.item.name}
                             </Text>
                         </View>
                         <View style={[styleBase.row]}>
-                            <Text>
-                                Đã Bán:
+                            <Text style={[{fontSize: 14}, styleBase.text4, styleBase.bold]}>
+                                Vốn:
                             </Text>
-                            <Text>
-                                {this.props.item.sold}
+                            <Text style={[styleBase.text4, {marginLeft: 5, fontSize: 14}]}>
+                                {this.props.item.fund}
                             </Text>
                         </View>
                         <View style={[styleBase.row]}>
-                            <Text>
-                                Còn lại:
+                            <Text style={[{fontSize: 14}, styleBase.text4, styleBase.bold]}>
+                                Doanh thu:
                             </Text>
-                            <Text>
-                                {this.props.item.inStock}
+                            <Text style={[styleBase.text4, {marginLeft: 5, fontSize: 14}]}>
+                                {this.props.item.benefit}
                             </Text>
                         </View>
                     </View>
                 </View>
-                <View style={[styleBase.row]}>
+                <View style={[styleBase.row, {marginTop: 20}]}>
                     <View style={[{flex: .5}, styleBase.center]}>
-                        <Text>
+                        <Text style={[{fontSize: 14}, styleBase.text4, styleBase.bold]}>
                             Trạng Thái:
                         </Text>
                     </View>
                     <View style={[{flex: .5}, styleBase.center]}>
-                        <Text>
+                        <Text style={[styleBase.text4, {marginLeft: 5, fontSize: 14}]}>
                             Đang Hoạt Động
                         </Text>
                     </View>

@@ -34,17 +34,19 @@ class Invoice extends React.Component {
             this.setState({currentItem: nextProps.invoice.data[0]})
         } else {
             let { currentItem } = this.state;
-            let currentItemIndex = _.indexOf(nextProps.invoice.data, _.find(nextProps.invoice.data, (item) => {
-                return (currentItem._id.date === item._id.date && currentItem._id.month === item._id.month && currentItem._id.year === item._id.year);
-            }));
-            this.setState({currentItem: nextProps.invoice.data[(currentItemIndex === -1 ? 0 : currentItemIndex)]});
+            if(typeof currentItem !== 'string') {
+                let currentItemIndex = _.indexOf(nextProps.invoice.data, _.find(nextProps.invoice.data, (item) => {
+                    return (currentItem._id.date === item._id.date && currentItem._id.month === item._id.month && currentItem._id.year === item._id.year);
+                }));
+                this.setState({currentItem: nextProps.invoice.data[(currentItemIndex === -1 ? 0 : currentItemIndex)]});
+            }
         }
         this.setState({invoiceData: nextProps.invoice.data});
     }
 
     currentItemTitle() {
         let currentItem = this.state.currentItem;
-        if(!_.isEmpty(currentItem)) {
+        if(typeof currentItem !== "string" && !_.isEmpty(currentItem) && this.state.invoiceData !== "No Data") {
             return `${currentItem._id.date}/${currentItem._id.month}/${currentItem._id.year}`;
         }
         return "";
@@ -78,7 +80,7 @@ class Invoice extends React.Component {
                             </View>
                         }
                         {
-                            this.state.invoiceData.length > 0 &&
+                            (this.state.invoiceData.length > 0 && this.state.invoiceData !== "No Data") &&
                             <InvoiceMenu menuList={this.state.invoiceData} onPressItem={this.onPressItem.bind(this)} currentItem={this.state.currentItem}/>
                         }
                         {
@@ -103,7 +105,7 @@ class Invoice extends React.Component {
                             </View>
                         }
                         {
-                            this.state.invoiceData.length > 0 &&
+                            (this.state.invoiceData.length > 0 && this.state.invoiceData !== "No Data") &&
                             <InvoiceMain invoiceData={this.state.currentItem.invoice} {...this.props}/>
                         }
                         {
@@ -155,8 +157,15 @@ class InvoiceMenu extends React.Component {
     }
 
     checkActive(item) {
-        let {currentItem} = this.props;
-        return (currentItem._id.date === item._id.date && currentItem._id.month === item._id.month && currentItem._id.year === item._id.year);
+        try {
+            let {currentItem} = this.props;
+            if(typeof currentItem !== "string") {
+                return (currentItem._id.date === item._id.date && currentItem._id.month === item._id.month && currentItem._id.year === item._id.year);
+            }
+            return false;
+        } catch(e) {
+            console.warn(JSON.stringify(e));
+        }
     }
 
     renderItem({item, index}) {
