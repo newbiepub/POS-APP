@@ -5,7 +5,7 @@ import styleBase from "../../style/base";
 import styleHome from "../../style/home";
 import {openPopup, renderPopup} from '../../../action/popup';
 import Entypo from 'react-native-vector-icons/Entypo';
-import ProductFlatList from "../product/product/productFlatList";
+import ProductFlatList from "../product/productFlatList";
 import CustomAmount from './customAmount';
 import Library from './library';
 import {TextLarge, TextNormal, TextSmall} from '../../reusable/text';

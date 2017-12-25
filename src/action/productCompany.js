@@ -34,7 +34,6 @@ export function getProduct() {
                 responseProduct = await responseProduct.json();
                 let responseCategory = await fetch(`${api}/company/api/category/getCategory?access_token=${token.access_token}`);
                 responseCategory = await responseCategory.json();
-                let product = [], categoryLength = responseCategory.length;
                 dispatch(getCategoryAction(responseCategory));
                 dispatch(getProductAction(responseProduct));
                 resolve(true)

@@ -85,7 +85,7 @@ function transactionReducer(initialState) {
                     transaction: [...state.transaction]
                 }
             }
-            case TRANSACTION.SET_TAX: {
+            case TRANSACTION.GET_CURRENT_TAX: {
                 return {
                     ...state,
                     tax: action.payload

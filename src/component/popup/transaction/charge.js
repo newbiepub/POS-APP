@@ -10,7 +10,7 @@ import {closePopup} from '../../../action/popup';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
-import PriceGrid from '../../home/product/price/priceGrid';
+import PriceGrid from '../../company/product/price/priceGrid';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import {createTransaction, getTransaction} from '../../../action/transaction';
 import {clearCart} from '../../../action/cart';

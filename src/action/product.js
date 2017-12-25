@@ -38,22 +38,6 @@ export function getProduct(access_token) {
                 responseProduct = await responseProduct.json();
                 let responseCategory = await fetch(`${api}/api/category/getCategory?access_token=${access_token}`);
                 responseCategory = await responseCategory.json();
-                let product = [], categoryLength = responseCategory.length;
-                // responseProduct.forEach(async (item) => {
-                //     if (item.hasOwnProperty("productVariantParent") === false) {
-                //         if (item.hasOwnProperty("categoryId")) {
-                //             for (var i = 0; i < categoryLength; i++) {
-                //                 if (item.categoryId === responseCategory[i]._id) {
-                //                     item["categoryName"] = responseCategory[i].name;
-                //                 }
-                //             }
-                //         }
-                //
-                //         await product.push(item)
-                //     } else {
-                //         await variant.push(item)
-                //     }
-                // });
                 dispatch(getCategoryAction(responseCategory));
                 dispatch(getProductAction(responseProduct));
                 resolve(true)

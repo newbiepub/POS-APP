@@ -7,14 +7,14 @@ import Entypo from "react-native-vector-icons/Entypo";
 import {TextLarge} from "../../reusable/text";
 import SettingMain from "./settingMain";
 import styleSetting from "../../style/setting";
-
+import Tax from './tax';
 class Setting extends React.Component {
     constructor(props) {
         super(props);
         this.listSectionSettings = [
             {
                 title: "Tài Khoản",
-                settings: [{id: 'account', name: "Thông tin"}]
+                settings: [{id: 'account', name: "Thông tin"}, {id: 'tax', name: "Thuế"}]
             }
         ];
         this.state = {
@@ -26,8 +26,10 @@ class Setting extends React.Component {
         return this.state.currentSetting.id === id
     }
 
-    onPressSectionItem() {
-
+    onPressSectionItem(setting) {
+        this.setState({
+            currentSetting: { title: setting.name, id: setting.id}
+        })
     }
 
     renderSection() {
@@ -43,9 +45,9 @@ class Setting extends React.Component {
                         item.settings.map((setting, i) => {
                             let isActive = this.checkActive(setting.id),
                                 activeButton = isActive ? styleSetting.activeSection : null,
-                                activeText = isActive ? styleSetting.activeText: null;
+                                activeText = isActive ? styleSetting.activeText : null;
                             return (
-                                <TouchableOpacity onPress={this.onPressSectionItem.bind(this, setting.name)} key={i} style={[
+                                <TouchableOpacity onPress={()=> this.onPressSectionItem(setting)} key={i} style={[
                                     styleBase.centerVertical,
                                     styleSetting.sectionItem,
                                     activeButton
@@ -89,7 +91,14 @@ class Setting extends React.Component {
                         <TextLarge style={[styleBase.color3]}>{this.state.currentSetting.title}</TextLarge>
                     </View>
                     <View style={[styleBase.grow, {borderLeftWidth: 1, borderColor: "#e5e5e5"}]}>
-                        <SettingMain {...this.props} setting={this.state.currentSetting.id}/>
+                        {
+                            this.state.currentSetting.id === this.listSectionSettings[0].settings[0].id &&
+                            <SettingMain {...this.props} setting={this.state.currentSetting.id}/>
+                        }
+                        {
+                            this.state.currentSetting.id === this.listSectionSettings[0].settings[1].id &&
+                            <Tax {...this.props} setting={this.state.currentSetting.id}/>
+                        }
                     </View>
                 </View>
             </View>
