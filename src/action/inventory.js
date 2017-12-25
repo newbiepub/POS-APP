@@ -1,4 +1,4 @@
-import {INVENTORY} from "../constant/constant";
+import {ASYNC_STORAGE, INVENTORY} from "../constant/constant";
 import config from "../config";
 import store from "../store/configureStore";
 
@@ -129,5 +129,28 @@ export function updateInventoryAfterCharge(productItems) {
         } catch (e) {
             console.warn(e)
         }
+    }
+}
+
+/**
+ * COMPANY
+ * POS Inventory
+ * @returns {Promise.<void>}
+ */
+
+export async function getPOSInventory(employeeId) {
+    try {
+        let token = await require("react-native").AsyncStorage.getItem(ASYNC_STORAGE.COMPANY_AUTH);
+        token = JSON.parse(token);
+        let response = await fetch(`${config.api}/company/api/management/employee/inventory?employeeId=${employeeId}`, {
+            method: "GET",
+            headers: {
+                'access-token': token.access_token
+            }
+        });
+        response = await response.json();
+        return response;
+    } catch (e) {
+        throw e;
     }
 }

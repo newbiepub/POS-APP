@@ -12,8 +12,8 @@ import {companyAuth} from "../action/accountCompany";
 import {connect} from "react-redux";
 import CompanyHome from "./company/home/companyHome";
 import * as _ from "lodash";
-import {ASYNC_STORAGE} from "../constant/constant";
 import POSDetail from "./company/POSDetail/POSDetail";
+import {ASYNC_STORAGE} from "../constant/constant";
 
 EStyleSheet.build(); // Build Extended StyleSheet
 
@@ -34,13 +34,16 @@ class App extends PureComponent {
             case "companyhome":
                 return <CompanyHome navigator={navigator}/>;
             case "posdetail":
-                return <POSDetail employeeId={route.employeeId} navigator={navigator}/>
-
+                return <POSDetail pos={route.employee} navigator={navigator}/>
         }
     }
 
     async componentDidMount() {
         try {
+           /* require("react-native").AsyncStorage.setItem(ASYNC_STORAGE.COMPANY_AUTH, JSON.stringify({
+                "access_token" : "680cb3c6fca7fcc26ded16f9dbf24735b31f2107affcdb74f08fcf27d6fa74f6",
+                "refresh_token" : "34a04005bcaf206eec990bd9637d9fdb6725e0a0c0d4aebf003f17f4c956eb5c",
+            }))*/
             await companyAuth();
         } catch(e) {
             alert(e);

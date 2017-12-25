@@ -35,6 +35,12 @@ const styleBase = EStyleSheet.create({
     backgroundSuccess: {
         backgroundColor: "#a5dc86"
     },
+    backgroundGreen: {
+        backgroundColor: "#2ecc71"
+    },
+    backgroundYellow: {
+        backgroundColor: "#ffad1d"
+    },
     background4: {
         backgroundColor: '#ffffff'
     },
@@ -81,7 +87,7 @@ const styleBase = EStyleSheet.create({
             width: 0,
             height: 2,
         },
-        shadowColor: '#000',
+        shadowColor: '#444',
         shadowOpacity: 1,
     },
     row: {

@@ -21,9 +21,7 @@ class POSGrid extends React.Component {
     }
 
     onPressItem(item) {
-        this.props.navigator.push({id: "posdetail"}, {
-            employeeId: item._id
-        })
+        this.props.navigator.push({id: "posdetail", employee: item})
     }
 
     renderItem(item, index) {
