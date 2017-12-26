@@ -55,7 +55,7 @@ class Charge extends React.Component {
 
         setTimeout(() => {
             this.setState({
-                totalPrice: totalPrice + (totalPrice * this.props.tax / 100),
+                totalPrice: totalPrice + Math.floor((totalPrice * this.props.tax / 100))
             })
         }, 0)
 

@@ -8,6 +8,8 @@ import Menu from "../menu/menu";
 import Main from "./companyMain";
 import {getCurrentCompany} from "../../../action/accountCompany";
 import {getCurrentTax} from '../../../action/taxCompany';
+import {getTransaction,countTransaction} from '../../../action/transactionCompany';
+
 class CompanyHome extends React.Component {
     constructor(props) {
         super(props);
@@ -16,10 +18,19 @@ class CompanyHome extends React.Component {
         }
     }
 
+    async getTransaction(){
+        await this.props.countTransaction();
+        while(this.props.transaction.currentNumberOfTransaction < this.props.transaction.transactionAmount)
+        {
+            await this.props.getTransaction(10,this.props.transaction.currentNumberOfTransaction);
+        }
+
+    }
     async componentWillMount() {
-        let {access_token} = this.props.account;
+        // let {access_token} = this.props.account;
         await getCurrentCompany()
         await this.props.getCurrentTax()
+        this.getTransaction()
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -52,9 +63,12 @@ const mapStateToProps = (state) => {
     return {
         account: state.accountCompany,
         currentRoute: state.routeCompany.currentRoute,
+        transaction: state.transaction
     }
 };
 const mapDispatchToProps = {
-    getCurrentTax
+    getCurrentTax,
+    getTransaction,
+    countTransaction
 };
 export default connect(mapStateToProps, mapDispatchToProps)(CompanyHome);

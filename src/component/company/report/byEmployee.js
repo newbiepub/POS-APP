@@ -13,33 +13,24 @@ import {TextLarge, TextNormal, TextSmall} from '../../reusable/text';
 import styleHome from "../../style/home";
 import styleBase from "../../style/base";
 import {connect} from 'react-redux';
-import Entypo from 'react-native-vector-icons/Entypo';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {openPopup, renderPopup} from '../../../action/popup';
+import ChartPie from '../../chart/chartPie';
 
-import {numberwithThousandsSeparator} from "../../reusable/function";
-import {VictoryBar, VictoryPie, VictoryChart, VictoryGroup, VictoryTheme, VictoryLabel} from "victory-native";
-import ChartBar from '../../chart/chartBar';
 
 class ByProduct extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            length: 0,
-            dataByPrice: [],
-            dataByQuantity: [],
-            widthChart: 0,
-            heightChart: 0,
-            criteria: 'Theo số lượng',
-            isSelectCriteria: false
+            data: [],
         }
     }
 
     componentWillMount() {
         let transaction = this.props.transaction;
         if (transaction.length > 0) {
-            this.getDataByProduct(transaction)
+            this.getDataByEmployee(transaction)
         }
 
     }
@@ -49,37 +40,47 @@ class ByProduct extends React.Component {
         if (nextProps.hasOwnProperty("transaction")) {
             let transaction = this.props.transaction;
             if (transaction.length > 0) {
-                this.getDataByProduct(transaction)
+                this.getDataByEmployee(transaction)
             }
         }
     }
 
+    getEmployeeName(id) {
+        for (item of this.props.employee) {
+            if (id === item._id) {
+                return item.username
+            }
 
-    getDataByProduct(transaction) {
-        let dataByQuantity = [];
+        }
+        return ""
+
+    }
+
+    getDataByEmployee(transaction) {
+
+        let data = [];
+
         for (itemDate of transaction) {
             for (tran of itemDate.data) {
-                for (product of tran.productItems) {
-                    if (dataByQuantity.length === 0) {
-                        dataByQuantity.push({
-                            y: product.quantity,
-                            x: product.name,
-                            _id: product._id
-                        })
-                    } else {
-                        for (itemData of dataByQuantity) {
-                            if (itemData._id === product._id) {
-                                itemData.y = itemData.y + product.quantity;
+                if (data.length === 0) {
+                    data.push({
+                        y: tran.totalPrice,
+                        x: this.getEmployeeName(tran.employeeId),
+                        _id: tran.employeeId
+                    })
+                } else {
+                    for (itemData of data) {
+                        if (itemData._id === tran.employeeId) {
+                            itemData.y = itemData.y + tran.totalPrice;
+                            break;
+                        } else {
+                            if (data.indexOf(itemData) === data.length - 1) {
+                                data.push({
+                                    y: tran.totalPrice,
+                                    x: this.getEmployeeName(tran.employeeId),
+                                    _id: tran.employeeId
+                                })
                                 break;
-                            } else {
-                                if (dataByQuantity.indexOf(itemData) === dataByQuantity.length - 1) {
-                                    dataByQuantity.push({
-                                        y: product.quantity,
-                                        x: product.name,
-                                        _id: product._id
-                                    });
-                                    break;
-                                }
                             }
                         }
                     }
@@ -89,59 +90,11 @@ class ByProduct extends React.Component {
 
         }
         this.setState({
-            length: dataByQuantity.length,
-            dataByQuantity: dataByQuantity
-        });
-        let dataByPrice = [];
-        for (itemDate of transaction) {
-            for (tran of itemDate.data) {
-                for (product of tran.productItems) {
-                    if (dataByPrice.length === 0) {
-                        dataByPrice.push({
-                            y: product.totalPrice,
-                            x: product.name,
-                            _id: product._id
-                        })
-                    } else {
-                        for (item of dataByPrice) {
-                            if (item._id === product._id) {
-                                item.y = item.y + product.totalPrice;
-                                break;
-                            } else {
-                                if (dataByPrice.indexOf(item) === dataByPrice.length - 1) {
-                                    dataByPrice.push({
-                                        y: product.totalPrice,
-                                        x: product.name,
-                                        _id: product._id
-                                    })
-                                    break;
-                                }
-
-                            }
-                        }
-                    }
-                }
-            }
-
-
-        }
-        this.setState({
-            dataByPrice: dataByPrice
-        })
-
-
-    }
-
-    getWidthChart(event) {
-        var {width, height} = event.nativeEvent.layout;
-        this.setState({
-            widthChart: width,
-            heightChart: height * 85 / 100
+            data: data,
         })
     }
 
     render() {
-
         return (
             <View style={{flex: 1}}>
                 {/*Header*/}
@@ -199,23 +152,14 @@ class ByProduct extends React.Component {
 
 
                 </View>
-                <View onLayout={(event) => {
-                    this.getWidthChart(event)
-                }} style={{flex: 1, padding: 15, zIndex: 1}}>
+                <View style={{flex: 1}}>
 
                     {
                         this.props.loading ?
                             <View style={[styleBase.center, {flex: 1}]}>
                                 <ActivityIndicator size={"large"}/>
                             </View> :
-                            <View style={{flex:1}}>
-                                {
-                                    this.state.criteria === "Theo số lượng" ?
-                                        <ChartBar y={"Số lượng"} x={"Mặt hàng"} data={this.state.dataByQuantity} yType={"quantity"}/> :
-                                        <ChartBar y={"Tiền"} x={"Mặt hàng"} data={this.state.dataByPrice} yType={"money"}/>
-
-                                }
-                            </View>
+                            <ChartPie data={this.state.data}/>
 
                     }
 
@@ -231,7 +175,8 @@ const mapStateToProps = (state) => {
         allProduct: state.product.allProduct,
         category: state.product.category,
         transaction: state.transaction.transaction,
-        loading: state.transaction.loading
+        loading: state.transaction.loading,
+        employee: state.employeeCompany.data
 
     }
 };

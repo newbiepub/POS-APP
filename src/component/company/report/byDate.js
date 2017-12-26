@@ -14,19 +14,15 @@ import {connect} from 'react-redux';
 
 import {openPopup, renderPopup} from '../../../action/popup';
 
-import {numberwithThousandsSeparator} from "../../reusable/function";
-import {VictoryBar, VictoryPie, VictoryChart, VictoryGroup, VictoryTheme, VictoryAxis} from "victory-native";
 import moment from '../../momentJs'
 import ChartBar from '../../chart/chartBar';
+
 class ByDate extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            length: 0,
             data: [],
-            widthChart: 0,
-            heightChart: 0
         }
     }
 
@@ -63,19 +59,10 @@ class ByDate extends React.Component {
         }
         this.setState({
             data: data,
-            length: data.length
         })
 
     }
 
-
-    getWidthChart(event) {
-        var {width, height} = event.nativeEvent.layout;
-        this.setState({
-            widthChart: width,
-            heightChart: height * 90 / 100
-        })
-    }
 
     render() {
 
@@ -89,17 +76,14 @@ class ByDate extends React.Component {
                     <TextLarge style={[styleBase.color3]}>Theo ngày</TextLarge>
 
                 </View>
-                <View onLayout={(event) => {
-                    this.getWidthChart(event)
-                }} style={{flex: 1, padding: 15}}>
+                <View style={{flex:1}}>
 
                     {
                         this.props.loading ?
                             <View style={[styleBase.center, {flex: 1}]}>
                                 <ActivityIndicator size={"large"}/>
                             </View> :
-                            <ChartBar y={"Tiền"} x={"Mặt hàng"} data={this.state.data} yType={"money"}/>
-
+                            <ChartBar y={"Tiền"} x={"Mặt hàng"} data={this.state.data} length={this.state.length} yType={"money"}/>
                     }
                 </View>
             </View>

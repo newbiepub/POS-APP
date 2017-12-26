@@ -88,12 +88,6 @@ class POSDetail extends React.Component {
                     </ScrollView>
                 </View>
                 <View style={{flex: 0.7}}>
-                    <View
-                        style={[styleHome.header, styleBase.background6, styleBase.row,
-                            styleBase.centerHorizontal, styleHome.boxPadding, styleBase.center]}>
-                        <TextLarge
-                            style={[styleBase.color3]}>{this.props.pos.hasOwnProperty("employeeProfile") ? (this.props.pos.employeeProfile.name || "") : ""}</TextLarge>
-                    </View>
                     <View style={[styleBase.grow, {borderLeftWidth: 1, borderColor: "#e5e5e5"}]}>
                         <POSDetailMain {...this.props} route={this.state.currentMenuItem.id} employee={this.props.pos}/>
                     </View>

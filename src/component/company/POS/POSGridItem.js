@@ -3,7 +3,7 @@ import styleBase from "../../style/base";
 import {Text, View, Dimensions, TouchableOpacity} from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import styleHome from "../../style/POS";
-
+import {numberwithThousandsSeparator} from '../../reusable/function';
 class POSGridItem extends React.Component {
     constructor(props) {
         super(props);
@@ -19,6 +19,10 @@ class POSGridItem extends React.Component {
         onPressItem: () => {}
     };
 
+    getRevenue()
+    {
+
+    }
     render() {
         return (
             <TouchableOpacity
@@ -39,16 +43,16 @@ class POSGridItem extends React.Component {
                             <Text style={[{fontSize: 14}, styleBase.text4, styleBase.bold]}>
                                 Vốn:
                             </Text>
-                            <Text style={[styleBase.text4, {marginLeft: 5, fontSize: 14}]}>
-                                adsasd
+                            <Text style={[styleBase.text4, {marginLeft: 5, fontSize: 14}]} numberOfLines={2}>
+                                {numberwithThousandsSeparator(this.props.item.fund) +"đ"}
                             </Text>
                         </View>
                         <View style={[styleBase.row]}>
                             <Text style={[{fontSize: 14}, styleBase.text4, styleBase.bold]}>
-                                Doanh thu:
+                                Tài khoản:
                             </Text>
                             <Text style={[styleBase.text4, {marginLeft: 5, fontSize: 14}]}>
-                                adssad
+                                {this.props.item.username}
                             </Text>
                         </View>
                     </View>
@@ -61,7 +65,7 @@ class POSGridItem extends React.Component {
                     </View>
                     <View style={[{flex: .5}, styleBase.center]}>
                         <Text style={[styleBase.text4, {marginLeft: 5, fontSize: 14}]}>
-                            Đang Hoạt Động
+                            {this.props.item.isActivate ? "Đang hoạt động" : "Đã tắt"}
                         </Text>
                     </View>
                 </View>

@@ -59,10 +59,8 @@ export function getDiscount(access_token) {
                     let token = await AsyncStorage.getItem(ASYNC_STORAGE.AUTH_TOKEN);
                     access_token = token.access_token;
                 }
-                console.warn(access_token)
                 let result = await fetch(`${api}/api/discount/getDiscount?access_token=${access_token}`);
                 result = await result.json();
-                console.warn(JSON.stringify(result));
                 dispatch(getDiscountAction(result));
                 resolve(true)
             } catch (e) {

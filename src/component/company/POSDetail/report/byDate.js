@@ -3,21 +3,19 @@ import {
     ActivityIndicator,
 
     ScrollView,
-
+    TouchableOpacity,
     View,
 
 } from "react-native";
-import {TextLarge, TextNormal, TextSmall} from '../../reusable/text';
-import styleHome from "../../style/home";
-import styleBase from "../../style/base";
+import {TextLarge, TextNormal, TextSmall} from '../../../reusable/text';
+import styleHome from "../../../style/home";
+import styleBase from "../../../style/base";
 import {connect} from 'react-redux';
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import {openPopup, renderPopup} from '../../../../action/popup';
+import ChartBar from '../../../chart/chartBar';
+import moment from '../../../momentJs'
 
-import {openPopup, renderPopup} from '../../../action/popup';
-
-import {numberwithThousandsSeparator} from "../../reusable/function";
-import {VictoryBar, VictoryPie, VictoryChart, VictoryGroup, VictoryTheme, VictoryAxis} from "victory-native";
-import moment from '../../momentJs'
-import ChartBar from '../../chart/chartBar';
 class ByDate extends React.Component {
 
     constructor(props) {
@@ -53,12 +51,18 @@ class ByDate extends React.Component {
         for (itemDate of transaction) {
             var totalPrice = 0;
             for (tran of itemDate.data) {
-                totalPrice = totalPrice + tran.totalPrice
+                if (tran.employeeId === this.props.employee._id) {
+                    totalPrice = totalPrice + tran.totalPrice
+                }
+
             }
-            data.push({
-                y: totalPrice,
-                x: moment(itemDate.title).format(`DD/MM/YYYY `),
-            })
+            if (totalPrice > 0) {
+                data.push({
+                    y: totalPrice,
+                    x: moment(itemDate.title).format(`DD/MM/YYYY `),
+                })
+            }
+
 
         }
         this.setState({
@@ -85,9 +89,15 @@ class ByDate extends React.Component {
 
                 <View
                     style={[styleHome.header, styleHome.boxPadding]}>
+                    <TouchableOpacity
+                        onPress={() => this.props.instance.setState({selected: {id: 'main', name: 'Thống kê'}})}>
+                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                            <EvilIcons name="arrow-left"
+                                       style={[styleHome.titleBarIconBack]}/>
+                            <TextLarge style={[styleBase.color3]}>Theo ngày</TextLarge>
+                        </View>
 
-                    <TextLarge style={[styleBase.color3]}>Theo ngày</TextLarge>
-
+                    </TouchableOpacity>
                 </View>
                 <View onLayout={(event) => {
                     this.getWidthChart(event)

@@ -100,7 +100,7 @@ class Employee extends React.PureComponent {
 
                 </View>
                 <View style={[styleHome.boxTitle, styleBase.background4, {flex: 1}]}>
-                    <TextSmall style={{flex: 1}}>{item.username}</TextSmall>
+                    <TextSmall style={{flex: 1}}>{item.username}{item.employeeProfile.name != undefined && `(${item.employeeProfile.name})`}</TextSmall>
                     <View style={[styleBase.center, styleHome.borderRadioButton]}>
                         {
                             this.state.isPicked &&

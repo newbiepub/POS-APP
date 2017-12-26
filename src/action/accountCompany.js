@@ -1,9 +1,9 @@
 import {ACCOUNT_COMPANY, ASYNC_STORAGE} from "../constant/constant";
 import config from "../config";
 import store from "../store/configureStore";
-import { AsyncStorage } from "react-native";
+import {AsyncStorage} from "react-native";
 
-function companyLoginAction (payload) {
+function companyLoginAction(payload) {
     return {
         type: ACCOUNT_COMPANY.COMPANY_LOGIN,
         payload
@@ -28,7 +28,7 @@ export async function companyLogin(email, password) {
             body: JSON.stringify({email, password})
         });
         response = await response.json();
-        if(response.error) {
+        if (response.error) {
             throw new Error(response.error.message);
         }
         await AsyncStorage.setItem(ASYNC_STORAGE.COMPANY_AUTH, JSON.stringify({
@@ -36,15 +36,20 @@ export async function companyLogin(email, password) {
             refresh_token: response.refresh_token
         }));
         store.dispatch(companyLoginAction(response));
-    } catch(e) {
+    } catch (e) {
         throw e;
     }
 }
 
-export async function companyAuth () {
+export async function companyAuth() {
     try {
+        // await AsyncStorage.setItem(ASYNC_STORAGE.COMPANY_AUTH, JSON.stringify({
+        //     access_token: "d81ab3063ec476535604befadd2d7543875359eb40bf563324887321eda16769",
+        //     refresh_token: "e1f937278d515175dd1cb625b9ffb4a6da14472f094a5e72485cc27e627a0fc8",
+        // }));
         let token = await AsyncStorage.getItem(ASYNC_STORAGE.COMPANY_AUTH);
-        if(token) {
+
+        if (token) {
             token = JSON.parse(token);
             let response = await fetch(`${config.api}/company/auth`, {
                 method: "POST",
@@ -55,7 +60,7 @@ export async function companyAuth () {
                 body: JSON.stringify({token})
             });
             response = await response.json();
-            if(response.error) {
+            if (response.error) {
                 throw new Error(response.error.message);
             }
             await AsyncStorage.setItem(ASYNC_STORAGE.COMPANY_AUTH, JSON.stringify({
@@ -64,22 +69,22 @@ export async function companyAuth () {
             }));
             store.dispatch(companyLoginAction(response));
         }
-    } catch(e) {
+    } catch (e) {
         throw e;
     }
 }
 
-export async function getCurrentCompany () {
+export async function getCurrentCompany() {
     try {
         let token = await AsyncStorage.getItem(ASYNC_STORAGE.COMPANY_AUTH);
         token = JSON.parse(token);
         let response = await fetch(`${config.api}/company/api/account/currentCompany?access_token=${token.access_token}`);
         response = await response.json();
-        if(response.error) {
+        if (response.error) {
             throw new Error(response.error.message);
         }
         return store.dispatch(getCurrentCompanyAction(response));
-    } catch(e) {
+    } catch (e) {
         throw e;
     }
 }

@@ -107,7 +107,15 @@ function transactionReducer(initialState) {
                 }
             }
             case ACCOUNT.LOGOUT:
-                return initialState;
+                return {
+                    paymentMethod: ["Trả Trước", "Trả Sau"],
+                    paymentStatus: ["Đã Thanh Toán", "Chưa Thanh Toán"],
+                    transaction: [],
+                    tax: 0,
+                    currentNumberOfTransaction: 0,
+                    transactionAmount: 0,
+                    loading: true
+                };
             default: {
                 return {
                     ...state

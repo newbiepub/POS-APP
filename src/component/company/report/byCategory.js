@@ -13,7 +13,6 @@ import styleBase from "../../style/base";
 import {connect} from 'react-redux';
 
 import {openPopup, renderPopup} from '../../../action/popup';
-
 import ChartBar from '../../chart/chartBar';
 class ByCategory extends React.Component {
 
@@ -138,7 +137,7 @@ class ByCategory extends React.Component {
                             <View style={[styleBase.center, {flex: 1}]}>
                                 <ActivityIndicator size={"large"}/>
                             </View> :
-                            <ChartBar y={"Tiền"} x={"Mặt hàng"} data={this.state.data} yType={"money"}/>
+                            <ChartBar y={"Tiền"} x={"Mặt hàng"} data={this.state.data} length={this.state.length} yType={"money"}/>
 
                     }
                 </View>

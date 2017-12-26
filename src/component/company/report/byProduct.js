@@ -13,13 +13,11 @@ import {TextLarge, TextNormal, TextSmall} from '../../reusable/text';
 import styleHome from "../../style/home";
 import styleBase from "../../style/base";
 import {connect} from 'react-redux';
-import Entypo from 'react-native-vector-icons/Entypo';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {openPopup, renderPopup} from '../../../action/popup';
 
-import {numberwithThousandsSeparator} from "../../reusable/function";
-import {VictoryBar, VictoryPie, VictoryChart, VictoryGroup, VictoryTheme, VictoryLabel} from "victory-native";
 import ChartBar from '../../chart/chartBar';
+
 
 class ByProduct extends React.Component {
 
@@ -132,6 +130,21 @@ class ByProduct extends React.Component {
 
     }
 
+    splitLabel(s) {
+        let index = 0
+        for (var i = 0, len = s.length; i < len; i++) {
+            if (s.charAt(i) === " ") {
+                if (index > 7) {
+                    s = s.substr(0, i) + '\n' + s.substr(i + 1);
+                    i++;
+                    index = 0
+                }
+            }
+            index++;
+        }
+        return s
+    }
+
     getWidthChart(event) {
         var {width, height} = event.nativeEvent.layout;
         this.setState({
@@ -216,7 +229,6 @@ class ByProduct extends React.Component {
 
                                 }
                             </View>
-
                     }
 
                 </View>

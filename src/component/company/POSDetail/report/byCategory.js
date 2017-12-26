@@ -3,18 +3,19 @@ import {
     ActivityIndicator,
 
     ScrollView,
-
+    TouchableOpacity,
     View,
 
 } from "react-native";
-import {TextLarge, TextNormal, TextSmall} from '../../reusable/text';
-import styleHome from "../../style/home";
-import styleBase from "../../style/base";
+import {TextLarge, TextNormal, TextSmall} from '../../../reusable/text';
+import styleHome from "../../../style/home";
+import styleBase from "../../../style/base";
 import {connect} from 'react-redux';
 
-import {openPopup, renderPopup} from '../../../action/popup';
+import {openPopup, renderPopup} from '../../../../action/popup';
+import ChartBar from '../../../chart/chartBar';
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
 
-import ChartBar from '../../chart/chartBar';
 class ByCategory extends React.Component {
 
     constructor(props) {
@@ -70,34 +71,37 @@ class ByCategory extends React.Component {
 
         for (itemDate of transaction) {
             for (tran of itemDate.data) {
-                for (product of tran.productItems) {
-                    if (data.length === 0) {
-                        let categoryId = await this.getCategoryId(product._id);
-                        data.push({
-                            y: product.totalPrice,
-                            x: this.getCategoryName(categoryId),
-                            _id: categoryId
-                        })
-                    } else {
-                        for (itemData of data) {
-                            if (itemData._id === this.getCategoryId(product._id)) {
-                                itemData.y = itemData.y + product.totalPrice;
-                                break;
-                            } else {
-                                if (data.indexOf(itemData) === data.length - 1) {
-                                    let categoryId = await this.getCategoryId(product._id);
-
-                                    data.push({
-                                        y: product.totalPrice,
-                                        x: this.getCategoryName(categoryId),
-                                        _id: categoryId
-                                    });
+                if (tran.employeeId === this.props.employee._id) {
+                    for (product of tran.productItems) {
+                        if (data.length === 0) {
+                            let categoryId = await this.getCategoryId(product._id);
+                            data.push({
+                                y: product.totalPrice,
+                                x: this.getCategoryName(categoryId),
+                                _id: categoryId
+                            })
+                        } else {
+                            for (itemData of data) {
+                                if (itemData._id === this.getCategoryId(product._id)) {
+                                    itemData.y = itemData.y + product.totalPrice;
                                     break;
+                                } else {
+                                    if (data.indexOf(itemData) === data.length - 1) {
+                                        let categoryId = await this.getCategoryId(product._id);
+
+                                        data.push({
+                                            y: product.totalPrice,
+                                            x: this.getCategoryName(categoryId),
+                                            _id: categoryId
+                                        });
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
                 }
+
             }
 
 
@@ -125,8 +129,16 @@ class ByCategory extends React.Component {
 
                 <View
                     style={[styleHome.header, styleHome.boxPadding]}>
+                    <TouchableOpacity
+                        onPress={() => this.props.instance.setState({selected: {id: 'main', name: 'Thống kê'}})}>
+                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                            <EvilIcons name="arrow-left"
+                                       style={[styleHome.titleBarIconBack]}/>
+                            <TextLarge style={[styleBase.color3]}>Theo loại hàng</TextLarge>
+                        </View>
 
-                    <TextLarge style={[styleBase.color3]}>Theo loại hàng</TextLarge>
+                    </TouchableOpacity>
+
 
                 </View>
                 <View onLayout={(event) => {
