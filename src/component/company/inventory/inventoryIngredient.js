@@ -3,7 +3,7 @@ import {Text, TouchableOpacity, View, InteractionManager, ActivityIndicator, Fla
 import styleBase from "../../style/base";
 import {connect} from "react-redux";
 import * as _ from "lodash";
-import {getInventoryIngredient} from "../../../action/inventory";
+import {getInventoryIngredient} from "../../../action/companyInventory";
 import NoData from "../../noData/noData";
 import {openPopup, renderPopup} from "../../../action/popup";
 import IngredientCreatorModal from "../../popup/inventory/inventoryIngredientModal";
@@ -24,7 +24,7 @@ class Ingredient extends React.Component {
     }
 
     async componentDidMount() {
-        this.props.ingredient.length ? null : await getInventoryIngredient(this.props.account.access_token)
+        this.props.ingredient.length ? null : await getInventoryIngredient()
     }
 
     componentWillReceiveProps(nextProps) {
@@ -44,11 +44,25 @@ class Ingredient extends React.Component {
         }}/>)
     }
 
+    onPressIngredientItem(item) {
+        this.props.openPopup();
+        this.props.renderPopup(<IngredientCreatorModal type="update" item={item}/>)
+    }
+
     render() {
         return (
             <View style={[styleBase.container]}>
                 <InventoryIngredientSearch instance={this}/>
                 <View style={[styleBase.container, {paddingVertical: 30}]}>
+                    <TouchableOpacity onPress={this.onAddIngredient.bind(this)} style={[styleBase.row, styleBase.center,
+                        {
+                            marginHorizontal: 50, paddingVertical: 15, borderRadius: 5,
+                            backgroundColor: "#f9f9f9", borderColor: "#999", borderWidth: 0.5
+                        }]}>
+                        <Text style={[styleBase.font16, styleBase.text4, styleBase.bold]}>
+                            Thêm Nguyên Liệu
+                        </Text>
+                    </TouchableOpacity>
                     {
                         this.state.ingredient.length === 0 &&
                         <View style={{paddingTop: 30}}>
@@ -58,7 +72,7 @@ class Ingredient extends React.Component {
                     }
                     {
                         (this.state.ingredient.length > 0 && this.state.ingredient !== "No Data") &&
-                        <ListIngredient {...this.props}
+                        <ListIngredient {...this.props} onPressItem={this.onPressIngredientItem.bind(this)}
                                         data={this.state.ingredient}/>
                     }
                     {
@@ -118,9 +132,8 @@ class ListIngredient extends React.Component {
 
     async onRefresh() {
         try {
-            let {account} = this.props;
             this.setState({refreshing: true});
-            await getInventoryIngredient(account.access_token);
+            await getInventoryIngredient();
         } catch (e) {
             alert(e);
         }

@@ -6,6 +6,7 @@ const initialState = {
         {id: "POS", name: "Điểm bán hàng"},
         {id: "item", name: "Mặt hàng"},
         {id: "report",name: "Thống kê"},
+        {id: "inventory",name: "Kho hàng"},
         {id: "inventoryActivity",name: "QL xuất nhập kho"},
         {id: "setting",name: "Cài Đặt"}
     ],

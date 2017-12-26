@@ -198,11 +198,11 @@ class InventoryFilterProduct extends React.Component {
         if(this.state.POSInventory != undefined && this.state.POSInventory !== "No Data") {
             let POSProduct = _.find(this.state.POSInventory.productItems, (item) => item.productId === item._id);
             return (
-                <InventoryProductItem {...this.props} item={item} POSProduct={POSProduct}/>
+                <InventoryProductItem key={index} {...this.props} item={item} POSProduct={POSProduct}/>
             )
         }
         return (
-            <InventoryProductItem {...this.props} item={item}/>
+            <InventoryProductItem key={index} {...this.props} item={item}/>
         )
     }
 

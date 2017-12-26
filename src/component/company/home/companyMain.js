@@ -7,7 +7,8 @@ import * as Animate from "react-native-animatable";
 import {openMenu} from "../../../action/route";
 import POS from "../POS/POS";
 import Report from "../report/report";
-import Product from "../product/product"
+import Product from "../product/product";
+import Inventory from "../inventory/inventory";
 import {getProduct} from "../../../action/productCompany";
 import {getEmployee} from "../../../action/employeeCompany";
 
@@ -52,7 +53,14 @@ class Main extends React.Component {
                                  navigator={this.props.navigator}/>
                     </Animate.View>
                 }
-
+                {
+                    this.props.currentRoute === "inventory" &&
+                    <Animate.View style={{flex: 1}}>
+                        <Inventory
+                            openMenu={this.props.openMenu.bind(this)}
+                            navigator={this.props.navigator}/>
+                    </Animate.View>
+                }
                 {
                     this.props.currentRoute === "report" &&
                     <Animate.View style={{flex: 1}}>

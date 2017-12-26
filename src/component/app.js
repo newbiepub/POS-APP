@@ -40,9 +40,9 @@ class App extends PureComponent {
 
     async componentDidMount() {
         try {
-           /* require("react-native").AsyncStorage.setItem(ASYNC_STORAGE.COMPANY_AUTH, JSON.stringify({
-                "access_token" : "680cb3c6fca7fcc26ded16f9dbf24735b31f2107affcdb74f08fcf27d6fa74f6",
-                "refresh_token" : "34a04005bcaf206eec990bd9637d9fdb6725e0a0c0d4aebf003f17f4c956eb5c",
+            /*require("react-native").AsyncStorage.setItem(ASYNC_STORAGE.AUTH_TOKEN, JSON.stringify({
+                "access_token" : "c666591df0537cf226cc7d33d50a72a2d9d4c7651ff7caeae045f723528c3917",
+                "refresh_token" : "55c1520824a84d75076a69c1a4c9dfe03ef400b649fe8c774f68754300946940",
             }))*/
             await companyAuth();
         } catch(e) {

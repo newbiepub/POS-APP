@@ -11,6 +11,7 @@ import routeCompany from "./routeCompany";
 import invoice from "./invoice";
 import employeeCompany from "./employeeCompany";
 import tax from './tax';
+import inventoryActivity from "./inventoryActivity";
 const appReducers = combineReducers({
     account,
     popup,
@@ -23,7 +24,8 @@ const appReducers = combineReducers({
     accountCompany,
     routeCompany,
     invoice,
-    employeeCompany
+    employeeCompany,
+    inventoryActivity
 });
 
 export default appReducers;

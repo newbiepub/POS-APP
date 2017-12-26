@@ -17,8 +17,6 @@ class Inventory extends React.Component {
             name: "Nguyên Liệu"
         }, {
             name: "Sản Phẩm"
-        }, {
-            name: "Yêu cầu nhập kho"
         }];
         this.state = {
             currentSetting: "Nguyên Liệu"

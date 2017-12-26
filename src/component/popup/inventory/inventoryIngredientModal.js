@@ -9,7 +9,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import {connect} from "react-redux";
 import {closePopup} from "../../../action/popup";
 import LoadingOverlay from "../../loadingOverlay/loadingOverlay";
-import {createIngredient, deleteIngredient, getInventoryIngredient, updateIngredient} from "../../../action/inventory";
+import {createIngredient, deleteIngredient, getInventoryIngredient, updateIngredient} from "../../../action/companyInventory";
 
 class IngredientCreatorModal extends React.Component {
     constructor(props) {
