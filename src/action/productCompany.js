@@ -45,12 +45,14 @@ export function getProduct() {
     }
 }
 
-export function getDiscount(access_token) {
+export function getDiscount() {
     return async (dispatch) => {
         return new Promise(async (resolve, reject) => {
             try {
+                let token = await AsyncStorage.getItem(ASYNC_STORAGE.COMPANY_AUTH);
+                token = JSON.parse(token);
                 let {api} = url;
-                let result = await fetch(`${api}/api/discount/getDiscount?access_token=${access_token}`);
+                let result = await fetch(`${api}/company/api/discount/getDiscount?access_token=${token.access_token}`);
                 result = await result.json();
                 dispatch(getDiscountAction(result));
                 resolve(true)
@@ -64,13 +66,14 @@ export function getDiscount(access_token) {
     }
 }
 
-export function createDiscount(access_token, discount) {
+export function createDiscount(discount) {
     return async (dispatch, getState) => {
         return new Promise(async (resolve, reject) => {
             try {
-
+                let token = await AsyncStorage.getItem(ASYNC_STORAGE.COMPANY_AUTH);
+                token = JSON.parse(token);
                 let {api} = url;
-                let result = await fetch(`${api}/api/discount/createDiscount?access_token=${access_token}`, {
+                let result = await fetch(`${api}/company/api/discount/createDiscount?access_token=${token.access_token}`, {
                     method: "POST",
                     headers: {
                         Accept: "application/json",
@@ -90,12 +93,14 @@ export function createDiscount(access_token, discount) {
     }
 }
 
-export function upsertDiscount(access_token, discount) {
+export function upsertDiscount(discount) {
     return async (dispatch, getState) => {
         return new Promise(async (resolve, reject) => {
             try {
+                let token = await AsyncStorage.getItem(ASYNC_STORAGE.COMPANY_AUTH);
+                token = JSON.parse(token);
                 let {api} = url;
-                let result = await fetch(`${api}/api/discount/upsertDiscount?access_token=${access_token}`, {
+                let result = await fetch(`${api}/company/api/discount/upsertDiscount?access_token=${token.access_token}`, {
                     method: "POST",
                     headers: {
                         Accept: "application/json",
@@ -111,6 +116,25 @@ export function upsertDiscount(access_token, discount) {
                 console.warn(e);
                 reject(false)
             }
+
+        })
+    }
+}
+export function removeDiscount(id) {
+    return async (dispatch) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let token = await AsyncStorage.getItem(ASYNC_STORAGE.COMPANY_AUTH);
+                token = JSON.parse(token);
+                let {api} = url;
+                let result = await fetch(`${api}/company/api/discount/removeDiscount?access_token=${token.access_token}&id=${id}`);
+                result = await result.json();
+                resolve(result)
+            } catch (e) {
+                console.warn(e);
+                reject(false)
+            }
+
 
         })
     }

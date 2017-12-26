@@ -20,7 +20,7 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {openPopup, renderPopup} from '../../../action/popup';
 import CreateModifyProductPopup from '../../popup/product/createModifyProduct';
 import CreateCategory from '../../popup/product/createCategory';
-import CreateDiscount from '../../popup/product/createDiscount';
+import CreateDiscount from '../../popup/product/discount/createDiscount';
 import styleProduct from "../../style/product";
 import * as Animate from "react-native-animatable";
 import Swipeable from "../../swipeableList/swipeableList";

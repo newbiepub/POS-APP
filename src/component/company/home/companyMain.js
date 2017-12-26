@@ -9,7 +9,7 @@ import POS from "../POS/POS";
 import Report from "../report/report";
 import Product from "../product/product";
 import Inventory from "../inventory/inventory";
-import {getProduct} from "../../../action/productCompany";
+import {getProduct, getDiscount} from "../../../action/productCompany";
 import {getEmployee} from "../../../action/employeeCompany";
 
 class Main extends React.Component {
@@ -18,8 +18,9 @@ class Main extends React.Component {
     }
 
     async componentWillMount() {
-        await this.props.getProduct();
-        await getEmployee();
+        this.props.getProduct();
+        this.props.getDiscount();
+        getEmployee();
     }
 
     render() {
@@ -67,7 +68,7 @@ class Main extends React.Component {
                         <Report openMenu={() => {
                             this.props.openMenu()
                         }} title="Thống Kê"
-                                 navigator={this.props.navigator}/>
+                                navigator={this.props.navigator}/>
                     </Animate.View>
                 }
             </View>
@@ -84,6 +85,7 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = {
     getProduct,
+    getDiscount,
     openMenu
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Main);
