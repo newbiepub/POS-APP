@@ -9,18 +9,20 @@ import {
     Alert,
     ActivityIndicator
 } from "react-native";
-import {TextInputNormal, TextInputPriceMask, TextLarge, TextSmall, TextNormal} from '../../reusable/text';
-import styleBase from "../../style/base";
-import styleHome from '../../style/home';
-import styleModalItems from '../../style/modalItem';
-import styleProduct from "../../style/product";
+import {TextInputNormal, TextInputPriceMask, TextLarge, TextSmall, TextNormal} from '../../../reusable/text';
+import styleBase from "../../../style/base";
+import styleHome from '../../../style/home';
+import styleModalItems from '../../../style/modalItem';
+import styleProduct from "../../../style/product";
 import {connect} from "react-redux";
-import {closePopup} from '../../../action/popup';
+import {closePopup} from '../../../../action/popup';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
-import {numberwithThousandsSeparator} from '../../reusable/function';
-import {createDiscount, upsertDiscount, getDiscount} from '../../../action/product';
+import {numberwithThousandsSeparator} from '../../../reusable/function';
+import {createDiscount, upsertDiscount, getDiscount,removeDiscount} from '../../../../action/productCompany';
+import ChooseProduct from './productItem'
+import EmployeeSelection from './employeeSelection';
 
 class CreateDiscount extends React.Component {
     constructor(props) {
@@ -32,6 +34,7 @@ class CreateDiscount extends React.Component {
             height,
             onProgressing: false,
             discountData: this.props.hasOwnProperty("discountData") ? this.props.discountData : {
+                employeeId: [],
                 name: '',
                 value: 0,
                 type: 'percent',
@@ -84,27 +87,67 @@ class CreateDiscount extends React.Component {
 
     }
 
+    async onRemoveDiscount() {
+        Alert.alert(
+            'Xoá khuyến mãi',
+            'Bạn có muốn xoá khuyến mãi này không !',
+            [
+                {text: 'Không', style: 'cancel'},
+                {text: 'OK', onPress: async () => {
+
+                    this.setState({
+                        onProgressing: true
+                    });
+                    let res = this.props.removeDiscount(this.state.discountData._id);
+                    if (!res.hasOwnProperty("error")) {
+                        this.props.getDiscount();
+                        Alert.alert(
+                            'Thành công',
+                            'Bạn đã sửa thành công !',
+                            [
+                                {text: 'OK', onPress: () => this.props.closePopup()},
+                            ],
+                            {cancelable: false}
+                        )
+                    }
+                    else
+                        Alert.alert("Thất bại", "Đã có lỗi xảy ra !!");
+                    this.setState({
+                        onProgressing: false
+                    });
+
+                }
+                },
+            ],
+            {cancelable: false}
+        )
+    }
+
     async onUpdateDiscount() {
-        this.setState({
-            onProgressing: true
-        })
-        let {access_token} = this.props.account;
-        let res = await this.props.upsertDiscount(access_token, this.state.discountData);
-        if (res.status < 400) {
-            Alert.alert(
-                'Thành công',
-                'Bạn đã sửa thành công !',
-                [
-                    {text: 'OK', onPress: () => this.props.closePopup()},
-                ],
-                {cancelable: false}
-            )
+        if (this.state.discountData.employeeId.length > 0 && this.state.discountData.name != "" && this.state.discountData.productItems.length > 0 && this.state.discountData.type !== "" && this.state.discountData.value > 0) {
+            this.setState({
+                onProgressing: true
+            })
+            let res = await this.props.upsertDiscount(this.state.discountData);
+            if (res.status < 400) {
+                this.props.getDiscount();
+                Alert.alert(
+                    'Thành công',
+                    'Bạn đã sửa thành công !',
+                    [
+                        {text: 'OK', onPress: () => this.props.closePopup()},
+                    ],
+                    {cancelable: false}
+                )
+            }
+            else
+                Alert.alert("Thất bại", "Đã có lỗi xảy ra !!");
+            this.setState({
+                onProgressing: false
+            });
+        } else {
+            Alert.alert("Chú ý", "Bạn đã nhập thiếu thông tin cần thiết !");
         }
-        else
-            Alert.alert("Thất bại", "Đã có lỗi xảy ra !!");
-        this.setState({
-            onProgressing: false
-        });
     }
 
     getModalSize(evt) {
@@ -116,28 +159,32 @@ class CreateDiscount extends React.Component {
     }
 
     async onCreateDiscount() {
-        this.setState({
-            onProgressing: true
-        })
-        let {access_token} = this.props.account;
-        let res = await this.props.createDiscount(access_token, this.state.discountData);
-        if (res.status < 400) {
-            this.props.getDiscount(access_token);
-            Alert.alert(
-                'Thành công',
-                'Bạn đã thêm một khuyến mãi mới !',
-                [
-                    {text: 'OK', onPress: () => this.props.closePopup()},
-                ],
-                {cancelable: false}
-            )
+        if (this.state.discountData.employeeId.length > 0 && this.state.discountData.name != "" && this.state.discountData.productItems.length > 0 && this.state.discountData.type !== "" && this.state.discountData.value > 0) {
+            this.setState({
+                onProgressing: true
+            })
+            let res = await this.props.createDiscount(this.state.discountData);
+            if (res.status < 400) {
+                this.props.getDiscount();
+                Alert.alert(
+                    'Thành công',
+                    'Bạn đã thêm một khuyến mãi mới !',
+                    [
+                        {text: 'OK', onPress: () => this.props.closePopup()},
+                    ],
+                    {cancelable: false}
+                )
 
+            }
+            else
+                Alert.alert("Thất bại", "Đã có lỗi xảy ra !!");
+            this.setState({
+                onProgressing: false
+            });
+        } else {
+            Alert.alert("Chú ý", "Bạn đã nhập thiếu thông tin cần thiết !");
         }
-        else
-            Alert.alert("Thất bại", "Đã có lỗi xảy ra !!");
-        this.setState({
-            onProgressing: false
-        });
+
 
     }
 
@@ -192,12 +239,18 @@ class CreateDiscount extends React.Component {
                         this.state.currentView === 'Thêm khuyến mãi' &&
                         <AddDiscount instant={this} discountChange={(name, value) => {
                             this.discountChange(name, value)
-                        }}/>
+                        }} removeDiscount={()=> this.onRemoveDiscount()}/>
                     }
+
 
                     {
                         this.state.currentView === 'Thêm hàng khuyến mãi' &&
                         <ChooseProduct instant={this} productData={this.props.product}/>
+                    }
+
+                    {
+                        this.state.currentView === 'Thêm nơi khuyến mãi' &&
+                        <EmployeeSelection instant={this} productData={this.props.product}/>
                     }
                 </View>
                 {
@@ -313,6 +366,16 @@ class AddDiscount extends React.PureComponent {
                                 </View>
                             </TouchableWithoutFeedback>
                         </View>
+                        {/*--------------------add discount employee  --------------------*/}
+
+                        <TouchableWithoutFeedback onPress={() => {
+                            this.props.instant.setState({currentView: 'Thêm nơi khuyến mãi'})
+                        }}>
+                            <View style={styleModalItems.modalItemWithUnderLine}>
+                                <TextLarge style={{flex: 1}}>Thêm nơi khuyến mãi</TextLarge>
+                                <EvilIcons name="chevron-right" style={[styleBase.vector32]}/>
+                            </View>
+                        </TouchableWithoutFeedback>
                         {/*--------------------add discount product  --------------------*/}
 
                         <TouchableWithoutFeedback onPress={() => {
@@ -323,6 +386,8 @@ class AddDiscount extends React.PureComponent {
                                 <EvilIcons name="chevron-right" style={[styleBase.vector32]}/>
                             </View>
                         </TouchableWithoutFeedback>
+
+
                         {/*--------------description discount-----------------*/}
                         <View style={styleModalItems.modalItemWithUnderLine}>
                             <TextInputNormal placeholder={"Ghi chú"}
@@ -334,7 +399,18 @@ class AddDiscount extends React.PureComponent {
                                              style={[styleModalItems.modalTextInput, {flex: 1, borderBottomWidth: 0}]}
                             />
                         </View>
+                        {/*------------------delete---------------------------*/}
+                        {
+                            this.props.instant.props.hasOwnProperty("discountData") &&
+                            <TouchableWithoutFeedback onPress={() => {
+                                this.props.removeDiscount()
+                            }}>
+                                <View style={styleHome.buttonDelete}>
+                                    <TextNormal style={styleBase.color4}>Xoá</TextNormal>
+                                </View>
+                            </TouchableWithoutFeedback>
 
+                        }
                     </View>
                 </KeyboardAwareScrollView>
             </View>
@@ -342,106 +418,13 @@ class AddDiscount extends React.PureComponent {
     }
 }
 
-class ProductItem extends React.PureComponent {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isPicked: this.checkIfExistInDiscountProduct(this.props.item._id)
-        }
-    }
-
-    checkIfExistInDiscountProduct(id) {
-        for (item of this.props.productDiscount) {
-            if (id === item._id)
-                return true
-        }
-        return false
-    }
-
-    render() {
-        let item = this.props.item;
-        return (
-            <TouchableOpacity onPress={() => {
-                this.props.addProduct(item._id);
-                this.setState({
-                    isPicked: !this.state.isPicked
-                })
-            }}
-                              style={[styleHome.borderBottom, styleHome.itemBar, {
-                                  flexDirection: 'row',
-                                  flex: 1
-                              }]}>
-                <View style={[styleHome.itemIcon, {
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }]}>
-
-                    <TextNormal style={styleBase.background2}>{item.name.substr(0, 2)}</TextNormal>
-                </View>
-                <View style={[styleHome.boxTitle, styleBase.background4, {flex: 1}]}>
-                    <TextSmall style={{flex: 1}}>{item.name}</TextSmall>
-                    <View style={[styleBase.center, styleHome.borderRadioButton]}>
-                        {
-                            this.state.isPicked &&
-                            <View style={[styleBase.background2, styleHome.checkedRadioButton]}/>
-                        }
-                    </View>
-                </View>
-            </TouchableOpacity>
-        )
-    }
-}
-
-class ChooseProduct extends React.PureComponent {
-
-    addProduct(id) {
-        let {productItems} = this.props.instant.state.discountData;
-        for (item of productItems) {
-            if (id === item._id) {
-                productItems.splice(productItems.indexOf(item), 1)
-                return true
-            }
-
-        }
-        productItems.push({_id: id});
-
-    }
-
-    _renderItem = ({item}) => (
-        <ProductItem item={item} productDiscount={this.props.instant.state.discountData.productItems}
-                     addProduct={(id) => this.addProduct(id)}/>
-    );
-
-    render() {
-        // console.warn(JSON.stringify(this.props.instant.state.discountData.product))
-        return (
-            <ScrollView style={{flex: 1}}>
-                <View style={[styleHome.paddingModal]}>
-                    <TextNormal>
-                        Sản phẩm
-                    </TextNormal>
-                    <View style={[styleHome.modalItem]}>
-                        <FlatList
-                            data={this.props.productData}
-                            extraData={this.state}
-                            initialNumToRender={15}
-                            keyExtractor={(item) => item._id}
-                            renderItem={this._renderItem}
-                        />
-                    </View>
-
-                </View>
-            </ScrollView>
-        )
-    }
-}
 
 const mapDispatchToProps = {
     closePopup,
     createDiscount,
     upsertDiscount,
-    getDiscount
+    getDiscount,
+    removeDiscount
 };
 const mapStateToProps = (state) => {
     return {
