@@ -52,3 +52,34 @@ export async function getEmployee() {
         throw e;
     }
 }
+
+export async function updateEmployee(payload) {
+    try {
+        let token = await require("react-native").AsyncStorage.getItem(ASYNC_STORAGE.COMPANY_AUTH);
+        token = JSON.parse(token);
+
+        let response = await fetch(`${config.api}/company/api/employee`, {
+            method: "PUT",
+            headers: {
+                'access-token': token.access_token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+        response = await response.json();
+        if(response.error) {
+            throw new Error(response.error.message);
+        }
+        return response
+    } catch(e) {
+        throw e;
+    }
+}
+
+export async function deactivateEmployee() {
+    try {
+
+    } catch(e) {
+        throw e;
+    }
+}

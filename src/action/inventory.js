@@ -50,6 +50,7 @@ export async function getInventoryIngredient(access_token, searchText) {
 
         let response = await fetch(url);
         response = await response.json();
+        console.warn(JSON.stringify(response, null, 4));
         return !store.getState().inventory.ingredient.length && !response.length
             ? store.dispatch(getInventoryIngredientAction("No Data"))
             : store.dispatch(getInventoryIngredientAction(response))

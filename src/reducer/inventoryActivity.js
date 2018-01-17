@@ -1,6 +1,7 @@
 import {INVENTORY_ACTIVITY} from "../constant/constant";
 
 const initialState = {
+    data: [],
     exportProduct: [],
     exportIngredient: []
 };
@@ -17,6 +18,12 @@ export default function (state = initialState, action = {}) {
             return {
                 ...state,
                 exportIngredient: action.payload
+            }
+        }
+        case INVENTORY_ACTIVITY.GET_INVENTORY_ACTIVITY_DATA: {
+            return {
+                ...state,
+                data: action.payload
             }
         }
         default: return {...state}

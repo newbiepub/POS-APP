@@ -1,11 +1,16 @@
 import React from "react";
-import {ActivityIndicator, FlatList, Text, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, FlatList, Text, TouchableOpacity, View, Alert} from "react-native";
 import styleBase from "../../../style/base";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {closePopup} from "../../../../action/popup";
 import {connect} from "react-redux";
 import {numberwithThousandsSeparator} from "../../../reusable/function";
 import NoData from "../../../noData/noData";
+import LoadingOverlay from "../../../loadingOverlay/loadingOverlay";
+import {
+    getCompanyInventoryActivity, getInventoryActionProduct, sendDelivery,
+    sendExportProduct
+} from "../../../../action/inventoryActivity";
 
 class InventoryRequestProduct extends React.Component {
     constructor(props) {
@@ -25,6 +30,17 @@ class InventoryRequestProduct extends React.Component {
             this.setState({product: nextProps.product});
         else
             this.setState({product: "No Data"});
+    }
+
+    async componentWillMount() {
+        try {
+            if(this.props.fromCompany) {
+                let product = await getInventoryActionProduct(this.props.employeeId);
+                this.setState({product});
+            }
+        } catch(e) {
+            alert(e);
+        }
     }
 
     renderHeaderComponent() {
@@ -57,10 +73,33 @@ class InventoryRequestProduct extends React.Component {
         return <InventoryRequestProductItem key={index} item={item}/>
     }
 
+    async onPressAction() {
+        let { loadingOverlay } = this.refs;
+        try {
+            loadingOverlay.setLoading();
+            if(!this.props.fromCompany) {
+                await sendExportProduct();
+            } else {
+                await sendDelivery(this.props.employeeId, "product");
+            }
+            Alert.alert("Thành Công", "Đã gửi yêu cầu thành công", [
+                {text: "OK", onPress: () => {
+                    this.props.closePopup();
+                    if(this.props.fromCompany) {
+                        getCompanyInventoryActivity()
+                    }
+                }}
+            ])
+        } catch(e) {
+            alert(e);
+        }
+        loadingOverlay.stopLoading();
+    }
+
     render() {
         return (
             <View style={[styleBase.container]}>
-                <ModalHeader {...this.props}/>
+                <ModalHeader {...this.props} product={this.state.product} onPressAction={this.onPressAction.bind(this)}/>
                 {
                     this.state.product.length === 0 &&
                     <View style={[styleBase.container, styleBase.center]}>
@@ -82,6 +121,7 @@ class InventoryRequestProduct extends React.Component {
                     this.state.product === "No Data" &&
                     <NoData />
                 }
+                <LoadingOverlay ref="loadingOverlay" message="Đang gửi yêu cầu"/>
             </View>
         )
     }
@@ -127,12 +167,12 @@ class ModalHeader extends React.Component {
     static propTypes = {
         type: React.PropTypes.string,
         instance: React.PropTypes.object,
-        onAddItem: React.PropTypes.func,
+        onPressAction: React.PropTypes.func,
         onUpdateItem: React.PropTypes.func,
     };
 
     static defaultProps = {
-        onAddItem: () => {
+        onPressAction: () => {
         },
         onUpdateItem: () => {
         }
@@ -147,7 +187,7 @@ class ModalHeader extends React.Component {
     }
 
     onPressAction() {
-        this.props.type === 'create' ? this.onAddItem() : this.onUpdateItem();
+        this.props.onPressAction();
     }
 
     onCloseModal() {
@@ -169,6 +209,7 @@ class ModalHeader extends React.Component {
                     </Text>
                 </View>
                 <TouchableOpacity
+                    disabled={(this.props.product.length === 0 || this.props.product === "No Data")}
                     onPress={this.onPressAction.bind(this)}
                     style={[{
                         flex: 0.2,

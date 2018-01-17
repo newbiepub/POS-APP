@@ -1,11 +1,16 @@
 import React from "react";
-import {ActivityIndicator, FlatList, Text, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, FlatList, Text, TouchableOpacity, View, Alert} from "react-native";
 import styleBase from "../../../style/base";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {closePopup} from "../../../../action/popup";
 import {connect} from "react-redux";
 import NoData from "../../../noData/noData";
 import {numberwithThousandsSeparator} from "../../../reusable/function";
+import LoadingOverlay from "../../../loadingOverlay/loadingOverlay";
+import {
+    getCompanyInventoryActivity, getInventoryActionIngredient, sendDelivery,
+    sendExportIngredient
+} from "../../../../action/inventoryActivity";
 
 class InventoryRequestIngredient extends React.Component {
     constructor(props) {
@@ -14,6 +19,18 @@ class InventoryRequestIngredient extends React.Component {
             ingredient: this.props.ingredient,
             refreshing: false
         }
+    }
+
+    async componentWillMount() {
+        try {
+            if(this.props.fromCompany) {
+                let ingredient = await getInventoryActionIngredient(this.props.employeeId);
+                this.setState({ingredient});
+            }
+        } catch(e) {
+            alert(e);
+        }
+
     }
 
     static propTypes = {};
@@ -57,10 +74,34 @@ class InventoryRequestIngredient extends React.Component {
         return <InventoryRequestIngredientItem key={index} item={item}/>
     }
 
+    async onPressAction() {
+        let { loadingOverlay } = this.refs;
+        try {
+            loadingOverlay.setLoading();
+            if(!this.props.fromCompany) {
+                await sendExportIngredient();
+            } else {
+                await sendDelivery(this.props.employeeId, "ingredient");
+            }
+
+            Alert.alert("Thành Công", "Đã gửi yêu cầu thành công", [
+                {text: "OK", onPress: () => {
+                    this.props.closePopup();
+                    if(this.props.fromCompany) {
+                        getCompanyInventoryActivity()
+                    }
+                }}
+            ])
+        } catch(e) {
+            alert(e);
+        }
+        loadingOverlay.stopLoading();
+    }
+
     render() {
         return (
            <View style={[styleBase.container]}>
-               <ModalHeader {...this.props}/>
+               <ModalHeader {...this.props} ingredient={this.state.ingredient} onPressAction={this.onPressAction.bind(this)}/>
                {
                    this.state.ingredient.length === 0 &&
                    <View style={[styleBase.container, styleBase.center]}>
@@ -82,6 +123,7 @@ class InventoryRequestIngredient extends React.Component {
                    this.state.ingredient === "No Data" &&
                    <NoData />
                }
+               <LoadingOverlay ref="loadingOverlay" message="Đang gửi yêu cầu"/>
            </View>
         )
     }
@@ -127,27 +169,19 @@ class ModalHeader extends React.Component {
     static propTypes = {
         type: React.PropTypes.string,
         instance: React.PropTypes.object,
-        onAddItem: React.PropTypes.func,
+        onPressAction: React.PropTypes.func,
         onUpdateItem: React.PropTypes.func,
     };
 
     static defaultProps = {
-        onAddItem: () => {
+        onPressAction: () => {
         },
         onUpdateItem: () => {
         }
     };
 
-    onUpdateItem() {
-        this.props.onUpdateItem()
-    }
-
-    onAddItem() {
-        this.props.onAddItem();
-    }
-
     onPressAction() {
-        this.props.type === 'create' ? this.onAddItem() : this.onUpdateItem();
+        this.props.onPressAction();
     }
 
     onCloseModal() {
@@ -169,6 +203,7 @@ class ModalHeader extends React.Component {
                     </Text>
                 </View>
                 <TouchableOpacity
+                    disabled={(this.props.ingredient.length === 0 || this.props.ingredient === "No Data")}
                     onPress={this.onPressAction.bind(this)}
                     style={[{
                         flex: 0.2,

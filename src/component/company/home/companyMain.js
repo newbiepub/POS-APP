@@ -9,6 +9,7 @@ import POS from "../POS/POS";
 import Report from "../report/report";
 import Product from "../product/product";
 import Inventory from "../inventory/inventory";
+import InventoryActivity from "../inventoryActivity/inventoryActivity";
 import {getProduct, getDiscount} from "../../../action/productCompany";
 import {getEmployee} from "../../../action/employeeCompany";
 
@@ -58,6 +59,14 @@ class Main extends React.Component {
                     this.props.currentRoute === "inventory" &&
                     <Animate.View style={{flex: 1}}>
                         <Inventory
+                            openMenu={this.props.openMenu.bind(this)}
+                            navigator={this.props.navigator}/>
+                    </Animate.View>
+                }
+                {
+                    this.props.currentRoute === "inventoryActivity" &&
+                    <Animate.View style={{flex: 1}}>
+                        <InventoryActivity
                             openMenu={this.props.openMenu.bind(this)}
                             navigator={this.props.navigator}/>
                     </Animate.View>
