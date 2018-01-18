@@ -1,20 +1,27 @@
 import React from "react";
-import {Image, Text, View} from "react-native";
-import styleBase from "../style/base";
+import {Tile, Title, Image, View} from "@shoutem/ui";
 
 class NoData extends React.Component {
     constructor(props) {
         super(props);
     }
 
+    static propTypes = {};
+
+    static defaultProps = {};
+
     render() {
         return (
-            <View pointerEvents='none' style={[styleBase.fillParent, styleBase.center]}>
-                <Image source={require("../../asset/img/website.jpg")} style={{width: 150, height: 150}}/>
-                <Text style={[styleBase.text4, styleBase.bold, styleBase.font18, {backgroundColor: "transparent"}]}>
-                    Không có gì ở đây cả !!
-                </Text>
-            </View>
+           <View styleName="xl-gutter-top">
+               <Tile styleName="text-centric">
+                   <Image
+                       styleName="medium-square"
+                       style={{width: 142, height: 142}}
+                       source={require("../../assets/img/open-box.png")}
+                   />
+                   <Title styleName="md-gutter-top">KHÔNG CÓ DỮ LIỆU</Title>
+               </Tile>
+           </View>
         )
     }
 }

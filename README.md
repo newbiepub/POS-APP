@@ -1,1 +1,0 @@
-### POS APP - React Native best practices
