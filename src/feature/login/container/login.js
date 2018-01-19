@@ -57,7 +57,9 @@ class Login extends React.Component {
             this.setState({isLogin: true});
             let token = await companyLogin(this.state.email.toLowerCase().trim(), this.state.password);
             await setToken(token);
-            this.props.navigator.resetTo({id: "home"});
+            InteractionManager.runAfterInteractions(() => {
+                this.props.navigator.resetTo({id: "home"});
+            });
         }
         catch (e) {
             console.warn("error - onSubmitLogin");

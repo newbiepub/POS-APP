@@ -6,10 +6,15 @@ let token = null;
 export const getToken = async () => {
     try {
         if (token) {
-            return Promise.resolve(token);
+            return token // Return Token
         }
 
-        token = await AsyncStorage.getItem(AUTH_TOKEN);
+        token = await AsyncStorage.getItem(AUTH_TOKEN); // Get Token From LocalStorage
+
+        if(token) {
+            token = JSON.parse(token); // Parse JSON
+        }
+
         return token
     }
     catch (e) {

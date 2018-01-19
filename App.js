@@ -8,22 +8,32 @@ import {ApolloProvider} from "react-apollo";
 import AppContainer from "./src/container/app";
 import {setContext} from "apollo-link-context";
 import {getToken} from "./src/feature/login/utils/loginToken";
+import { Provider } from "react-redux";
+import store from "./src/store/store";
 
 const httpLink = new HttpLink({
     uri: "http://localhost:3000/api"
 });
 
-const authLink = setContext(async (req, { headers }) => {
-    let token = await getToken();
-    token = JSON.parse(token);
+const authLink = setContext(async (req, {headers}) => {
+    try {
+        let token = await getToken();
 
-    return {
-        ...headers,
-        headers: {
-            authentication: token ? `${token.access_token}` : null,
-            "x-refresh-token": token ? token.refresh_token : null
-        },
-    };
+        return {
+            ...headers,
+            headers: {
+                authentication: token ? `${token.access_token}` : null,
+                "x-refresh-token": token ? token.refresh_token : null
+            },
+        };
+    }
+    catch (e) {
+        console.log(e);
+        console.warn("error - authLink");
+        return {
+            ...headers
+        }
+    }
 });
 
 const cache = new InMemoryCache();
@@ -38,13 +48,18 @@ const client = new ApolloClient({
     cache
 });
 
+// Popup Configs
+
+
 export {client};
 
 export default class AppRoot extends PureComponent {
     render() {
         return (
             <ApolloProvider client={client}>
-                <AppContainer/>
+                <Provider store={store}>
+                    <AppContainer/>
+                </Provider>
             </ApolloProvider>
         )
     }

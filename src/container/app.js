@@ -4,6 +4,8 @@ import Login from "../feature/login/container/login";
 import EStyleSheet from "react-native-extended-stylesheet";
 import {View} from "react-native";
 import Home from "../feature/home/container/home";
+import Popup from "../component/popup/popup";
+import styleBase from "../styles/base";
 
 EStyleSheet.build(); //Build Extended StyleSheet
 
@@ -35,14 +37,17 @@ class AppContainer extends React.Component {
 
     render() {
         return (
-            <Navigator
-                ref={(ref) => {
-                    this.navigator = ref;
-                }}
-                initialRoute={{id: 'login', index: 0}}
-                configureScene={this.configureScene.bind(this)}
-                renderScene={this.renderScene.bind(this)}
-            />
+            <View style={[styleBase.container]}>
+                <Navigator
+                    ref={(ref) => {
+                        this.navigator = ref;
+                    }}
+                    initialRoute={{id: 'login', index: 0}}
+                    configureScene={this.configureScene.bind(this)}
+                    renderScene={this.renderScene.bind(this)}
+                />
+                <Popup/>
+            </View>
         )
     }
 }

@@ -9,7 +9,7 @@ const getAllPOS = gql`
                 address
                 phoneNumber
             }
-            ... on CurrentEmployee {
+            ...on CurrentEmployee {
                 username
                 companyId
             }

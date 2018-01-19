@@ -1,9 +1,8 @@
 import React from "react";
-import {Easing, StyleSheet} from "react-native";
-import {DropDownMenu, NavigationBar, View, Text} from "@shoutem/ui";
-import {FadeIn, TimingDriver} from "@shoutem/animation";
-import styleBase from "../../../styles/base";
+import {DropDownMenu, NavigationBar, Screen, View, Icon, TouchableOpacity} from "@shoutem/ui";
 import POS from "../../pos/container/pos";
+import {openPopup, renderContent} from "../../../component/popup/actions/popupAction";
+import POSCreator from "../../pos/component/posCreator";
 
 class Home extends React.Component {
     constructor(props) {
@@ -14,7 +13,8 @@ class Home extends React.Component {
                 {title: 'THỐNG KÊ', route: 'report'},
                 {title: 'QUẢN LÝ KHO ', route: 'inventory'},
                 {title: "CÀI ĐẶT", route: 'setting'}
-            ]
+            ],
+            isChangeDimension: false
         };
         this.state.currentRoute = this.state.routes[0];
     }
@@ -22,6 +22,10 @@ class Home extends React.Component {
     static propTypes = {};
 
     static defaultProps = {};
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.state !== nextState;
+    }
 
     renderCenterComponent() {
         return (
@@ -35,28 +39,42 @@ class Home extends React.Component {
         )
     }
 
-    render() {
-        const timingDriver = new TimingDriver({
-            duration: 750,
-            easing: Easing.linear,
-            delay: 0
-        });
+    renderRightComponent() {
+        if(this.state.currentRoute.route === "pos") {
 
-        timingDriver.toValue(1); // Start Animation
-        return (
-            <View style={StyleSheet.flatten([styleBase.container])}>
-                <NavigationBar
-                    styleName="inline"
-                    style={{container: {paddingHorizontal: 15}}}
-                    centerComponent={this.renderCenterComponent()}
-                />
-                {this.state.currentRoute.route === "pos" &&
-                <FadeIn driver={timingDriver}>
+            // Render Button Add POS
+            return (
+                <TouchableOpacity onPress={() => {
+                    openPopup();
+                    renderContent(<POSCreator/>)
+                }}>
+                    <Icon name="plus-button"/>
+                </TouchableOpacity>
+            )
+        }
+        return <View/>
+    }
+
+    render() {
+        try {
+            return (
+                <Screen styleName="paper">
+                    <NavigationBar
+                        styleName="inline"
+                        style={{container: {paddingHorizontal: 15}}}
+                        centerComponent={this.renderCenterComponent()}
+                        rightComponent={this.renderRightComponent()}
+                    />
+                    {this.state.currentRoute.route === "pos" &&
                     <POS navigator={this.props.navigator}/>
-                </FadeIn>
-                }
-            </View>
-        )
+                    }
+                </Screen>
+            )
+        }
+        catch(e) {
+            console.warn("error - render Home");
+            return <Screen/>
+        }
     }
 }
 
