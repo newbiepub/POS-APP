@@ -13,7 +13,8 @@ class POS extends React.Component {
         super(props);
         this.state = {
             pos: [],
-            loading: false
+            loading: false,
+            listViewLoading: false
         }
     }
 
@@ -22,13 +23,15 @@ class POS extends React.Component {
     static defaultProps = {};
 
     shouldComponentUpdate(nextProps, nextState) {
-        return !_.isEqual(this.state, nextState);
+        return this.state !== nextState;
     }
 
     componentWillReceiveProps(nextProps) {
         try {
+            if(nextProps.data.error) {
+                throw new Error(nextProps.data.error.message);
+            }
             let data = nextProps.data || {getAllPOS: []};
-
             if (!data.getAllPOS.length && !data.loading) {
                 return this.setState({pos: "NoData", loading: false});
             }
@@ -50,6 +53,17 @@ class POS extends React.Component {
             {cellViews}
         </GridRow>
 
+    }
+
+    async onRefresh() {
+        try {
+            this.setState({listViewLoading: true});
+            await this.props.data.refetch();
+            this.setState({listViewLoading: false});
+        }
+        catch (e) {
+            console.warn("error - onRefresh")
+        }
     }
 
     getColumnSpan() {
@@ -87,7 +101,8 @@ class POS extends React.Component {
                             style={{
                                 listContent: StyleSheet.flatten([styleBase.bgWhite])
                             }}
-                            loading={false}
+                            onRefresh={this.onRefresh.bind(this)}
+                            loading={this.state.listViewLoading}
                             data={groupData}
                             renderRow={(rowData, sectionId, index) => this.renderRow(rowData, sectionId, index, numberOfCols)}
                         />
@@ -106,4 +121,8 @@ class POS extends React.Component {
     }
 }
 
-export default graphql(getAllPOS)(POS)
+export default graphql(getAllPOS, {
+    options: {
+        fetchPolicy: "cache-and-network"
+    }
+})(POS)

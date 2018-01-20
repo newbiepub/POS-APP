@@ -1,0 +1,30 @@
+{
+  "__schema": {
+    "types": [
+      {
+        "kind": "INTERFACE",
+        "name": "User",
+        "possibleTypes": [
+          {
+            "name": "CurrentCompany"
+          },
+          {
+            "name": "CurrentEmployee"
+          }
+        ]
+      },
+      {
+        "kind": "INTERFACE",
+        "name": "Inventory",
+        "possibleTypes": [
+          {
+            "name": "InventoryCompany"
+          },
+          {
+            "name": "InventoryEmployee"
+          }
+        ]
+      }
+    ]
+  }
+}
