@@ -47,7 +47,7 @@ class POS extends React.Component {
     renderRow(rowData, sectionId, index, numberOfRows) {
 
         const cellViews = rowData.map((item, i) => {
-            return <POSItem key={i} item={item}/>
+            return <POSItem key={i} {...this.props} item={item}/>
         });
         return <GridRow key={index} columns={numberOfRows}>
             {cellViews}

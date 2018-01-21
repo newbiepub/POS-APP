@@ -1,6 +1,6 @@
 import React from "react";
 import {Button, Icon, Title, TouchableOpacity, View, FormGroup, Divider, TextInput} from "@shoutem/ui";
-import {StyleSheet, Dimensions} from "react-native";
+import {StyleSheet, Dimensions, SafeAreaView} from "react-native";
 import styleBase from "../../../styles/base";
 import {closePopup} from "../../../component/popup/actions/popupAction";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
@@ -77,26 +77,28 @@ class POSCreator extends React.Component {
 
     render() {
         return (
-            <View
-                style={StyleSheet.flatten(this.modalStyle())}>
-                <View styleName="horizontal v-center space-between" style={StyleSheet.flatten([styleBase.panelHeader])}>
-                    <TouchableOpacity
-                        onPress={() => closePopup()}>
-                        <Icon name="close"/>
-                    </TouchableOpacity>
-                    <Title>
-                        TẠO ĐIỂM BÁN HÀNG
-                    </Title>
-                    <Button
-                        style={{backgroundColor: "transparent"}}
-                        onPress={() => this.onCreatePOS()}>
+            <SafeAreaView style={[styleBase.container]}>
+                <View
+                    style={StyleSheet.flatten(this.modalStyle())}>
+                    <View styleName="horizontal v-center space-between" style={StyleSheet.flatten([styleBase.panelHeader])}>
+                        <TouchableOpacity
+                            onPress={() => closePopup()}>
+                            <Icon name="close"/>
+                        </TouchableOpacity>
                         <Title>
-                            TẠO
+                            TẠO ĐIỂM BÁN HÀNG
                         </Title>
-                    </Button>
+                        <Button
+                            style={{backgroundColor: "transparent"}}
+                            onPress={() => this.onCreatePOS()}>
+                            <Title>
+                                TẠO
+                            </Title>
+                        </Button>
+                    </View>
+                    <POSForm ref="posCreator"/>
                 </View>
-                <POSForm ref="posCreator"/>
-            </View>
+            </SafeAreaView>
         )
     }
 }

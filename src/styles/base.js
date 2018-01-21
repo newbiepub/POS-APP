@@ -26,6 +26,9 @@ const styleBase = EStyleSheet.create({
     borderButton: {
         borderRadius: 4
     },
+    textWhite: {
+        color: "#fff"
+    },
     shadowBox: {
         elevation: 2,
         shadowColor: "#e5e5e5",

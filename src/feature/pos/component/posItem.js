@@ -17,10 +17,15 @@ class POSItem extends React.Component {
         item: {}
     };
 
+    navigatePOSDetail () {
+        this.props.navigator.push({id: "pos_detail", title: this.props.item.profile.name || "POINT OF SALES", posItem: this.props.item});
+    }
+
     render() {
         let {item} = this.props;
         return (
             <TouchableOpacity
+                onPress={() => this.navigatePOSDetail()}
                 style={StyleSheet.flatten([styleBase.shadowBox, styleBase.p_md_vertical, styleBase.p_md_horizontal])}>
                 <View styleName="vertical v-center h-center">
                     <Image

@@ -6,6 +6,8 @@ import {View} from "react-native";
 import Home from "../feature/home/container/home";
 import Popup from "../component/popup/popup";
 import styleBase from "../styles/base";
+import POSDetail from "../feature/pos/container/posDetail";
+import ProductManagement from "../feature/productManagement/container/productManagement";
 
 EStyleSheet.build(); //Build Extended StyleSheet
 
@@ -20,9 +22,10 @@ class AppContainer extends React.Component {
     static defaultProps = {};
 
     configureScene(route, navigator) {
-        if (route.id === "home") {
-            return Navigator.SceneConfigs.FadeAndroid
-        }
+        if (route.id === "home" || route.id === "pos_product_management") return Navigator.SceneConfigs.FadeAndroid;
+
+        if(route.id === "pos_detail") return Navigator.SceneConfigs.FloatFromBottom;
+
         return Navigator.SceneConfigs.PushFromRight
     }
     renderScene(route, navigator) {
@@ -30,8 +33,11 @@ class AppContainer extends React.Component {
             case "login":
                 return <Login navigator={navigator}/>;
             case "home":
-                return <Home navigator={navigator}/>
-
+                return <Home navigator={navigator}/>;
+            case "pos_detail":
+                return <POSDetail navigator={navigator} title={route.title} posItem={route.posItem}/>;
+            case "pos_product_management":
+                return <ProductManagement navigator={navigator} title={route.title} posItem={route.posItem}/>
         }
     }
 

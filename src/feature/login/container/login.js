@@ -1,5 +1,5 @@
 import React from "react";
-import {Platform, StyleSheet, InteractionManager} from "react-native";
+import {Platform, StyleSheet, InteractionManager, Dimensions} from "react-native";
 import {Button, Divider, Image, TextInput, Tile, View, Spinner, Text} from "@shoutem/ui";
 import KeyboardSpacer from "react-native-keyboard-spacer";
 import EStyleSheet from "react-native-extended-stylesheet";
@@ -74,6 +74,12 @@ class Login extends React.Component {
         this.setState({isLogin: false});
     }
 
+    getFormWidth() {
+        let screenWidth = Dimensions.get("window").width;
+        if (screenWidth >= 768) return styles.width50;
+        else return styles.width80;
+    }
+
     render() {
         return (
             <View styleName="vertical h-center v-center fill-parent" style={StyleSheet.flatten([styleBase.bgE5])}>
@@ -86,7 +92,7 @@ class Login extends React.Component {
                     </Tile>
                 </View>
                 <View styleName="vertical h-center v-center"
-                      style={StyleSheet.flatten([styles.width50, styleBase.shadowBox])}>
+                      style={StyleSheet.flatten([this.getFormWidth(), styleBase.shadowBox])}>
                     <View styleName="vertical md-gutter-bottom" style={StyleSheet.flatten([styles.width100])}>
                         <TextInput
                             onChangeText={(email) => this.setState({email})}
@@ -127,6 +133,9 @@ const styles = EStyleSheet.create({
     },
     width100: {
         width: "100%"
+    },
+    width80: {
+        width: "80%"
     }
 });
 
