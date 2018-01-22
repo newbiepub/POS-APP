@@ -70,7 +70,7 @@ class POSDetail extends React.Component {
                             <Title styleName="md-gutter-bottom">QUẢN LÝ SẢN PHẨM</Title>
                             <Button
                                 onPress={() => this.props.navigator.push({id: "pos_product_management",
-                                    posItem: this.props.posItem,
+                                    user: this.props.user,
                                     title: `QUẢN LÝ SẢN PHẨM - ${this.props.title}`})}
                                 styleName="dark confirmation"><Text>ĐI ĐẾN</Text></Button>
                         </Tile>

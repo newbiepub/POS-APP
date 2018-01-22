@@ -3,6 +3,9 @@ import {DropDownMenu, NavigationBar, Screen, View, Icon, TouchableOpacity} from 
 import POS from "../../pos/container/pos";
 import {openPopup, renderContent} from "../../../component/popup/actions/popupAction";
 import POSCreator from "../../pos/component/posCreator";
+import CompanyInventory from "../../companyInventory/container/companyInventory";
+import {graphql} from "react-apollo";
+import {getCurrentUser} from "../../login/action/login";
 
 class Home extends React.Component {
     constructor(props) {
@@ -27,6 +30,18 @@ class Home extends React.Component {
         return this.state !== nextState;
     }
 
+    componentWillReceiveProps (nextProps) {
+        try {
+            let data = nextProps.data || {};
+            if(data.error) {
+                throw new Error(data.error.message);
+            }
+        } catch(e) {
+            console.log(e);
+            console.warn("error - componentWillReceiveProps - Home");
+        }
+    }
+
     renderCenterComponent() {
         return (
             <DropDownMenu
@@ -40,7 +55,7 @@ class Home extends React.Component {
     }
 
     renderRightComponent() {
-        if(this.state.currentRoute.route === "pos") {
+        if (this.state.currentRoute.route === "pos") {
 
             // Render Button Add POS
             return (
@@ -52,7 +67,7 @@ class Home extends React.Component {
                 </TouchableOpacity>
             )
         }
-        return <View/>
+        return null;
     }
 
     render() {
@@ -66,16 +81,25 @@ class Home extends React.Component {
                         rightComponent={this.renderRightComponent()}
                     />
                     {this.state.currentRoute.route === "pos" &&
-                    <POS navigator={this.props.navigator}/>
+                         <POS navigator={this.props.navigator}/>
+                    }
+                    {
+                        this.state.currentRoute.route === "inventory" &&
+                        <CompanyInventory {...this.props}/>
                     }
                 </Screen>
             )
         }
-        catch(e) {
+        catch (e) {
             console.warn("error - render Home");
             return <Screen/>
         }
     }
 }
 
-export default (Home)
+export default graphql(getCurrentUser, {
+    options: {
+        fetchPolicy: "cache-and-network",
+        errorPolicy: "all"
+    }
+})(Home)

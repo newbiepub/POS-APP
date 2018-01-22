@@ -1,25 +1,21 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {StyleSheet} from "react-native";
+import {InteractionManager, StyleSheet} from "react-native";
 import {
-    View,
+    Caption,
     DropDownMenu,
     Icon,
+    ListView,
     NavigationBar,
     Screen,
-    TouchableOpacity,
-    Title,
-    Divider,
-    Caption,
-    Row,
-    Subtitle,
-    Text,
     Spinner,
-    ListView
+    Title,
+    TouchableOpacity,
+    View
 } from "@shoutem/ui";
 import styleBase from "../../../styles/base";
 import ProductItem from "../component/productItem";
-import {graphql} from "react-apollo";
+import {graphql, compose} from "react-apollo";
 import {getProductInventory} from "../action/productManagementAction";
 import NoData from "../../../component/noData/noData";
 
@@ -55,19 +51,30 @@ class ProductManagement extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         try {
-            let {data} = nextProps;
-            if (data.error) {
-                throw new Error(data.error.message);
+            let data = nextProps.data || {};
+
+            if(nextProps.data.error) {
+                throw new Error(nextProps.data.error.message)
             }
 
-            if(!data.getUserInventory && !data.loading) {
-                return this.setState({employeeInventory: "NoData", loading: false});
-            }
+            InteractionManager.runAfterInteractions(() => {
+                try {
 
-            return this.setState({employeeInventory: data.getUserInventory, loading: data.loading});
+                    if(!data.getUserInventory && !data.loading) {
+                        return this.setState({employeeInventory: "NoData", loading: false});
+                    }
+
+                    return this.setState({employeeInventory: data.getUserInventory, loading: data.loading});
+                }
+                catch (e) {
+                    console.log(e);
+                    console.warn("error - componentWillReceiveProps")
+                }
+            })
         }
-        catch (e) {
-            console.warn("error - componentWillReceiveProps")
+        catch(e) {
+            console.log(e);
+            console.warn("error - componentWillReceiveProps - productManagement")
         }
     }
 
@@ -102,7 +109,10 @@ class ProductManagement extends React.Component {
     }
 
     renderItem(rowData, sectionId, index, numberOfRows) {
-        return <ProductItem key={index}/>
+        if(!parseInt(index)) {
+            console.log(rowData);
+        }
+        return <ProductItem key={index} item={rowData}/>
     }
 
     render() {
@@ -119,15 +129,25 @@ class ProductManagement extends React.Component {
                         rightComponent={this.renderRightComponent()}
                     />
                     <View styleName="md-gutter-bottom">
-                        <View styleName="space-between horizontal"
+                        <View styleName="horizontal"
                               style={StyleSheet.flatten([styleBase.p_md_vertical, styleBase.p_md_horizontal, styleBase.bgE5])}>
-                            <Caption>
-                                TÊN SẢN PHẨM
-                            </Caption>
-                            <Caption>
-                                SỐ LƯỢNG
-                            </Caption>
-                            <Caption/>
+                            <View style={{flex: 0.33}}>
+                                <Caption>
+                                    TÊN SẢN PHẨM
+                                </Caption>
+                            </View>
+                            <View styleName="horizontal v-center h-center" style={{flex: 0.33}}>
+                                <Caption>
+                                    SỐ LƯỢNG
+                                </Caption>
+                            </View>
+                            <View styleName="horizontal v-center h-center" style={{flex: 0.2}}>
+                                <Caption>
+                                    ĐƠN VỊ
+                                </Caption>
+                            </View>
+
+                            <View style={{flex: 0.13}}/>
                         </View>
                         {
                             this.state.loading && (this.state.employeeInventory != undefined) &&
@@ -153,18 +173,32 @@ class ProductManagement extends React.Component {
         }
         catch(e) {
             console.warn("error - render productManagement");
+            return (
+                <Screen styleName="paper">
+                    <NavigationBar
+                        style={{container: {paddingHorizontal: 15}}}
+                        styleName="inline"
+                        centerComponent={this.renderCenterComponent()}
+                        leftComponent={this.renderLeftComponent()}
+                        rightComponent={this.renderRightComponent()}
+                    />
+                    <View styleName="xl-gutter-top">
+                        <NoData/>
+                    </View>
+                </Screen>
+            )
         }
     }
 }
 
-export default graphql(getProductInventory, {
+export default compose(graphql(getProductInventory, {
     options: (props) => {
         return {
             variables: {
-                type: "employee",
-                userId: props.posItem._id
+                type: props.type,
+                userId: props.user._id
             },
-            fetchPolicy: "cache-and-network",
+            fetchPolicy: "cache-and-network"
         }
     },
-})(ProductManagement);
+}))(ProductManagement);

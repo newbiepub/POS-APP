@@ -4,7 +4,7 @@ import NoData from "../../../component/noData/noData";
 import {graphql} from "react-apollo";
 import {getAllPOS} from "../action/posAction";
 import POSItem from "../component/posItem";
-import {Dimensions, StyleSheet} from "react-native";
+import {Dimensions, StyleSheet, InteractionManager} from "react-native";
 import styleBase from "../../../styles/base";
 import * as _ from "lodash";
 
@@ -29,18 +29,26 @@ class POS extends React.Component {
     componentWillReceiveProps(nextProps) {
         try {
             if(nextProps.data.error) {
-                throw new Error(nextProps.data.error.message);
+                console.warn(nextProps.data.error.message);
             }
-            let data = nextProps.data || {getAllPOS: []};
-            if (!data.getAllPOS.length && !data.loading) {
-                return this.setState({pos: "NoData", loading: false});
-            }
+            InteractionManager.runAfterInteractions(() => {
+                try {
+                    let data = nextProps.data || {getAllPOS: []};
+                    if (!data.getAllPOS.length && !data.loading) {
+                        return this.setState({pos: "NoData", loading: false});
+                    }
 
-            return this.setState({pos: data.getAllPOS, loading: data.loading});
+                    return this.setState({pos: data.getAllPOS, loading: data.loading});
+                }
+                catch (e) {
+                    console.log(e);
+                    console.warn("error - componentWillReceiveProps - POS")
+                }
+            });
         }
-        catch (e) {
+        catch(e) {
             console.log(e);
-            console.warn("error - componentWillReceiveProps - POS")
+            console.warn("error - componentWillReceiveProps")
         }
     }
 
@@ -116,7 +124,7 @@ class POS extends React.Component {
         }
         catch (e) {
             console.warn("error - render POS");
-            return <View/>
+            return <NoData/>
         }
     }
 }

@@ -18,7 +18,7 @@ class POSItem extends React.Component {
     };
 
     navigatePOSDetail () {
-        this.props.navigator.push({id: "pos_detail", title: this.props.item.profile.name || "POINT OF SALES", posItem: this.props.item});
+        this.props.navigator.push({id: "pos_detail", title: this.props.item.profile.name || "POINT OF SALES", user: this.props.item});
     }
 
     render() {

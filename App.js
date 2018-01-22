@@ -9,7 +9,7 @@ import {ApolloProvider} from "react-apollo";
 import AppContainer from "./src/container/app";
 import {setContext} from "apollo-link-context";
 import {getToken} from "./src/feature/login/utils/loginToken";
-import { Provider } from "react-redux";
+import {Provider} from "react-redux";
 import store from "./src/store/store";
 
 const fragmentMatcher = new IntrospectionFragmentMatcher({
@@ -27,7 +27,7 @@ const authLink = setContext(async (req, {headers}) => {
         return {
             ...headers,
             headers: {
-                authentication: token ? `${token.access_token}` : null,
+                "Authentication": token ? token.access_token : null,
                 "x-refresh-token": token ? token.refresh_token : null
             },
         };
@@ -40,7 +40,6 @@ const authLink = setContext(async (req, {headers}) => {
         }
     }
 });
-
 const cache = new InMemoryCache({fragmentMatcher});
 
 persistCache({

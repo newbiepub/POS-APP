@@ -8,6 +8,7 @@ import Popup from "../component/popup/popup";
 import styleBase from "../styles/base";
 import POSDetail from "../feature/pos/container/posDetail";
 import ProductManagement from "../feature/productManagement/container/productManagement";
+import CompanyInventory from "../feature/companyInventory/container/companyInventory";
 
 EStyleSheet.build(); //Build Extended StyleSheet
 
@@ -22,7 +23,7 @@ class AppContainer extends React.Component {
     static defaultProps = {};
 
     configureScene(route, navigator) {
-        if (route.id === "home" || route.id === "pos_product_management") return Navigator.SceneConfigs.FadeAndroid;
+        if (route.id === "home" || route.id === "pos_product_management" || route.id === "company_product_management") return Navigator.SceneConfigs.FadeAndroid;
 
         if(route.id === "pos_detail") return Navigator.SceneConfigs.FloatFromBottom;
 
@@ -35,9 +36,11 @@ class AppContainer extends React.Component {
             case "home":
                 return <Home navigator={navigator}/>;
             case "pos_detail":
-                return <POSDetail navigator={navigator} title={route.title} posItem={route.posItem}/>;
+                return <POSDetail navigator={navigator} title={route.title} user={route.user}/>;
             case "pos_product_management":
-                return <ProductManagement navigator={navigator} title={route.title} posItem={route.posItem}/>
+                return <ProductManagement navigator={navigator} title={route.title} user={route.user} type={"employee"}/>;
+            case "company_product_management":
+                return <ProductManagement navigator={navigator} title={route.title} user={route.user} type={"company"}/>;
         }
     }
 

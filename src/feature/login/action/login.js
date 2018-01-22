@@ -1,4 +1,5 @@
 import configs from "../../../configs";
+import gql from 'graphql-tag';
 
 export async function companyLogin(email, password) {
     try {
@@ -22,3 +23,30 @@ export async function companyLogin(email, password) {
         throw e;
     }
 }
+
+const userProfile = gql`
+    fragment userProfile on User {
+        _id
+        profile {
+            name
+            address
+            phoneNumber
+        }
+    }
+`;
+
+export const getCurrentUser = gql`
+    query getCurrentUser {
+        currentUser {
+            ...userProfile
+            ... on CurrentCompany {
+                email
+            }
+            ... on CurrentEmployee {
+                username
+                companyId
+            }
+        }
+    }
+    ${userProfile}
+`;
