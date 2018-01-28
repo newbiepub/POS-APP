@@ -1,10 +1,10 @@
 import React from "react";
 import {Text, View, TouchableOpacity} from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
-import {TextLarge, TextInputNormal} from '../reuseable/ui/text';
+import {TextLarge, TextInputNormal} from '../../component/text';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {constantStyle} from '../../style/base';
-import {numberwithThousandsSeparator} from '../reuseable/function/function';
+import {numberwithThousandsSeparator} from '../../reuseable/function/function';
 class CustomAmount extends React.Component {
     constructor(props) {
         super(props);
@@ -116,7 +116,7 @@ class CustomAmount extends React.Component {
                             }}>
                                 <View style={style.amountKeyButton}>
                                     <Ionicons name={"md-arrow-back"}
-                                              style={{fontSize: constantStyle.sizeLarge,color:'red'}}/>
+                                              style={{fontSize: constantStyle.sizeNormal,color:'red'}}/>
                                 </View>
                             </TouchableOpacity>
 

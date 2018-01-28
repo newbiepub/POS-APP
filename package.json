@@ -7,6 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@shoutem/ui": "^0.23.2",
     "apollo-cache-inmemory": "^1.1.5",
     "apollo-cache-persist": "^0.1.1",
     "apollo-client": "^2.2.0",
@@ -27,7 +28,8 @@
     "react-native-keyboard-spacer": "^0.4.1",
     "react-native-vector-icons": "^4.5.0",
     "react-redux": "^5.0.6",
-    "redux": "^3.7.2"
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0"
   },
   "devDependencies": {
     "babel-jest": "22.1.0",

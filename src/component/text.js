@@ -1,6 +1,6 @@
 import React from "react";
 import {View, Text, TextInput,} from "react-native";
-import {numberwithThousandsSeparator} from '../function/function';
+import {numberwithThousandsSeparator} from '../reuseable/function/function';
 import EStyleSheet from "react-native-extended-stylesheet";
 
 export class TextInputNormal extends React.PureComponent {
@@ -115,7 +115,12 @@ export class TextInputNumber extends React.PureComponent {
                 newText = this.props.maxValue
             }
         }
-        return newText
+        if (this.props.hasOwnProperty("minValue")) {
+            if (newText < this.props.minValue) {
+                newText = this.props.minValue
+            }
+        }
+        return parseInt(newText)
     }
 
     render() {
@@ -127,6 +132,7 @@ export class TextInputNumber extends React.PureComponent {
                        onBlur={() => {
                            this.setState({onFocus: false})
                        }}
+                       value={this.props.value.toString()}
                        keyboardType={'numeric'}
                        onChangeText={(num) => {
                            if (this.getNumberInput(num) !== undefined)
@@ -224,7 +230,7 @@ const style = EStyleSheet.create({
         borderColor: 'gray',
         flex: 1,
         paddingHorizontal: 30,
-        paddingVertical:10
+        paddingVertical: 10
     },
     fontSizeSmall: {
         fontSize: 14
@@ -240,13 +246,13 @@ const style = EStyleSheet.create({
     },
     '@media (min-width: 768) and (max-width: 1024)': {
         fontSizeSmall: {
-            fontSize: 18
+            fontSize: 16
         },
         fontSizeNormal: {
-            fontSize: 24
+            fontSize: 20
         },
         fontSizeLarge: {
-            fontSize: 28
+            fontSize: 24
         },
     },
     '@media (min-width: 1024)': {
@@ -254,10 +260,10 @@ const style = EStyleSheet.create({
             fontSize: 18
         },
         fontSizeNormal: {
-            fontSize: 28
+            fontSize: 22
         },
         fontSizeLarge: {
-            fontSize: 32
+            fontSize: 26
         },
     }
 });

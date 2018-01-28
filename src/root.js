@@ -8,6 +8,8 @@ import {persistCache} from 'apollo-cache-persist';
 import {ASYNC_STORAGE} from './constant/constant';
 import {setContext} from "apollo-link-context";
 import {ApolloClient} from "apollo-client";
+import {Provider} from "react-redux";
+import store from './store/store';
 
 const cache = new InMemoryCache();
 const authLink = setContext(async (req, {headers}) => {
@@ -32,15 +34,20 @@ persistCache({
 const client = new ApolloClient({
 
     link: authLink.concat(httpLink),
-    cache: new InMemoryCache()
+    cache: cache
 });
+
 export default class AppRoot extends PureComponent {
     render() {
 
         return (
             <ApolloProvider client={client}>
-                <App/>
+                <Provider store={store}>
+                    <App client={client}/>
+                </Provider>
             </ApolloProvider>
         )
     }
 }
+
+export {client}

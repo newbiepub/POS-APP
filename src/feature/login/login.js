@@ -1,6 +1,6 @@
 import React, {PureComponent} from "react";
 import {Platform, StatusBar, Text, View, Image, TouchableOpacity, Alert, AsyncStorage} from "react-native";
-import {TextNormal, TextInputNormal, TextInputUserName, TextInputPassword} from '../reuseable/ui/text';
+import {TextNormal, TextInputNormal, TextInputUserName, TextInputPassword} from '../../component/text';
 import EStyleSheet from "react-native-extended-stylesheet";
 import config from '../../config';
 import {ASYNC_STORAGE} from '../../constant/constant';
@@ -66,6 +66,7 @@ class Login extends PureComponent {
                 {cancelable: false}
             )
         } else {
+            this.props.navigator.resetTo({id: "home"})
             AsyncStorage.setItem(ASYNC_STORAGE.AUTH_TOKEN, JSON.stringify(response))
             //console.warn("dang nhapj thanh cong")
         }
