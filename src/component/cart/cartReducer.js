@@ -1,8 +1,7 @@
 import {CART_ACTION} from '../../constant/constant';
 
 const initialState = {
-    cart: [
-    ]
+    cart: []
 };
 
 export default function (state = initialState, action = {}) {
@@ -12,6 +11,12 @@ export default function (state = initialState, action = {}) {
                 cart: state.cart.concat(action.payload)
             }
         }
+        case CART_ACTION.CLEAN_CART: {
+            return {
+                cart: []
+            }
+        }
+
         default:
             return {
                 ...state
