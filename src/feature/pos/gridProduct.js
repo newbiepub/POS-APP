@@ -9,6 +9,7 @@ import {connect} from 'react-redux';
 import ViewProduct from '../../component/popup/popupContent/viewProduct';
 import {client} from '../../root';
 import {QUERY} from '../../constant/query';
+
 class GridProduct extends React.Component {
     constructor(props) {
         super(props);
@@ -17,16 +18,8 @@ class GridProduct extends React.Component {
             gridViewWidth: width * 60 / 100,
             gridViewItemSize: ((width * 60) / 100 - 20) / 3,
             columnNumber: 3,
-            product:[]
+            product: []
         }
-    }
-
-    itemPress(product) {
-        this.props.openPopup();
-        this.props.renderPopup(
-            <ViewProduct productData={product}/>
-        );
-
     }
 
     componentDidMount() {
@@ -38,6 +31,7 @@ class GridProduct extends React.Component {
             })
         })
     }
+
     async componentWillMount() {
         try {
             const res = await client.query({
@@ -58,6 +52,7 @@ class GridProduct extends React.Component {
             })
         }
     }
+
     shouldComponentUpdate(nextProps, nextState) {
         const differentData = this.props.data !== nextProps.data;
         const changedLoading = this.props.loading !== nextProps.loading;

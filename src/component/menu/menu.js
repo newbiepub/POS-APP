@@ -14,7 +14,7 @@ import {constantStyle} from '../../style/base';
 import {connect} from 'react-redux';
 import EStyleSheet from "react-native-extended-stylesheet";
 import ModalWrapper from '../@modalWrapper';
-import {changeRoute,switchMenu} from './menuAction';
+import {changeRoute, switchMenu} from './menuAction';
 
 class Menu extends PureComponent {
     constructor(props) {
@@ -35,14 +35,14 @@ class Menu extends PureComponent {
             })
         })
     }
-    changeRoute(item)
-    {
+
+    changeRoute(item) {
         this.props.switchMenu();
         this.props.changeRoute(item)
     }
 
     _MenuItem = ({item}) => (
-        <TouchableOpacity onPress={()=> this.changeRoute(item)}>
+        <TouchableOpacity onPress={() => this.changeRoute(item)}>
             <View
                 style={[style.menuItemWrapper, this.props.currentItem.id === item.id && {backgroundColor: constantStyle.color2}]}>
                 <TextLarge
@@ -75,6 +75,7 @@ class Menu extends PureComponent {
                             data={this.props.menuItems}
                             keyExtractor={item => item.name}
                             renderItem={this._MenuItem}
+                            contentContainerStyle={style.listMenu}
                         />
 
                     </View>
@@ -90,7 +91,7 @@ const style = EStyleSheet.create({
     menuContainer: {
         backgroundColor: constantStyle.color1,
         position: 'absolute',
-        paddingVertical: 40,
+
     },
     menuItemWrapper: {
         paddingVertical: 20,
@@ -99,6 +100,9 @@ const style = EStyleSheet.create({
     menuItemText: {
         color: constantStyle.color2,
 
+    },
+    listMenu: {
+        paddingVertical: 40,
     },
     '@media (min-width: 768) and (max-width: 1024)': {},
     '@media (min-width: 1024)': {}

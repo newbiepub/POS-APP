@@ -16,6 +16,9 @@ import {constantStyle} from '../../style/base';
 import {connect} from 'react-redux';
 import {clearCart} from './cartAction';
 import {numberwithThousandsSeparator} from "../../reuseable/function/function";
+import {openPopup} from '../popup/popupAction';
+import ViewProduct from '../popup/popupContent/viewProduct';
+import CustomAmountView from '../popup/popupContent/customAmountView';
 
 class Cart extends PureComponent {
     constructor(props) {
@@ -86,6 +89,14 @@ class Cart extends PureComponent {
         }
     }
 
+    onCLickItem(item) {
+        if (item.customAmount) {
+            this.props.openPopup(<CustomAmountView edit={true} item={item}/>);
+        } else {
+            this.props.openPopup(<ViewProduct edit={true} item={item}/>);
+        }
+    }
+
     render() {
         const spinArrow = this.state.clearArrow.interpolate({
             inputRange: [0, 1],
@@ -129,18 +140,20 @@ class Cart extends PureComponent {
                     {
                         this.props.cart.map((item) => {
                             return (
-                                <View style={style.cartItem} key={item._id}>
-                                    <View style={style.cartItemTitle}>
-                                        <TextNormal>{item.name}</TextNormal>
-                                        {
-                                            item.quantity > 1 &&
-                                            <TextSmall style={{color: 'gray'}}>x{item.quantity}</TextSmall>
-                                        }
+                                <TouchableWithoutFeedback key={item._id} onPress={() => this.onCLickItem(item)}>
+                                    <View style={style.cartItem}>
+                                        <View style={style.cartItemTitle}>
+                                            <TextNormal>{item.name}</TextNormal>
+                                            {
+                                                item.quantity > 1 &&
+                                                <TextSmall style={{color: 'gray'}}>x{item.quantity}</TextSmall>
+                                            }
+
+                                        </View>
+                                        <TextSmall>{numberwithThousandsSeparator(item.price)}{item.currency}</TextSmall>
 
                                     </View>
-                                    <TextSmall>{numberwithThousandsSeparator(item.price)}{item.currency}</TextSmall>
-
-                                </View>
+                                </TouchableWithoutFeedback>
                             )
                         })
                     }
@@ -213,6 +226,7 @@ const mapStateToProps = (state) => {
     }
 };
 const mapDispatchToProps = {
-    clearCart
+    clearCart,
+    openPopup
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Cart);

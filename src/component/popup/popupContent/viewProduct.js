@@ -5,7 +5,7 @@ import {TextLarge, TextNormal, TextSmall, TextInputNumber} from '../../text';
 import {constantStyle} from '../../../style/base';
 import {connect} from 'react-redux';
 import PopupHeader from './_popupHeader';
-import {addToCart} from '../../cart/cartAction';
+import {addToCart, removeFromCart} from '../../cart/cartAction';
 import {closePopup} from '../../popup/popupAction';
 import {numberwithThousandsSeparator} from "../../../reuseable/function/function";
 
@@ -16,15 +16,18 @@ class ViewProduct extends React.Component {
         this.state = {
             width,
             height,
-            product: {
+            product: this.props.edit ? this.props.item : {
                 _id: this.props.item._id,
                 quantity: 1,
                 name: this.props.item.name,
                 price: this.props.item.price[0].price,
                 priceName: this.props.item.price[0].name,
                 currency: this.props.item.price[0].currency.name,
+                prices: this.props.item.price,
+                index: 0,
+                unit: this.props.item.unit
             },
-            index: 0,
+
         }
 
     }
@@ -46,8 +49,9 @@ class ViewProduct extends React.Component {
                 price: item.price,
                 currency: item.currency.name,
                 priceName: item.name,
+                index: index,
             },
-            index: index,
+
 
         })
     }
@@ -93,11 +97,12 @@ class ViewProduct extends React.Component {
 
     _renderPrice = ({item, index}) => (
         <TouchableWithoutFeedback onPress={() => this.onChangePrice(item, index)}>
-            <View style={[style.pricePicker, this.state.index === index && {backgroundColor: constantStyle.color1}]}>
+            <View
+                style={[style.pricePicker, this.state.product.index === index && {backgroundColor: constantStyle.color1}]}>
                 <TextSmall numberOfLines={1}
-                           style={[{flex: 1}, this.state.index === index && {color: constantStyle.color2}]}>{item.name}</TextSmall>
+                           style={[{flex: 1}, this.state.product.index === index && {color: constantStyle.color2}]}>{item.name}</TextSmall>
                 <TextSmall
-                    style={this.state.index === index && {color: constantStyle.color2}}>{numberwithThousandsSeparator(item.price)}{item.currency.name}/{this.props.item.unit}</TextSmall>
+                    style={this.state.product.index === index && {color: constantStyle.color2}}>{numberwithThousandsSeparator(item.price)}{item.currency.name}/{this.state.product.unit}</TextSmall>
 
             </View>
         </TouchableWithoutFeedback>
@@ -119,16 +124,16 @@ class ViewProduct extends React.Component {
                     submitFunction={() => {
                         this.addToCart()
                     }}
-                    buttonText={"Thêm vào giỏ"}/>
+                    buttonText={this.props.edit ? "Sửa" : "Thêm vào giỏ"}/>
                 <ScrollView style={style.body}>
                     <TextNormal style={style.titlePrice}>{item.name} chọn
                         giá:</TextNormal>
                     <FlatList
-                        data={item.price}
+                        data={this.state.product.prices}
                         numColumns={2}
                         extraData={this.state}
                         keyExtractor={(item) => item.name}
-                        renderItem={this._renderPrice}/////
+                        renderItem={this._renderPrice}
                     />
                     <TextNormal
                         style={style.titleQuantity}>Chọn số lượng (Trong kho có : ?) </TextNormal>
@@ -149,12 +154,23 @@ class ViewProduct extends React.Component {
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
+                    {
+                        this.props.edit &&
+                        <TouchableWithoutFeedback onPress={() => {
+                            this.props.removeFromCart(this.state.product._id);
+                            this.props.closePopup()
+                        }}>
+                            <View>
+                                <TextNormal style={style.buttonDelete}>Xoá</TextNormal>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    }
+
                 </ScrollView>
             </View>
         )
     }
 }
-
 
 const style = EStyleSheet.create({
     container: {
@@ -199,6 +215,14 @@ const style = EStyleSheet.create({
         textAlign: "center",
         flex: 1
     },
+    buttonDelete: {
+        marginTop: constantStyle.headerHeight,
+        paddingVertical: constantStyle.paddingHorizontal,
+        textAlign: 'center',
+        backgroundColor: 'red',
+        color: constantStyle.color2
+
+    },
     '@media (min-width: 768) and (max-width: 1024)': {},
     '@media (min-width: 1024)': {}
 });
@@ -209,6 +233,7 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = {
     addToCart,
+    removeFromCart,
     closePopup
 };
 export default connect(mapStateToProps, mapDispatchToProps)(ViewProduct);

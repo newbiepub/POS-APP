@@ -6,6 +6,12 @@ function addToCartAction(payload) {
         payload
     }
 }
+function removeFromCartAction(payload) {
+    return {
+        type: CART_ACTION.REMOVE_FROM_CART,
+        payload
+    }
+}
 
 function clearCartAction() {
     return {
@@ -23,7 +29,16 @@ export function addToCart(product) {
         }
     }
 }
+export function removeFromCart(id) {
+    return async (dispatch, getState) => {
+        try {
+            dispatch(removeFromCartAction(id))
 
+        } catch (e) {
+            console.warn(e);
+        }
+    }
+}
 export function clearCart() {
     return async (dispatch, getState) => {
         try {

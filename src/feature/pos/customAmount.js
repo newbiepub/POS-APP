@@ -4,41 +4,92 @@ import EStyleSheet from "react-native-extended-stylesheet";
 import {TextLarge, TextInputNormal} from '../../component/text';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {constantStyle} from '../../style/base';
+import {connect} from 'react-redux';
 import {numberwithThousandsSeparator} from '../../reuseable/function/function';
+import {addToCart, removeFromCart} from '../../component/cart/cartAction';
+
 class CustomAmount extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            amount: 0,
-            title: '',
-            num: [{value: "1", size: 1}, {value: "2", size: 1}, {value: "3", size: 1}, {value: "4", size: 1}, {
-                value: "5",
-                size: 1
-            }, {value: "6", size: 1}, {value: "7", size: 1}, {value: "8", size: 1}, {value: "9", size: 0}, {
-                value: "00",
-                size: 1
-            }]
+            item: this.props.edit ? this.props.item : {
+                price: 0,
+                name: '',
+                quantity: 1,
+                currency: 'VND',
+                customAmount: true
+
+            }
+
         }
 
     }
 
-    onAmountChange(num, type) {
-        if(type ==='remove')
-        {
-            this.setState({
-                amount: Math.floor(this.state.amount/ 10)
+    editItemUpdate() {
+        this.props.item.price = this.state.item.price;
+        this.props.item.name = this.state.item.name;
+    }
+
+    async onAmountChange(num, type) {
+        if (type === 'remove') {
+            await  this.setState({
+                item: {
+                    ...this.state.item,
+                    price: Math.floor(this.state.item.price / 10)
+                }
+
             })
         }
-        if(type=== 'add')
-        {
-            if(num === "00")
-            {
-                this.setState({
-                    amount: this.state.amount * 100
+        if (type === 'add') {
+            if (num === "00") {
+                await this.setState({
+                    item: {
+                        ...this.state.item,
+                        price: this.state.item.price * 100
+                    }
+
                 })
-            }else
+            } else
+                await  this.setState({
+                    item: {
+                        ...this.state.item,
+                        price: this.state.item.price * 10 + parseInt(num)
+                    }
+
+
+                })
+        }
+        if (this.props.edit)
+            this.editItemUpdate()
+    }
+
+    async onTextChange(text) {
+        await this.setState({
+            item: {
+                ...this.state.item,
+                name: text
+            }
+        });
+        if (this.props.edit)
+            this.editItemUpdate()
+    }
+
+    addToCart() {
+        if (this.state.item.price > 0) {
+            let item = this.state.item;
+            item._id = new Date();
+            if (item.name === "")
+                item.name = "ghi chú";
+            this.props.addToCart(item);
             this.setState({
-                amount: this.state.amount * 10 + parseInt(num)
+                item: {
+                    price: 0,
+                    name: '',
+                    quantity: 1,
+                    currency: 'VND',
+                    customAmount: true
+
+                }
             })
         }
 
@@ -49,17 +100,18 @@ class CustomAmount extends React.Component {
             <View style={style.container}>
                 <View style={style.amountHeader}>
                     <View style={{flex: 0.4, paddingHorizontal: 20}}>
-                        <TextInputNormal value={this.state.title}
+                        <TextInputNormal value={this.state.item.name}
                                          multiline={true}
                                          placeholder={"ghi chú"}
-                                         onChangeText={(text) => this.setState({title: text})}/>
+                                         onChangeText={(text) => this.onTextChange(text)}/>
                     </View>
                     <View style={{flex: 0.6, paddingHorizontal: 20}}>
-                        <TextLarge numberOfLines={1} style={{textAlign: 'right'}}>{numberwithThousandsSeparator(this.state.amount) }</TextLarge>
+                        <TextLarge numberOfLines={1}
+                                   style={{textAlign: 'right'}}>{numberwithThousandsSeparator(this.state.item.price)}</TextLarge>
                     </View>
                 </View>
                 <View style={style.amountKeypad}>
-                    <View style={{flex: 0.5 , flexDirection: 'row'}}>
+                    <View style={{flex: 0.5, flexDirection: 'row'}}>
                         <View style={{flex: 3}}>
                             <View
                                 style={style.row}>
@@ -116,7 +168,7 @@ class CustomAmount extends React.Component {
                             }}>
                                 <View style={style.amountKeyButton}>
                                     <Ionicons name={"md-arrow-back"}
-                                              style={{fontSize: constantStyle.sizeNormal,color:'red'}}/>
+                                              style={{fontSize: constantStyle.sizeNormal}}/>
                                 </View>
                             </TouchableOpacity>
 
@@ -167,11 +219,23 @@ class CustomAmount extends React.Component {
                             </View>
                         </View>
                         <View style={style.row}>
-                            <TouchableOpacity style={{flex: 1}} >
-                                <View style={style.amountKeyButton}>
-                                    <TextLarge style={{textAlign: 'center'}}>+</TextLarge>
-                                </View>
-                            </TouchableOpacity>
+                            {
+                                this.props.edit ?
+                                    <TouchableOpacity style={{flex: 1}} onPress={() => {
+                                        this.props.removeFromCart(this.state.item._id);
+                                        this.props.closePopup()
+                                    }}>
+                                        <View style={[style.amountKeyButton]}>
+                                            <TextLarge style={{textAlign: 'center', color: 'red'}}>-</TextLarge>
+                                        </View>
+                                    </TouchableOpacity> :
+                                    <TouchableOpacity style={{flex: 1}} onPress={() => this.addToCart()}>
+                                        <View style={[style.amountKeyButton]}>
+                                            <TextLarge
+                                                style={{textAlign: 'center', color: constantStyle.color1}}>+</TextLarge>
+                                        </View>
+                                    </TouchableOpacity>
+                            }
                         </View>
                     </View>
                 </View>
@@ -192,12 +256,12 @@ const style = EStyleSheet.create({
         alignItems: 'center',
         borderWidth: 1,
         borderColor: constantStyle.colorBorder,
-        backgroundColor:constantStyle.color2,
+        backgroundColor: constantStyle.color2,
     },
     amountKeyButton: {
         flex: 1,
         justifyContent: 'center',
-        alignItems:'center',
+        alignItems: 'center',
         borderWidth: 1,
         borderColor: constantStyle.colorBorder
     },
@@ -205,7 +269,7 @@ const style = EStyleSheet.create({
         flex: 0.8,
         borderWidth: 1,
         borderColor: constantStyle.colorBorder,
-        backgroundColor:constantStyle.color2,
+        backgroundColor: constantStyle.color2,
     },
     row: {
         flex: 1,
@@ -218,4 +282,8 @@ const style = EStyleSheet.create({
     '@media (min-width: 1024)': {}
 });
 
-export default CustomAmount;
+const mapDispatchToProps = {
+    addToCart,
+    removeFromCart
+};
+export default connect(null, mapDispatchToProps)(CustomAmount);
