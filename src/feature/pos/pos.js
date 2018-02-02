@@ -7,7 +7,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import {constantStyle} from '../../style/base';
 import {graphql} from 'react-apollo';
 import {QUERY} from '../../constant/query';
-import GridProduct from './gridProduct';
+import GridProduct from './gridView/gridProduct';
 import Library from './library';
 import CustomAmount from './customAmount';
 import Cart from '../../component/cart/cart';
@@ -62,7 +62,7 @@ class POS extends PureComponent {
                     <View style={{flex: 0.6}}>
                         {
                             this.state.currentView === 'gridProduct' &&
-                            <GridProduct/>
+                            <GridProduct loginExpire={() => this.props.loginExpire()}/>
                         }
                         {
                             this.state.currentView === 'library' &&

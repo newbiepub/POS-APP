@@ -1,5 +1,5 @@
 import React, {PureComponent} from "react";
-import {Platform, StatusBar, Text, View, AsyncStorage} from "react-native";
+import {Platform, StatusBar, Alert, View, AsyncStorage} from "react-native";
 import {Navigator} from "react-native-deprecated-custom-components";
 import Login from './login/login';
 import POS from './pos/pos';
@@ -12,9 +12,12 @@ import EStyleSheet from "react-native-extended-stylesheet";
 import {connect} from 'react-redux';
 import Menu from '../component/menu/menu';
 import Popup from '../component/popup/popup';
+import {QUERY} from '../constant/query';
+import {client} from '../root';
+
 EStyleSheet.build(); // Build Extended StyleSheet
 import {ASYNC_STORAGE} from '../constant/constant'
-import {QUERY} from '../constant/query';
+
 class App extends PureComponent {
     constructor(props) {
         super(props);
@@ -52,21 +55,18 @@ class App extends PureComponent {
     }
 
     async componentWillMount() {
-        try{
+        try {
             const res = await this.props.client.query({
                 query: QUERY.PRODUCTS,
                 fetchPolicy: 'cache-only'
             });
-        }catch(e)
-        {
+        } catch (e) {
             const res = await this.props.client.query({
                 query: QUERY.PRODUCTS,
                 fetchPolicy: 'cache-only'
             });
             console.warn(JSON.stringify(res.data.products))
         }
-
-
         this.ensuringLogined()
     }
 
@@ -93,12 +93,50 @@ class App extends PureComponent {
 }
 
 class Home extends PureComponent {
+    loginExpire() {
+        Alert.alert(
+            'Thông báo !',
+            'Phiên đăng nhập của bạn đã hết hạn !',
+            [
+                {
+                    text: 'OK', onPress: () => {
+                }
+                },
+            ],
+            {cancelable: false}
+        );
+        this.props.navigator.resetTo({id: "login"})
+    };
+
+    async componentWillMount() {
+        try {
+            client.query({
+                query: QUERY.PRODUCTS,
+                fetchPolicy: 'network-only'
+            }).catch(async err => {
+                if (err.networkError.response.status === 500) {
+                    this.loginExpire()
+                }
+            });
+            client.query({
+                query: QUERY.CATEGORIES,
+                fetchPolicy: 'network-only'
+            }).catch(async err => {
+                if (err.networkError.response.status === 500) {
+                    this.loginExpire()
+                }
+            });
+        } catch (e) {
+           // console.warn(e)
+        }
+    }
+
     render() {
         return (
             <View style={{flex: 1}}>
                 {
                     this.props.router.currentItem.id === this.props.router.menuItems[0].id &&
-                    <POS/>
+                    <POS loginExpire={() => this.loginExpire()}/>
                 }
                 {
                     this.props.router.currentItem.id === this.props.router.menuItems[1].id &&

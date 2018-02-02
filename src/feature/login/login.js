@@ -74,7 +74,6 @@ class Login extends PureComponent {
     }
 
 
-
     render() {
         return (
             <View style={style.container}>

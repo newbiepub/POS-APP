@@ -16,6 +16,7 @@ export const constantStyle = {
     //    gray
     colorBorder: 'gray',
     paddingHorizontal: 20,
+    paddingGridItem:10,
 //    listItemHeight
     listItemHeight: 70
 };

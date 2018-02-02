@@ -1,14 +1,26 @@
 import React from "react";
-import {ActivityIndicator, Text, FlatList, View, TouchableWithoutFeedback, Dimensions} from "react-native";
+import {
+    ActivityIndicator,
+    ScrollView,
+    FlatList,
+    View,
+    TouchableWithoutFeedback,
+    Dimensions,
+    Easing,
+    Animated,
+    Alert
+} from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
-import {constantStyle} from '../../style/base';
-import {TextNormal, TextSmall} from '../../component/text';
-import {numberwithThousandsSeparator} from '../../reuseable/function/function';
-import {openPopup} from '../../component/popup/popupAction';
+import {constantStyle} from '../../../style/base';
+import {TextNormal, TextSmall} from '../../../component/text';
+import {numberwithThousandsSeparator} from '../../../reuseable/function/function';
+import {openPopup} from '../../../component/popup/popupAction';
 import {connect} from 'react-redux';
-import ViewProduct from '../../component/popup/popupContent/viewProduct';
-import {client} from '../../root';
-import {QUERY} from '../../constant/query';
+import ViewProduct from '../../../component/popup/popupContent/viewProduct';
+import {client} from '../../../root';
+import {QUERY} from '../../../constant/query';
+import NoData from '../../../component/noData';
+import ListCategory from './listCategory';
 
 class GridProduct extends React.Component {
     constructor(props) {
@@ -16,10 +28,12 @@ class GridProduct extends React.Component {
         let {width, height} = Dimensions.get('window');
         this.state = {
             gridViewWidth: width * 60 / 100,
-            gridViewItemSize: ((width * 60) / 100 - 20) / 3,
-            columnNumber: 3,
-            product: []
-        }
+            height,
+            columnNumber: 2,
+            product: [],
+            categoryFilter: 'all'
+        };
+        this.state.gridViewItemSize = ((width * 60) / 100 - 20 - constantStyle.headerHeight) / this.state.columnNumber;
     }
 
     componentDidMount() {
@@ -27,29 +41,52 @@ class GridProduct extends React.Component {
             let {width, height} = Dimensions.get('window');
             this.setState({
                 gridViewWidth: width * 60 / 100,
-                gridViewItemSize: ((width * 60) / 100 - 20) / 3
+                height,
+                gridViewItemSize: ((width * 60) / 100 - 20 - constantStyle.headerHeight ) / this.state.columnNumber
             })
         })
+
     }
 
     async componentWillMount() {
         try {
-            const res = await client.query({
+            client.query({
                 query: QUERY.PRODUCTS,
-                fetchPolicy: 'network-only'
+                fetchPolicy: 'cache-first'
+            }).then((res) => {
+                this.setState({
+                    product: res.data.products
+                })
+            }).catch(async err => {
+                if (err.networkError.response.status === 500) {
+                    this.props.loginExpire()
+                }
             });
-
-            this.setState({
-                product: res.data.products
-            })
         } catch (e) {
-            const res = await client.query({
-                query: QUERY.PRODUCTS,
-                fetchPolicy: 'cache-only'
+            console.warn(e)
+        }
+    }
+
+    onChangeCagegoryFilter(categoryId) {
+        this.setState(
+            {
+                categoryFilter: categoryId
+            }
+        )
+    }
+
+    filterByCategory() {
+        if (this.state.categoryFilter === 'all') {
+            return this.state.product
+        } else {
+            let data = [];
+            this.state.product.forEach((item) => {
+                if (item.categoryId._id === this.state.categoryFilter) {
+                    data.push(item)
+                }
             });
-            this.setState({
-                product: res.data.products
-            })
+            return data;
+
         }
     }
 
@@ -80,29 +117,40 @@ class GridProduct extends React.Component {
                         <TextSmall>Loại hàng:{item.categoryId.name}</TextSmall>
 
                     </View>
+
                     <View style={style.gridItemName}>
                         <TextSmall numberOfLines={1} style={{color: constantStyle.color2}}>{item.name}</TextSmall>
                     </View>
+
                 </View>
 
             </TouchableWithoutFeedback>
         </View>
 
     );
+    _listEmptyComponent = () => (
+        <NoData style={{
+            padding: 0,
+            height: this.state.height - constantStyle.headerHeight - constantStyle.paddingGridItem * 2
+        }}/>
+    );
 
 
     render() {
         return (
             <View style={style.container}>
+                {/*View category*/}
+                <ListCategory onChangeCategoryFilter={(id) => this.onChangeCagegoryFilter(id)}/>
                 {
                     this.state.product != undefined && !this.state.product.loading ?
                         <FlatList
-                            data={this.state.product}
+                            data={this.filterByCategory()}
                             numColumns={this.state.columnNumber}
                             extraData={this.state}
-                            initialNumToRender={5}
+                            initialNumToRender={10}
                             keyExtractor={(item) => item._id}
                             contentContainerStyle={style.gridView}
+                            ListEmptyComponent={this._listEmptyComponent}
                             renderItem={this._renderItem}
                         /> :
                         <View style={[{flex: 1, justifyContent: "center", alignItems: 'center'}]}>
@@ -116,28 +164,29 @@ class GridProduct extends React.Component {
     }
 }
 
-
 const style = EStyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: constantStyle.colorBackground
+        backgroundColor: constantStyle.colorBackground,
+        flexDirection: 'row'
     },
     gridItem: {
         borderWidth: 1,
         borderColor: constantStyle.colorBorder,
-        borderTopRightRadius: 20,
+        borderTopRightRadius: 10,
         flex: 0.8,
-        padding: 10,
+        zIndex: 5,
+        padding: constantStyle.paddingGridItem,
         backgroundColor: constantStyle.color2
     },
     gridItemName: {
-        padding: 10,
+        padding: constantStyle.paddingGridItem,
         flex: 0.2,
         justifyContent: 'center',
         backgroundColor: constantStyle.color1
     },
     gridView: {
-        padding: 10,
+        padding: constantStyle.paddingGridItem,
 
     }
     ,
