@@ -55,18 +55,6 @@ class App extends PureComponent {
     }
 
     async componentWillMount() {
-        try {
-            const res = await this.props.client.query({
-                query: QUERY.PRODUCTS,
-                fetchPolicy: 'cache-only'
-            });
-        } catch (e) {
-            const res = await this.props.client.query({
-                query: QUERY.PRODUCTS,
-                fetchPolicy: 'cache-only'
-            });
-            console.warn(JSON.stringify(res.data.products))
-        }
         this.ensuringLogined()
     }
 
@@ -93,50 +81,37 @@ class App extends PureComponent {
 }
 
 class Home extends PureComponent {
-    loginExpire() {
-        Alert.alert(
-            'Thông báo !',
-            'Phiên đăng nhập của bạn đã hết hạn !',
-            [
-                {
-                    text: 'OK', onPress: () => {
-                }
-                },
-            ],
-            {cancelable: false}
-        );
-        this.props.navigator.resetTo({id: "login"})
-    };
-
-    async componentWillMount() {
-        try {
-            client.query({
-                query: QUERY.PRODUCTS,
-                fetchPolicy: 'network-only'
-            }).catch(async err => {
-                if (err.networkError.response.status === 500) {
-                    this.loginExpire()
-                }
-            });
-            client.query({
-                query: QUERY.CATEGORIES,
-                fetchPolicy: 'network-only'
-            }).catch(async err => {
-                if (err.networkError.response.status === 500) {
-                    this.loginExpire()
-                }
-            });
-        } catch (e) {
-           // console.warn(e)
+    checkLoginExpire(data) {
+        try{
+            if (data.error && data.error.networkError.statusCode === 500) {
+                Alert.alert(
+                    'Thông báo !',
+                    'Phiên làm việc của bạn đã hết hạn !',
+                    [
+                        {
+                            text: 'OK', onPress: () => {
+                        }
+                        },
+                    ],
+                    {cancelable: false}
+                );
+                AsyncStorage.removeItem(ASYNC_STORAGE.AUTH_TOKEN);
+                this.props.navigator.resetTo({id: "login"})
+            }
+        }catch(e)
+        {
+            console.warn(e)
         }
-    }
+
+
+    };
 
     render() {
         return (
             <View style={{flex: 1}}>
                 {
                     this.props.router.currentItem.id === this.props.router.menuItems[0].id &&
-                    <POS loginExpire={() => this.loginExpire()}/>
+                    <POS checkLoginExpire={(data) => this.checkLoginExpire(data)}/>
                 }
                 {
                     this.props.router.currentItem.id === this.props.router.menuItems[1].id &&

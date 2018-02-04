@@ -19,6 +19,7 @@ import {numberwithThousandsSeparator} from "../../reuseable/function/function";
 import {openPopup} from '../popup/popupAction';
 import ViewProduct from '../popup/popupContent/viewProduct';
 import CustomAmountView from '../popup/popupContent/customAmountView';
+import ChargeView from '../popup/popupContent/chargeView';
 
 class Cart extends PureComponent {
     constructor(props) {
@@ -97,6 +98,10 @@ class Cart extends PureComponent {
         }
     }
 
+    onCharge() {
+        this.props.openPopup(<ChargeView/>)
+    }
+
     render() {
         const spinArrow = this.state.clearArrow.interpolate({
             inputRange: [0, 1],
@@ -158,12 +163,14 @@ class Cart extends PureComponent {
                         })
                     }
                 </ScrollView>
-                <View style={style.buttonCharge}>
-                    <TextLarge style={style.buttonChargeText}>
-                        Thanh toán
-                    </TextLarge>
+                <TouchableWithoutFeedback onPress={() => this.onCharge()}>
+                    <View style={style.buttonCharge}>
+                        <TextLarge style={style.buttonChargeText}>
+                            Thanh toán
+                        </TextLarge>
 
-                </View>
+                    </View>
+                </TouchableWithoutFeedback>
             </View>
 
         )

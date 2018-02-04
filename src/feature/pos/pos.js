@@ -22,6 +22,7 @@ class POS extends PureComponent {
         }
     }
     render() {
+       // console.warn(JSON.stringify(this.props.paymentStatus))
         return (
             <View style={style.container}>
                 {/*---------------Header------------------------*/}
@@ -62,7 +63,7 @@ class POS extends PureComponent {
                     <View style={{flex: 0.6}}>
                         {
                             this.state.currentView === 'gridProduct' &&
-                            <GridProduct loginExpire={() => this.props.loginExpire()}/>
+                            <GridProduct checkLoginExpire={(data) => this.props.checkLoginExpire(data)}/>
                         }
                         {
                             this.state.currentView === 'library' &&
@@ -117,8 +118,3 @@ const style = EStyleSheet.create({
 });
 
 export default POS;
-// export default graphql(QUERY.PRODUCTS, {
-//     name: 'productsData', options: {
-//         fetchPolicy: "cache-and-network"
-//     }
-// })(POS);

@@ -1,7 +1,9 @@
 import React from "react";
-import {View, Text, TextInput,} from "react-native";
+import {View, Text, TextInput, TouchableWithoutFeedback} from "react-native";
 import {numberwithThousandsSeparator} from '../reuseable/function/function';
 import EStyleSheet from "react-native-extended-stylesheet";
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import {constantStyle} from '../style/base';
 
 export class TextInputNormal extends React.PureComponent {
     constructor(props) {
@@ -23,6 +25,41 @@ export class TextInputNormal extends React.PureComponent {
                        }}
                        style={[this.state.onFocus && {}, style.fontSizeNormal, this.props.style]}
             />
+        )
+    }
+}
+
+export class SearchInput extends React.PureComponent {
+    constructor(props) {
+        super(props);
+        this.state = {
+            onFocus: false,
+        }
+    }
+
+    render() {
+        return (
+            <View style={style.searchInput}>
+                <EvilIcons name={"search"} style={[style.fontSizeLarge, {marginRight: constantStyle.paddingGridItem}]}/>
+                <TextInput {...this.props}
+                           onFocus={() => {
+                               this.setState({onFocus: true})
+                           }}
+                           onBlur={() => {
+                               this.setState({onFocus: false})
+                           }}
+                           style={[this.state.onFocus && {}, style.fontSizeNormal, {flex: 1}, this.props.style]}
+                />
+                {
+                    this.props.value != undefined && this.props.value != "" &&
+                    <TouchableWithoutFeedback onPress={()=> this.props.clean()}>
+                        <EvilIcons name={"close"}
+                                   style={[style.fontSizeLarge, {marginLeft: constantStyle.paddingGridItem}]}/>
+                    </TouchableWithoutFeedback>
+                }
+
+            </View>
+
         )
     }
 }
@@ -227,10 +264,19 @@ const style = EStyleSheet.create({
     wrapperWithBorderRadius: {
         borderRadius: 30,
         borderWidth: 1,
-        borderColor: 'gray',
+        borderColor: constantStyle.colorBorder,
         flex: 1,
         paddingHorizontal: 30,
         paddingVertical: 10
+    },
+    searchInput: {
+        flexDirection: 'row',
+        flex: 1,
+        alignItems: 'center',
+        padding: 10,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 30
     },
     fontSizeSmall: {
         fontSize: 14

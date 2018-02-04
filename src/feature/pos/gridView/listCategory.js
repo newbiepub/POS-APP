@@ -13,10 +13,10 @@ import {
 import EStyleSheet from "react-native-extended-stylesheet";
 import {constantStyle} from '../../../style/base';
 import {TextNormal, TextSmall} from '../../../component/text';
-import {client} from '../../../root';
 import {QUERY} from '../../../constant/query';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {graphql} from 'react-apollo';
 
 class CategoryView extends React.PureComponent {
     constructor(props) {
@@ -28,30 +28,9 @@ class CategoryView extends React.PureComponent {
             isCategoryViewOpen: new Animated.Value(0),
             categoryOpen: false,
             categoryWidth: new Animated.Value(this.categoryWidthClose),
-            category: []
         };
     }
 
-    async componentWillMount() {
-        try {
-
-            client.query({
-                query: QUERY.CATEGORIES,
-                fetchPolicy: 'cache-first'
-            }).then((res) => {
-                this.setState({
-                    category: res.data.categories
-                })
-            }).catch(async err => {
-                if (err.networkError.response.status === 500) {
-                    this.props.loginExpire()
-                }
-            })
-
-        } catch (e) {
-            console.warn(e)
-        }
-    }
 
     openCategoryView() {
         Animated.timing(
@@ -116,11 +95,13 @@ class CategoryView extends React.PureComponent {
             <View style={style.categoryItem}>
                 <View style={style.categoryAvatarWrapper}>
                     <View style={style.categoryAvatar}>
-                        <TextNormal style={style.categoryAvatarText}>{item.name.substr(0, 2)}</TextNormal>
+                        <TextNormal style={[style.categoryAvatarText,
+                            this.props.categoryFilter === item._id && {color: constantStyle.color1}]}>{item.name.substr(0, 2)}</TextNormal>
                     </View>
                 </View>
                 <View style={style.categoryName}>
-                    <TextNormal>{item.name}</TextNormal>
+                    <TextNormal
+                        style={this.props.categoryFilter === item._id && {color: constantStyle.color1}}>{item.name}</TextNormal>
                 </View>
             </View>
         </TouchableWithoutFeedback>
@@ -154,16 +135,19 @@ class CategoryView extends React.PureComponent {
                             <View style={style.categoryAvatarWrapper}>
                                 <View style={style.categoryAvatar}>
                                     <MaterialCommunityIcons name={"paper-cut-vertical"}
-                                                            style={style.categoryIconAllProduct}/>
+                                                            style={[style.categoryIconAllProduct,
+                                                                this.props.categoryFilter === 'all' && {color: constantStyle.color1}]}/>
                                 </View>
                             </View>
                             <View style={style.categoryName}>
-                                <TextNormal>Tất cả</TextNormal>
+                                <TextNormal
+                                    style={this.props.categoryFilter === 'all' && {color: constantStyle.color1}}>Tất
+                                    cả</TextNormal>
                             </View>
                         </View>
                     </TouchableWithoutFeedback>
                     <FlatList
-                        data={this.state.category}
+                        data={this.props.category.categories}
                         extraData={this.state}
                         initialNumToRender={5}
                         keyExtractor={(item) => item._id}
@@ -182,7 +166,7 @@ const style = EStyleSheet.create({
     },
     categoryIconAllProduct: {
         fontSize: constantStyle.sizeNormal,
-        color: constantStyle.color1
+
     },
     categoryButtonSwitch: {
         alignItems: 'flex-end'
@@ -212,14 +196,16 @@ const style = EStyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-    categoryAvatarText: {
-        color: constantStyle.color1
-    },
+    categoryAvatarText: {},
     categoryName: {
         marginLeft: 10,
     },
     '@media (min-width: 768) and (max-width: 1024)': {},
     '@media (min-width: 1024)': {}
 });
-
-export default CategoryView;
+let CategoryViewApollo = graphql(QUERY.CATEGORIES, {
+    name: 'category', options: {
+        fetchPolicy: "cache-and-network"
+    }
+})(CategoryView);
+export default CategoryViewApollo;

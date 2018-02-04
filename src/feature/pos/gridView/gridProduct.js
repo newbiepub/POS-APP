@@ -12,15 +12,15 @@ import {
 } from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
 import {constantStyle} from '../../../style/base';
-import {TextNormal, TextSmall} from '../../../component/text';
+import {SearchInput, TextSmall} from '../../../component/text';
 import {numberwithThousandsSeparator} from '../../../reuseable/function/function';
 import {openPopup} from '../../../component/popup/popupAction';
 import {connect} from 'react-redux';
 import ViewProduct from '../../../component/popup/popupContent/viewProduct';
-import {client} from '../../../root';
 import {QUERY} from '../../../constant/query';
 import NoData from '../../../component/noData';
 import ListCategory from './listCategory';
+import {graphql} from 'react-apollo';
 
 class GridProduct extends React.Component {
     constructor(props) {
@@ -30,8 +30,8 @@ class GridProduct extends React.Component {
             gridViewWidth: width * 60 / 100,
             height,
             columnNumber: 2,
-            product: [],
-            categoryFilter: 'all'
+            categoryFilter: 'all',
+            searchText: ''
         };
         this.state.gridViewItemSize = ((width * 60) / 100 - 20 - constantStyle.headerHeight) / this.state.columnNumber;
     }
@@ -48,25 +48,6 @@ class GridProduct extends React.Component {
 
     }
 
-    async componentWillMount() {
-        try {
-            client.query({
-                query: QUERY.PRODUCTS,
-                fetchPolicy: 'cache-first'
-            }).then((res) => {
-                this.setState({
-                    product: res.data.products
-                })
-            }).catch(async err => {
-                if (err.networkError.response.status === 500) {
-                    this.props.loginExpire()
-                }
-            });
-        } catch (e) {
-            console.warn(e)
-        }
-    }
-
     onChangeCagegoryFilter(categoryId) {
         this.setState(
             {
@@ -76,13 +57,22 @@ class GridProduct extends React.Component {
     }
 
     filterByCategory() {
-        if (this.state.categoryFilter === 'all') {
-            return this.state.product
+        if (this.state.categoryFilter === 'all' && this.state.searchText === "") {
+            return this.props.product.products
+
         } else {
             let data = [];
-            this.state.product.forEach((item) => {
+            this.props.product.products.forEach((item) => {
+
                 if (item.categoryId._id === this.state.categoryFilter) {
-                    data.push(item)
+                    if (item.name.includes(this.state.searchText)) {
+                        data.push(item)
+                    }
+                }
+                if (this.state.categoryFilter === 'all') {
+                    if (item.name.includes(this.state.searchText)) {
+                        data.push(item)
+                    }
                 }
             });
             return data;
@@ -91,10 +81,10 @@ class GridProduct extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        const differentData = this.props.data !== nextProps.data;
+        const productChanged = this.props.product !== nextProps.product;
         const changedLoading = this.props.loading !== nextProps.loading;
         const onRotate = this.state.gridViewWidth !== nextState.gridItemWidth;
-        return differentData || changedLoading || onRotate;
+        return productChanged || changedLoading || onRotate;
     }
 
     onClickProduct(item) {
@@ -128,6 +118,18 @@ class GridProduct extends React.Component {
         </View>
 
     );
+
+    _listHeaderComponent = (data) => (
+        <View>
+            {(data.length > 0 || this.state.searchText !== "" ) &&
+            <View style={style.search}>
+                <SearchInput value={this.state.searchText} onChangeText={(text) => this.setState({searchText: text})}
+                             clean={() => this.setState({searchText: ''})}/>
+            </View>
+            }
+        </View>
+
+    );
     _listEmptyComponent = () => (
         <NoData style={{
             padding: 0,
@@ -137,20 +139,24 @@ class GridProduct extends React.Component {
 
 
     render() {
+        this.props.checkLoginExpire(this.props.product);
+        let data = this.filterByCategory();
         return (
             <View style={style.container}>
                 {/*View category*/}
-                <ListCategory onChangeCategoryFilter={(id) => this.onChangeCagegoryFilter(id)}/>
+                <ListCategory onChangeCategoryFilter={(id) => this.onChangeCagegoryFilter(id)}
+                              categoryFilter={this.state.categoryFilter}/>
                 {
-                    this.state.product != undefined && !this.state.product.loading ?
+                    this.props.product.products != [] || !this.props.product.loading ?
                         <FlatList
-                            data={this.filterByCategory()}
+                            data={data}
                             numColumns={this.state.columnNumber}
                             extraData={this.state}
                             initialNumToRender={10}
                             keyExtractor={(item) => item._id}
                             contentContainerStyle={style.gridView}
                             ListEmptyComponent={this._listEmptyComponent}
+                            ListHeaderComponent={this._listHeaderComponent(data)}
                             renderItem={this._renderItem}
                         /> :
                         <View style={[{flex: 1, justifyContent: "center", alignItems: 'center'}]}>
@@ -188,13 +194,21 @@ const style = EStyleSheet.create({
     gridView: {
         padding: constantStyle.paddingGridItem,
 
+    },
+    search: {
+        padding: constantStyle.paddingGridItem
     }
     ,
     '@media (min-width: 768) and (max-width: 1024)': {},
     '@media (min-width: 1024)': {}
 });
 
+let GridProductApollo = graphql(QUERY.PRODUCTS, {
+    name: 'product', options: {
+        fetchPolicy: "cache-and-network"
+    }
+})(GridProduct);
 const mapDispatchToProps = {
     openPopup
-}
-export default connect(null, mapDispatchToProps)(GridProduct);
+};
+export default connect(null, mapDispatchToProps)(GridProductApollo);

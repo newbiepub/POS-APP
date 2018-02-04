@@ -31,4 +31,30 @@ export const QUERY = {
                 description
             }
         }`,
+    INVENTORY_PRODUCT:gql`
+        query {
+            getUserProductInventory(type: "employee") {
+                quantity
+                product {
+                    _id
+                    name
+                    unit
+                }
+                description
+            }
+        }`,
+    PAYMENT_STATUS:gql`
+        query {
+            PaymentStatus {
+                _id
+                name
+            }
+        }`,
+    PAYMENT_METHOD:gql`
+        query {
+            PaymentMethod {
+                _id
+                name
+            }
+        }`,
 };
