@@ -8,6 +8,8 @@ import PopupHeader from './_popupHeader';
 import {addToCart, removeFromCart} from '../../cart/cartAction';
 import {closePopup} from '../../popup/popupAction';
 import CustomAmount from '../../../feature/pos/customAmount';
+import {graphql} from 'react-apollo';
+import {QUERY} from '../../../constant/query';
 
 class CustomAmountView extends React.Component {
     constructor(props) {
@@ -32,7 +34,10 @@ class CustomAmountView extends React.Component {
     }
 
     addToCart() {
-        if (this.props.item.price > 0) {
+        if (this.props.item.price.price > 0) {
+            this.props.item.price.currency = this.props.currency.currency[0];
+            if (this.props.item.name === "")
+                this.props.item.name = "ghi chú";
             this.props.addToCart(this.props.item);
             this.props.closePopup();
         }
@@ -117,4 +122,9 @@ const mapDispatchToProps = {
     removeFromCart,
     closePopup
 };
-export default connect(mapStateToProps, mapDispatchToProps)(CustomAmountView);
+let CustomAmountViewApollo = graphql(QUERY.CURRENCY, {
+    name: 'currency', options: {
+        fetchPolicy: "cache-and-network"
+    }
+})(CustomAmountView);
+export default connect(mapStateToProps, mapDispatchToProps)(CustomAmountViewApollo);

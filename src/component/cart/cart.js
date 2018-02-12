@@ -155,7 +155,7 @@ class Cart extends PureComponent {
                                             }
 
                                         </View>
-                                        <TextSmall>{numberwithThousandsSeparator(item.price)}{item.currency}</TextSmall>
+                                        <TextSmall>{numberwithThousandsSeparator(item.price.price * item.quantity)}{item.price.currency.symbol}</TextSmall>
 
                                     </View>
                                 </TouchableWithoutFeedback>

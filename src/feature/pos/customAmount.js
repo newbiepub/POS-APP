@@ -7,16 +7,17 @@ import {constantStyle} from '../../style/base';
 import {connect} from 'react-redux';
 import {numberwithThousandsSeparator} from '../../reuseable/function/function';
 import {addToCart, removeFromCart} from '../../component/cart/cartAction';
+import {graphql} from 'react-apollo';
+import {QUERY} from '../../constant/query';
 
 class CustomAmount extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             item: this.props.edit ? this.props.item : {
-                price: 0,
+                price: {price: 0},
                 name: '',
                 quantity: 1,
-                currency: 'VND',
                 customAmount: true
 
             }
@@ -27,7 +28,7 @@ class CustomAmount extends React.Component {
 
     editItemUpdate() {
         this.props.item.price = this.state.item.price;
-        this.props.item.name = this.state.item.name;
+        this.props.item.name = this.state.item.name
     }
 
     async onAmountChange(num, type) {
@@ -35,7 +36,9 @@ class CustomAmount extends React.Component {
             await  this.setState({
                 item: {
                     ...this.state.item,
-                    price: Math.floor(this.state.item.price / 10)
+                    price: {
+                        price: Math.floor(this.state.item.price.price / 10)
+                    }
                 }
 
             })
@@ -45,7 +48,9 @@ class CustomAmount extends React.Component {
                 await this.setState({
                     item: {
                         ...this.state.item,
-                        price: this.state.item.price * 100
+                        price: {
+                            price: this.state.item.price.price * 100
+                        }
                     }
 
                 })
@@ -53,7 +58,9 @@ class CustomAmount extends React.Component {
                 await  this.setState({
                     item: {
                         ...this.state.item,
-                        price: this.state.item.price * 10 + parseInt(num)
+                        price: {
+                            price: this.state.item.price.price * 10 + parseInt(num)
+                        }
                     }
 
 
@@ -75,18 +82,18 @@ class CustomAmount extends React.Component {
     }
 
     addToCart() {
-        if (this.state.item.price > 0) {
+        if (this.state.item.price.price > 0) {
             let item = this.state.item;
             item._id = new Date();
+            item.price.currency = this.props.currency.currency[0];
             if (item.name === "")
                 item.name = "ghi chú";
             this.props.addToCart(item);
             this.setState({
                 item: {
-                    price: 0,
+                    price: {price: 0},
                     name: '',
                     quantity: 1,
-                    currency: 'VND',
                     customAmount: true
 
                 }
@@ -96,6 +103,7 @@ class CustomAmount extends React.Component {
     }
 
     render() {
+        // console.warn(JSON.stringify(this.props.currency))
         return (
             <View style={style.container}>
                 <View style={style.amountHeader}>
@@ -105,9 +113,13 @@ class CustomAmount extends React.Component {
                                          placeholder={"ghi chú"}
                                          onChangeText={(text) => this.onTextChange(text)}/>
                     </View>
-                    <View style={{flex: 0.6, paddingHorizontal: 20}}>
+                    <View style={{flex: 0.6, paddingHorizontal: 20, flexDirection: 'row'}}>
                         <TextLarge numberOfLines={1}
-                                   style={{textAlign: 'right'}}>{numberwithThousandsSeparator(this.state.item.price)}</TextLarge>
+                                   style={{
+                                       textAlign: 'right',
+                                       flex: 1
+                                   }}>{numberwithThousandsSeparator(this.state.item.price.price)}</TextLarge>
+                        <TextLarge numberOfLines={1}>{this.props.currency.currency[0].symbol}</TextLarge>
                     </View>
                 </View>
                 <View style={style.amountKeypad}>
@@ -286,4 +298,9 @@ const mapDispatchToProps = {
     addToCart,
     removeFromCart
 };
-export default connect(null, mapDispatchToProps)(CustomAmount);
+let CustomAmountApollo = graphql(QUERY.CURRENCY, {
+    name: 'currency', options: {
+        fetchPolicy: "cache-and-network"
+    }
+})(CustomAmount);
+export default connect(null, mapDispatchToProps)(CustomAmountApollo);

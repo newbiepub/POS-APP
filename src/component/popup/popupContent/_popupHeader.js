@@ -4,6 +4,7 @@ import EStyleSheet from "react-native-extended-stylesheet";
 import {TextLarge, TextNormal} from '../../text';
 import {constantStyle} from '../../../style/base';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import Feather from 'react-native-vector-icons/Feather'
 import {closePopup} from '../popupAction';
 import {connect} from 'react-redux';
 
@@ -16,13 +17,26 @@ class PopupHeader extends React.Component {
     render() {
         return (
             <View style={style.container}>
-                <TouchableWithoutFeedback onPress={() => this.props.closePopup()}>
-                    <View style={style.closeButton}>
-                        <EvilIcons name="close" style={{fontSize: constantStyle.sizeLarge,}}/>
-                    </View>
-                </TouchableWithoutFeedback>
+                {
+                    this.props.isBack ?
+                        <TouchableWithoutFeedback
+                            onPress={() => this.props.backFunction()}>
+                            <View style={style.closeButton}>
+                                <Feather name="arrow-left" style={{fontSize: constantStyle.sizeLarge,}}/>
+                            </View>
+                        </TouchableWithoutFeedback> :
+                        <TouchableWithoutFeedback
+                            onPress={() => this.props.closePopup()}>
+                            <View style={style.closeButton}>
+                                <EvilIcons name="close" style={{fontSize: constantStyle.sizeLarge,}}/>
+                            </View>
+                        </TouchableWithoutFeedback>
+                }
+
                 <TextNormal style={{flex: 1}}>{this.props.title}</TextNormal>
-                <TouchableWithoutFeedback onPress={()=>{this.props.submitFunction()}}>
+                <TouchableWithoutFeedback onPress={() => {
+                    this.props.submitFunction()
+                }}>
                     <View style={style.buttonWrapper}>
 
                         <TextLarge style={style.buttonText}>

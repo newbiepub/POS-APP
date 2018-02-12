@@ -19,6 +19,7 @@ export const QUERY = {
                     price
                     currency {
                         name
+                        symbol
                     }
                 }
             }
@@ -45,16 +46,26 @@ export const QUERY = {
         }`,
     PAYMENT_STATUS:gql`
         query {
-            PaymentStatus {
+            paymentStatus {
                 _id
                 name
+                type
             }
         }`,
     PAYMENT_METHOD:gql`
         query {
-            PaymentMethod {
+            paymentMethod {
                 _id
                 name
+                type
+            }
+        }`,
+    CURRENCY:gql`
+        query {
+            currency(type:"employee"){
+                _id
+                name
+                symbol
             }
         }`,
 };

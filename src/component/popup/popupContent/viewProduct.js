@@ -8,6 +8,8 @@ import PopupHeader from './_popupHeader';
 import {addToCart, removeFromCart} from '../../cart/cartAction';
 import {closePopup} from '../../popup/popupAction';
 import {numberwithThousandsSeparator} from "../../../reuseable/function/function";
+import {graphql} from 'react-apollo';
+import {QUERY} from '../../../constant/query';
 
 class ViewProduct extends React.Component {
     constructor(props) {
@@ -20,9 +22,7 @@ class ViewProduct extends React.Component {
                 _id: this.props.item._id,
                 quantity: 1,
                 name: this.props.item.name,
-                price: this.props.item.price[0].price,
-                priceName: this.props.item.price[0].name,
-                currency: this.props.item.price[0].currency.name,
+                price: this.props.item.price[0],
                 prices: this.props.item.price,
                 index: 0,
                 unit: this.props.item.unit
@@ -46,10 +46,7 @@ class ViewProduct extends React.Component {
         this.setState({
             product: {
                 ...this.state.product,
-                price: item.price,
-                currency: item.currency.name,
-                priceName: item.name,
-                index: index,
+                price: item,
             },
 
 
@@ -98,11 +95,11 @@ class ViewProduct extends React.Component {
     _renderPrice = ({item, index}) => (
         <TouchableWithoutFeedback onPress={() => this.onChangePrice(item, index)}>
             <View
-                style={[style.pricePicker, this.state.product.index === index && {backgroundColor: constantStyle.color1}]}>
+                style={[style.pricePicker, this.state.product.price._id === item._id && {backgroundColor: constantStyle.color1}]}>
                 <TextSmall numberOfLines={1}
-                           style={[{flex: 1}, this.state.product.index === index && {color: constantStyle.color2}]}>{item.name}</TextSmall>
+                           style={[{flex: 1}, this.state.product.price._id === item._id && {color: constantStyle.color2}]}>{item.name}</TextSmall>
                 <TextSmall
-                    style={this.state.product.index === index && {color: constantStyle.color2}}>{numberwithThousandsSeparator(item.price)}{item.currency.name}/{this.state.product.unit}</TextSmall>
+                    style={this.state.product.price._id === item._id && {color: constantStyle.color2}}>{numberwithThousandsSeparator(item.price)}{item.currency.symbol}/{this.state.product.unit}</TextSmall>
 
             </View>
         </TouchableWithoutFeedback>
@@ -120,7 +117,7 @@ class ViewProduct extends React.Component {
         return (
             <View style={style.container}>
                 <PopupHeader
-                    title={`${item.name} (${ numberwithThousandsSeparator(this.state.product.price * this.state.product.quantity)}${this.state.product.currency})`}
+                    title={`${item.name} (${ numberwithThousandsSeparator(this.state.product.price.price * this.state.product.quantity)}${this.props.currency.currency[0].symbol})`}
                     submitFunction={() => {
                         this.addToCart()
                     }}
@@ -236,4 +233,9 @@ const mapDispatchToProps = {
     removeFromCart,
     closePopup
 };
-export default connect(mapStateToProps, mapDispatchToProps)(ViewProduct);
+let ViewProductApollo = graphql(QUERY.CURRENCY, {
+    name: 'currency', options: {
+        fetchPolicy: "cache-and-network"
+    }
+})(ViewProduct);
+export default connect(mapStateToProps, mapDispatchToProps)(ViewProductApollo);

@@ -57,27 +57,37 @@ class GridProduct extends React.Component {
     }
 
     filterByCategory() {
-        if (this.state.categoryFilter === 'all' && this.state.searchText === "") {
-            return this.props.product.products
+        try{
+            if (this.state.categoryFilter === 'all' && this.state.searchText === "") {
+                return this.props.product.products
 
-        } else {
-            let data = [];
-            this.props.product.products.forEach((item) => {
+            } else {
+                let data = [];
+                if (this.props.product && this.props.product.products) {
+                    this.props.product.products.forEach((item) => {
 
-                if (item.categoryId._id === this.state.categoryFilter) {
-                    if (item.name.includes(this.state.searchText)) {
-                        data.push(item)
-                    }
+                        if (item.categoryId._id === this.state.categoryFilter) {
+                            if (item.name.includes(this.state.searchText)) {
+                                data.push(item)
+                            }
+                        }
+                        if (this.state.categoryFilter === 'all') {
+                            if (item.name.includes(this.state.searchText)) {
+                                data.push(item)
+                            }
+                        }
+                    });
                 }
-                if (this.state.categoryFilter === 'all') {
-                    if (item.name.includes(this.state.searchText)) {
-                        data.push(item)
-                    }
-                }
-            });
-            return data;
 
+                return data;
+
+            }
+        }catch(e)
+        {
+            console.warn(e)
+            return []
         }
+
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -101,7 +111,7 @@ class GridProduct extends React.Component {
             <TouchableWithoutFeedback onPress={() => this.onClickProduct(item)}>
                 <View style={{flex: 1}}>
                     <View style={style.gridItem}>
-                        <TextSmall>Giá:{numberwithThousandsSeparator(item.price[0].price)}{item.price[0].currency.name}/{item.unit}</TextSmall>
+                        <TextSmall>Giá:{numberwithThousandsSeparator(item.price[0].price)}{item.price[0].currency.symbol}/{item.unit}</TextSmall>
                         <TextSmall>Số lượng:</TextSmall>
                         <TextSmall>Mã sản phẩm:</TextSmall>
                         <TextSmall>Loại hàng:{item.categoryId.name}</TextSmall>
@@ -121,7 +131,7 @@ class GridProduct extends React.Component {
 
     _listHeaderComponent = (data) => (
         <View>
-            {(data.length > 0 || this.state.searchText !== "" ) &&
+            {((data && data.length > 0) || this.state.searchText !== "" ) &&
             <View style={style.search}>
                 <SearchInput value={this.state.searchText} onChangeText={(text) => this.setState({searchText: text})}
                              clean={() => this.setState({searchText: ''})}/>
