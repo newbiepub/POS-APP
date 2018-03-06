@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
 import {constantStyle} from '../../../style/base';
-import {TextNormal, TextSmall} from '../../../component/text';
+import {TextNormal, TextSmall} from '../../text';
 import {QUERY} from '../../../constant/query';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';

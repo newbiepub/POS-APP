@@ -155,7 +155,7 @@ class Cart extends PureComponent {
                                             }
 
                                         </View>
-                                        <TextSmall>{numberwithThousandsSeparator(item.price.price * item.quantity)}{item.price.currency.symbol}</TextSmall>
+                                        <TextSmall>{numberwithThousandsSeparator(item.totalPrice)}{item.price.currency.symbol}</TextSmall>
 
                                     </View>
                                 </TouchableWithoutFeedback>
@@ -163,7 +163,9 @@ class Cart extends PureComponent {
                         })
                     }
                 </ScrollView>
-                <TouchableWithoutFeedback onPress={() => this.onCharge()}>
+                <TouchableWithoutFeedback onPress={() => {
+                    if (this.props.cart.length > 0) this.onCharge()
+                }}>
                     <View style={style.buttonCharge}>
                         <TextLarge style={style.buttonChargeText}>
                             Thanh toán

@@ -12,7 +12,7 @@ import Moment from '../moment';
 import _ from 'lodash';
 import Date from './util/date';
 
-class DatePicker extends React.Component {
+class DatePicker extends React.PureComponent {
     constructor(props) {
         super(props);
         let {width, height} = Dimensions.get('window');
@@ -23,7 +23,7 @@ class DatePicker extends React.Component {
             today: Moment()
         }
     }
-    //
+
     // _computeDays = (date): Array<Array<Object>> => {
     //     let result = [];
     //     const currentMonth = date.month();
@@ -42,7 +42,7 @@ class DatePicker extends React.Component {
     //         // Add it to the result here.
     //         iterator.add(1, 'day');
     //     }
-    //     // console.warn(result)
+    //      console.warn("x")
     //     return result;
     // };
     _computeDays = (date): Array<Array<Object>> => {
@@ -125,12 +125,15 @@ class DatePicker extends React.Component {
 }
 
 class RenderDay extends React.PureComponent {
+    constructor(props){
+        super(props);
+        this.dayList =  ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
+    }
     render() {
-        let dayList = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
         return (
             <View style={{flexDirection: 'row'}}>
                 {
-                    dayList.map((item) => {
+                    this.dayList.map((item) => {
                         return (
                             <View key={item} style={style.weekday}>
                                 <View style={style.dayItem}>

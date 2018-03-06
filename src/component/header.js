@@ -20,8 +20,9 @@ class Header extends PureComponent {
     constructor(props) {
         super(props);
         this.type = [
-            "tabView",
-            "normal"
+            "custom",
+            "normal",
+            "custom-right"
         ]
 
     }
@@ -38,17 +39,25 @@ class Header extends PureComponent {
     render() {
         return (
             <View style={[style.container]}>
-                <View style={[this.props.type === this.type[1] && style.typeNormalLeft]}>
+                <View
+                    style={[(this.props.type === this.type[1] || this.props.type === this.type[2]) && style.typeNormalLeft]}>
                     <TouchableWithoutFeedback onPress={() => this.props.switchMenu()}>
                         <View style={style.menuButton}>
                             <Entypo name="menu" style={style.menuIcon}/>
                         </View>
                     </TouchableWithoutFeedback>
                     {
-                        this.props.type === this.type[1] &&
-                        <View style={{flex: 1}}>
-                            <TextLarge style={style.typeNormalTitleLeft}>{this.props.titleLeft || ""}</TextLarge>
-                        </View>
+                        (this.props.type === this.type[1] || this.props.type === this.type[2] ) &&
+                        <TouchableWithoutFeedback onPress={() => {
+                            if(this.props.hasOwnProperty("leftTitlePress"))
+                            {
+                                 this.props.leftTitlePress()
+                            }
+                        }}>
+                            <View style={{flex: 1, paddingRight: constantStyle.paddingHorizontal,height:"100%",justifyContent:'center'}}>
+                                <TextLarge style={style.typeNormalTitleLeft}>{this.props.titleLeft || ""}</TextLarge>
+                            </View>
+                        </TouchableWithoutFeedback>
                     }
                 </View>
                 {
@@ -60,14 +69,34 @@ class Header extends PureComponent {
                 {
                     this.props.type === this.type[1] &&
                     <View style={style.typeNormalRight}>
-                        {
-                            this.props.goBack &&
-                            <TouchableOpacity onPress={() => this.goBackFunction()}>
-                                <Entypo name="chevron-with-circle-left" style={[style.menuIcon, {marginRight: 10}]}/>
-                            </TouchableOpacity>
-                        }
+                        <View style={{
+                            paddingHorizontal: constantStyle.paddingHorizontal, flexDirection: 'row',
+                            alignItems: 'center',
+                        }}>
+                            {
+                                this.props.goBack &&
+                                <TouchableOpacity onPress={() => this.goBackFunction()}>
+                                    <Entypo name="chevron-with-circle-left"
+                                            style={[style.menuIcon, {marginRight: 10}]}/>
+                                </TouchableOpacity>
+                            }
 
-                        <TextLarge style={style.typeNormalTitleRight}>{this.props.titleRight || ""}</TextLarge>
+                            <TextLarge style={style.typeNormalTitleRight}>{this.props.titleRight || ""}</TextLarge>
+                        </View>
+
+                    </View>
+                }
+
+                {
+                    this.props.type === this.type[2] &&
+                    <View style={style.typeNormalRight}>
+                        <View style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                        }}>
+                            {this.props.children}
+
+                        </View>
                     </View>
                 }
 
@@ -100,7 +129,6 @@ const style = EStyleSheet.create({
         flex: 0.3,
         flexDirection: "row",
         alignItems: 'center',
-        paddingRight: constantStyle.paddingHorizontal,
         borderRightWidth: 1,
         borderRightColor: constantStyle.colorBorder
     },
@@ -112,7 +140,6 @@ const style = EStyleSheet.create({
         flex: 0.7,
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: constantStyle.paddingHorizontal
     },
     typeNormalTitleRight: {
         color: constantStyle.color2

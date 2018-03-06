@@ -23,7 +23,12 @@ export class TextInputNormal extends React.PureComponent {
                        onBlur={() => {
                            this.setState({onFocus: false})
                        }}
-                       style={[this.state.onFocus && {}, style.fontSizeNormal, this.props.style]}
+                       style={[style.fontSizeNormal, {
+                           borderWidth: 1,
+                           borderRadius: 10,
+                           padding:constantStyle.sm,
+                           borderColor: constantStyle.colorBorder
+                       }, this.props.style, this.state.onFocus && {borderColor: constantStyle.color1}]}
             />
         )
     }
@@ -52,7 +57,7 @@ export class SearchInput extends React.PureComponent {
                 />
                 {
                     this.props.value != undefined && this.props.value != "" &&
-                    <TouchableWithoutFeedback onPress={()=> this.props.clean()}>
+                    <TouchableWithoutFeedback onPress={() => this.props.clean()}>
                         <EvilIcons name={"close"}
                                    style={[style.fontSizeLarge, {marginLeft: constantStyle.paddingGridItem}]}/>
                     </TouchableWithoutFeedback>

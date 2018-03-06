@@ -1,6 +1,17 @@
 import gql from 'graphql-tag';
 
 export const QUERY = {
+    CURRENT_USER: gql`
+        query {
+            currentUser {
+                _id
+                profile {
+                    name
+                    address
+                    phoneNumber
+                }
+            }
+        }`,
     PRODUCTS: gql`
         query {
             products {
@@ -32,19 +43,37 @@ export const QUERY = {
                 description
             }
         }`,
-    INVENTORY_PRODUCT:gql`
-        query {
-            getUserProductInventory(type: "employee") {
-                quantity
+    INVENTORY_PRODUCT: gql`
+        query getUserProductInventory($userId: String!){
+            getUserProductInventory(type: "employee", userId: $userId) {
                 product {
                     _id
                     name
+                    price {
+                        _id
+                        name
+                        price
+                        currency {
+                            name
+                            symbol
+                        }
+                    }
                     unit
+                    categoryId {
+                        _id
+                        name
+                    }
+                    productCode
                 }
+                quantity
                 description
+                ... on updateProductInventoryQuantityFragment{
+                    quantity
+                }
             }
+
         }`,
-    PAYMENT_STATUS:gql`
+    PAYMENT_STATUS: gql`
         query {
             paymentStatus {
                 _id
@@ -52,7 +81,7 @@ export const QUERY = {
                 type
             }
         }`,
-    PAYMENT_METHOD:gql`
+    PAYMENT_METHOD: gql`
         query {
             paymentMethod {
                 _id
@@ -60,7 +89,7 @@ export const QUERY = {
                 type
             }
         }`,
-    CURRENCY:gql`
+    CURRENCY: gql`
         query {
             currency(type:"employee"){
                 _id
@@ -68,4 +97,57 @@ export const QUERY = {
                 symbol
             }
         }`,
+    TRANSACTION: gql`
+        query {
+            getTransactionEmployee{
+                _id
+                productItems{
+                    _id
+                    productName
+                    quantity
+                    price{
+                        _id
+                        name
+                        price
+                        currency{
+                            name
+                            symbol
+                        }
+                    }
+                    totalPrice
+                    unit
+                    discount
+                }
+                type
+                issueRefund
+                issueRefundReason
+                date
+                paymentStatus{
+                    _id
+                    type
+                    name
+                }
+                paymentMethod{
+                    _id
+                    type
+                    name
+                }
+                dueDate
+                paymentMethod{
+                    _id
+                    name
+                    type
+                }
+                paymentStatus{
+                    _id
+                    name
+                    type
+                }
+                totalQuantity
+                totalPrice
+                paid
+                description
+            }
+        }
+    `
 };

@@ -12,15 +12,16 @@ import {
 } from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
 import {constantStyle} from '../../../style/base';
-import {SearchInput, TextSmall} from '../../../component/text';
+import {SearchInput, TextSmall} from '../../text';
 import {numberwithThousandsSeparator} from '../../../reuseable/function/function';
-import {openPopup} from '../../../component/popup/popupAction';
+import {openPopup} from '../../popup/popupAction';
 import {connect} from 'react-redux';
-import ViewProduct from '../../../component/popup/popupContent/viewProduct';
+import ViewProduct from '../../popup/popupContent/viewProduct';
 import {QUERY} from '../../../constant/query';
-import NoData from '../../../component/noData';
+import NoData from '../../noData';
 import ListCategory from './listCategory';
-import {graphql} from 'react-apollo';
+import {graphql, compose} from 'react-apollo';
+import _ from 'lodash';
 
 class GridProduct extends React.Component {
     constructor(props) {
@@ -48,7 +49,7 @@ class GridProduct extends React.Component {
 
     }
 
-    onChangeCagegoryFilter(categoryId) {
+    onChangeCategoryFilter(categoryId) {
         this.setState(
             {
                 categoryFilter: categoryId
@@ -57,22 +58,22 @@ class GridProduct extends React.Component {
     }
 
     filterByCategory() {
-        try{
+        try {
             if (this.state.categoryFilter === 'all' && this.state.searchText === "") {
-                return this.props.product.products
+                return this.props.inventoryProduct.getUserProductInventory
 
             } else {
                 let data = [];
-                if (this.props.product && this.props.product.products) {
-                    this.props.product.products.forEach((item) => {
+                if (this.props.inventoryProduct && this.props.inventoryProduct.getUserProductInventory) {
+                    this.props.inventoryProduct.getUserProductInventory.forEach((item) => {
 
-                        if (item.categoryId._id === this.state.categoryFilter) {
-                            if (item.name.includes(this.state.searchText)) {
+                        if (item.product.categoryId._id === this.state.categoryFilter) {
+                            if (item.product.name.includes(this.state.searchText)) {
                                 data.push(item)
                             }
                         }
                         if (this.state.categoryFilter === 'all') {
-                            if (item.name.includes(this.state.searchText)) {
+                            if (item.product.name.includes(this.state.searchText)) {
                                 data.push(item)
                             }
                         }
@@ -82,16 +83,15 @@ class GridProduct extends React.Component {
                 return data;
 
             }
-        }catch(e)
-        {
-            console.warn(e)
+        } catch (e) {
+            console.warn(e);
             return []
         }
 
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        const productChanged = this.props.product !== nextProps.product;
+        const productChanged = this.props.inventoryProduct !== nextProps.inventoryProduct;
         const changedLoading = this.props.loading !== nextProps.loading;
         const onRotate = this.state.gridViewWidth !== nextState.gridItemWidth;
         return productChanged || changedLoading || onRotate;
@@ -111,15 +111,16 @@ class GridProduct extends React.Component {
             <TouchableWithoutFeedback onPress={() => this.onClickProduct(item)}>
                 <View style={{flex: 1}}>
                     <View style={style.gridItem}>
-                        <TextSmall>Giá:{numberwithThousandsSeparator(item.price[0].price)}{item.price[0].currency.symbol}/{item.unit}</TextSmall>
-                        <TextSmall>Số lượng:</TextSmall>
-                        <TextSmall>Mã sản phẩm:</TextSmall>
-                        <TextSmall>Loại hàng:{item.categoryId.name}</TextSmall>
+                        <TextSmall>Giá:{numberwithThousandsSeparator(_.get(item,"product.price[0].price",0))}{_.get(item,"product.price[0].currency.symbol","")}/{item.product.unit|| ""}</TextSmall>
+                        <TextSmall>Số lượng: {item.quantity} {item.product.unit}</TextSmall>
+                        <TextSmall>Mã sản phẩm: {item.product.productCode}</TextSmall>
+                        <TextSmall>Loại hàng:{item.product.categoryId.name}</TextSmall>
 
                     </View>
 
                     <View style={style.gridItemName}>
-                        <TextSmall numberOfLines={1} style={{color: constantStyle.color2}}>{item.name}</TextSmall>
+                        <TextSmall numberOfLines={1}
+                                   style={{color: constantStyle.color2}}>{item.product.name}</TextSmall>
                     </View>
 
                 </View>
@@ -149,21 +150,21 @@ class GridProduct extends React.Component {
 
 
     render() {
-        this.props.checkLoginExpire(this.props.product);
+        this.props.checkLoginExpire(this.props.inventoryProduct);
         let data = this.filterByCategory();
         return (
             <View style={style.container}>
                 {/*View category*/}
-                <ListCategory onChangeCategoryFilter={(id) => this.onChangeCagegoryFilter(id)}
+                <ListCategory onChangeCategoryFilter={(id) => this.onChangeCategoryFilter(id)}
                               categoryFilter={this.state.categoryFilter}/>
                 {
-                    this.props.product.products != [] || !this.props.product.loading ?
+                    data !== [] ?
                         <FlatList
                             data={data}
                             numColumns={this.state.columnNumber}
                             extraData={this.state}
-                            initialNumToRender={10}
-                            keyExtractor={(item) => item._id}
+                            initialNumToRender={0}
+                            keyExtractor={(item) => item.product._id}
                             contentContainerStyle={style.gridView}
                             ListEmptyComponent={this._listEmptyComponent}
                             ListHeaderComponent={this._listHeaderComponent(data)}
@@ -213,11 +214,22 @@ const style = EStyleSheet.create({
     '@media (min-width: 1024)': {}
 });
 
-let GridProductApollo = graphql(QUERY.PRODUCTS, {
-    name: 'product', options: {
-        fetchPolicy: "cache-and-network"
-    }
-})(GridProduct);
+let GridProductApollo = compose(
+
+    graphql(QUERY.CURRENT_USER, {
+        name: 'currentUser', options: {
+            fetchPolicy: "cache-and-network"
+        }
+    }),
+    graphql(QUERY.INVENTORY_PRODUCT, {
+        name: 'inventoryProduct', options: (props) => ({
+            variables: {
+                userId: props.currentUser.currentUser._id,
+            },
+            fetchPolicy: "cache-and-network"
+        })
+    })
+)(GridProduct);
 const mapDispatchToProps = {
     openPopup
 };

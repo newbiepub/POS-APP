@@ -7,7 +7,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import {constantStyle} from '../../style/base';
 import {graphql} from 'react-apollo';
 import {QUERY} from '../../constant/query';
-import GridProduct from './gridView/gridProduct';
+import GridProduct from '../../component/listProduct/gridView/gridProduct';
 import Library from './library';
 import CustomAmount from './customAmount';
 import Cart from '../../component/cart/cart';
@@ -26,7 +26,7 @@ class POS extends PureComponent {
         return (
             <View style={style.container}>
                 {/*---------------Header------------------------*/}
-                <Header type={"tabView"}>
+                <Header type={"custom"}>
                     <View style={style.tabView}>
 
                         <TouchableOpacity onPress={() => {

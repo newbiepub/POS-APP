@@ -8,3 +8,9 @@ export function numberwithThousandsSeparator(x) {
         return x;
     }
 }
+
+export function removeTypeName(data) {
+    const result =  Object.assign({}, data);
+    delete result.__typename;
+    return result
+}

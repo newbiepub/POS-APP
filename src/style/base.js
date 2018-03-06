@@ -2,24 +2,38 @@ import EStyleSheet from "react-native-extended-stylesheet";
 import {Dimensions} from 'react-native';
 
 let {width} = Dimensions.get('window');
+let sm = 10, md = 20, lg = 30, xl = 50;
 export const constantStyle = {
-    headerHeight: 65,
-    sizeLarge: width > 1024 ? 46 : width > 768 ? 35 : 20,
-    sizeSmall: width > 1024 ? 18 : width > 768 ? 16 : 14,
-    sizeNormal: width > 1024 ? 40 : width = 768 ? 30 : 16,
-
-    //BLue
-    color1: '#6893d8',
+        headerHeight: 65,
+        sizeLarge: width > 1024 ? 46 : width > 768 ? 35 : 20,
+        sizeSmall: width > 1024 ? 18 : width > 768 ? 16 : 14,
+        sizeNormal: width > 1024 ? 40 : width = 768 ? 30 : 16,
+        "$sm": 10,
+        "$md": 20,
+        "$lg": 30,
+        //BLue
+        color1: '#6893d8',
 //    white
-    color2: '#fff',
-    colorBackground: '#E9EBEE',
-    //    gray
-    colorBorder: 'gray',
-    paddingHorizontal: 20,
-    paddingGridItem: 10,
+        color2: '#fff',
+        colorBackground: '#E9EBEE',
+        //    gray
+        colorBorder: 'gray',
+        paddingVerticalSmall: sm,
+        paddingHorizontal: md,
+        paddingGridItem: sm,
+        sm: sm,
+        md, lg, xl,
+        marginVerticalSmall:
+        sm,
+        marginVerticalNormal:
+        md,
+        marginVerticalLarge:
+        lg,
 //    listItemHeight
-    listItemHeight: 70
-};
+        listItemHeight:
+            70
+    }
+;
 
 var Style = EStyleSheet.create({
     overlay: {

@@ -34,8 +34,11 @@ class CustomAmountView extends React.Component {
     }
 
     addToCart() {
-        if (this.props.item.price.price > 0) {
-            this.props.item.price.currency = this.props.currency.currency[0];
+        if (this.props.item.totalPrice > 0) {
+            this.props.item.price.currency = {
+                name: _.get(this.props.currency, "currency[0].name", ""),
+                symbol: _.get(this.props.currency, "currency[0].symbol", ""),
+            };
             if (this.props.item.name === "")
                 this.props.item.name = "ghi chú";
             this.props.addToCart(this.props.item);

@@ -249,7 +249,7 @@ class DatePicker extends React.PureComponent {
         {
             await this.setState({
                 isDone: false
-            })
+            });
             let date = Moment(this.instance.state.current);
             await this.instance.setState({
                 current: this.instance.state.current.add(-1, 'month'),

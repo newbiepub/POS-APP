@@ -7,10 +7,10 @@ const initialState = {
         {id: 'invoice', name: 'Hoá đơn'},
         {id: 'inventory', name: 'Kho'},
         {id: 'setting', name: 'Cài đặt'},],
-    currentItem: {id: 'pos', name: 'Điểm bán hàng'},
+
     menuVisible: false
 };
-
+initialState.currentItem = initialState.menuItems[2];
 export default function (state = initialState, action = {}) {
     switch (action.type) {
 

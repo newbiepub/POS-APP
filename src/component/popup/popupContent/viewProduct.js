@@ -10,6 +10,7 @@ import {closePopup} from '../../popup/popupAction';
 import {numberwithThousandsSeparator} from "../../../reuseable/function/function";
 import {graphql} from 'react-apollo';
 import {QUERY} from '../../../constant/query';
+import _ from 'lodash';
 
 class ViewProduct extends React.Component {
     constructor(props) {
@@ -19,16 +20,17 @@ class ViewProduct extends React.Component {
             width,
             height,
             product: this.props.edit ? this.props.item : {
-                _id: this.props.item._id,
-                quantity: 1,
-                name: this.props.item.name,
-                price: this.props.item.price[0],
-                prices: this.props.item.price,
-                index: 0,
-                unit: this.props.item.unit
+                _id: this.props.item.product._id,
+                quantity: this.props.item.quantity > 0 ? 1 : 0,
+                name: this.props.item.product.name,
+                price: this.props.item.product.price[0],
+                prices: this.props.item.product.price,
+                unit: this.props.item.product.unit,
+                inventoryQuantity: this.props.item.quantity
             },
 
-        }
+        };
+        this.state.product.totalPrice = this.computeTotalPrice();
 
     }
 
@@ -42,54 +44,63 @@ class ViewProduct extends React.Component {
         })
     }
 
-    onChangePrice(item, index) {
-        this.setState({
+    computeTotalPrice() {
+        return this.state.product.price.price * this.state.product.quantity
+    }
+
+    async onChangePrice(item, index) {
+        await this.setState({
             product: {
                 ...this.state.product,
                 price: item,
             },
-
-
-        })
+        });
+        this.setState({
+            product: {
+                ...this.state.product,
+                totalPrice: this.computeTotalPrice()
+            }
+        });
     }
 
-    changeQuantity(subtend, value) {
-        let min = 1, max = 1000;
+    async changeQuantity(subtend, value) {
+        let min = this.state.product.inventoryQuantity > 0 ? 1 : 0, max = this.state.product.inventoryQuantity;
         if (subtend === "-") {
             if (this.state.product.quantity > min) {
-                this.setState({
+                await this.setState({
                     product: {
                         ...this.state.product,
                         quantity: this.state.product.quantity - 1
                     }
                 })
             }
-
         }
         if (subtend === "+") {
             if (this.state.product.quantity < max) {
-                this.setState({
+                await this.setState({
                     product: {
                         ...this.state.product,
                         quantity: this.state.product.quantity + 1
                     }
                 })
             }
-
-
         }
         if (subtend === "set") {
             if (value >= min && value <= max) {
-                this.setState({
+                await this.setState({
                     product: {
                         ...this.state.product,
                         quantity: value
                     }
                 })
             }
-
-
         }
+        this.setState({
+            product: {
+                ...this.state.product,
+                totalPrice: this.computeTotalPrice()
+            }
+        });
     }
 
     _renderPrice = ({item, index}) => (
@@ -107,17 +118,18 @@ class ViewProduct extends React.Component {
     );
 
     addToCart() {
+        // console.warn(this.state.product)
         this.props.addToCart(this.state.product);
         this.props.closePopup()
     }
 
     render() {
-        let item = this.props.item;
-
+       // console.warn(this.props.item)
+        let item = this.props.edit ? this.props.item : this.props.item.product;
         return (
             <View style={style.container}>
                 <PopupHeader
-                    title={`${item.name} (${ numberwithThousandsSeparator(this.state.product.price.price * this.state.product.quantity)}${this.props.currency.currency[0].symbol})`}
+                    title={`${item.name} (${ numberwithThousandsSeparator(this.state.product.totalPrice)}${_.get(this.props.currency, "currency[0].symbol", "")})`}
                     submitFunction={() => {
                         this.addToCart()
                     }}
@@ -133,7 +145,8 @@ class ViewProduct extends React.Component {
                         renderItem={this._renderPrice}
                     />
                     <TextNormal
-                        style={style.titleQuantity}>Chọn số lượng (Trong kho có : ?) </TextNormal>
+                        style={style.titleQuantity}>Chọn số lượng (Trong kho có
+                        : {this.state.product.inventoryQuantity} {this.state.product.unit}) </TextNormal>
                     <View style={style.boxQuantity}>
                         <TouchableWithoutFeedback onPress={() => this.changeQuantity("-")}>
                             <View style={style.subtend}>

@@ -9,15 +9,20 @@ import {numberwithThousandsSeparator} from '../../reuseable/function/function';
 import {addToCart, removeFromCart} from '../../component/cart/cartAction';
 import {graphql} from 'react-apollo';
 import {QUERY} from '../../constant/query';
+import _ from 'lodash';
 
 class CustomAmount extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             item: this.props.edit ? this.props.item : {
-                price: {price: 0},
+                price: {
+                    price: 0,
+                },
+                totalPrice: 0,
                 name: '',
                 quantity: 1,
+                unit: "cái",
                 customAmount: true
 
             }
@@ -28,6 +33,7 @@ class CustomAmount extends React.Component {
 
     editItemUpdate() {
         this.props.item.price = this.state.item.price;
+        this.props.item.totalPrice = this.state.item.totalPrice;
         this.props.item.name = this.state.item.name
     }
 
@@ -38,7 +44,8 @@ class CustomAmount extends React.Component {
                     ...this.state.item,
                     price: {
                         price: Math.floor(this.state.item.price.price / 10)
-                    }
+                    },
+                    totalPrice: Math.floor(this.state.item.totalPrice / 10)
                 }
 
             })
@@ -50,7 +57,8 @@ class CustomAmount extends React.Component {
                         ...this.state.item,
                         price: {
                             price: this.state.item.price.price * 100
-                        }
+                        },
+                        totalPrice: this.state.item.totalPrice * 100
                     }
 
                 })
@@ -60,7 +68,8 @@ class CustomAmount extends React.Component {
                         ...this.state.item,
                         price: {
                             price: this.state.item.price.price * 10 + parseInt(num)
-                        }
+                        },
+                        totalPrice: this.state.item.totalPrice * 10 + parseInt(num)
                     }
 
 
@@ -84,16 +93,23 @@ class CustomAmount extends React.Component {
     addToCart() {
         if (this.state.item.price.price > 0) {
             let item = this.state.item;
-            item._id = new Date();
-            item.price.currency = this.props.currency.currency[0];
+            item._id = Math.random().toString();
+            item.price.currency = {
+                name: _.get(this.props.currency, "currency[0].name", ""),
+                symbol: _.get(this.props.currency, "currency[0].symbol", ""),
+            }, item.price.name = "customPrice";
             if (item.name === "")
                 item.name = "ghi chú";
             this.props.addToCart(item);
             this.setState({
                 item: {
-                    price: {price: 0},
+                    price: {
+                        price: 0,
+                    },
+                    totalPrice: 0,
                     name: '',
                     quantity: 1,
+                    unit: "cái",
                     customAmount: true
 
                 }
@@ -118,8 +134,8 @@ class CustomAmount extends React.Component {
                                    style={{
                                        textAlign: 'right',
                                        flex: 1
-                                   }}>{numberwithThousandsSeparator(this.state.item.price.price)}</TextLarge>
-                        <TextLarge numberOfLines={1}>{this.props.currency.currency[0].symbol}</TextLarge>
+                                   }}>{numberwithThousandsSeparator(this.state.item.totalPrice)}</TextLarge>
+                        <TextLarge numberOfLines={1}>{_.get(this.props.currency, "currency[0].symbol", "")}</TextLarge>
                     </View>
                 </View>
                 <View style={style.amountKeypad}>

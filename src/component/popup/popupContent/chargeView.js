@@ -1,23 +1,31 @@
 import React from "react";
-import {ScrollView, View, TouchableWithoutFeedback, Dimensions, FlatList,} from "react-native";
+import {ScrollView, View, TouchableWithoutFeedback, Dimensions, FlatList, Alert} from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
-import {TextLarge, TextNormal, TextSmall, TextInputNumber} from '../../text';
+import {TextLarge, TextNormal, TextSmall, TextInputNumber, TextInputPriceMask, TextInputNormal} from '../../text';
 import {constantStyle} from '../../../style/base';
 import {connect} from 'react-redux';
 import PopupHeader from './_popupHeader';
-import {addToCart, removeFromCart} from '../../cart/cartAction';
 import {closePopup} from '../../popup/popupAction';
-import {numberwithThousandsSeparator} from "../../../reuseable/function/function";
+import {numberwithThousandsSeparator, removeTypeName} from "../../../reuseable/function/function";
 import {graphql, compose} from 'react-apollo';
 import {QUERY} from '../../../constant/query';
+import {MUTATION, FRAGMENT} from '../../../constant/mutation';
 import {Navigator} from "react-native-deprecated-custom-components";
 import Moment from '../../moment';
+import {normalizeProductItemsInput} from '../../../reuseable/function/normalizeData';
 import MyDatePicker from '../../datePicker/datePicker';
+import ListProduct from '../../listProduct/listProduct';
+import LoadingOverlay from '../../loadingOverlay';
+import {clearCart} from '../../cart/cartAction';
+import _ from 'lodash';
+import {client} from '../../../root';
+import gql from 'graphql-tag';
 
 class ChargeView extends React.Component {
     constructor(props) {
         super(props);
         let {width, height} = Dimensions.get('window');
+        this.chargeProgressing = null;
         this.state = {
             width,
             height,
@@ -28,8 +36,11 @@ class ChargeView extends React.Component {
                 totalQuantity: this.getTotalQuantity(),
                 paymentStatus: null,
                 paymentMethod: null,
+                paid: 0,
+                dueDate: null,
+                description: ""
             },
-            dueDate: null,
+
 
         }
 
@@ -93,7 +104,8 @@ class ChargeView extends React.Component {
     renderScene(route, navigator) {
         switch (route.id) {
             case "main":
-                return <Main navigator={navigator} transaction={this.state.transaction} instance={this}/>;
+                return <Main navigator={navigator} transaction={this.state.transaction} instance={this}
+                             cart={this.props.cart}/>;
             case "paymentMethod":
                 return <PaymentMethod navigator={navigator} instance={this}
                                       currentPaymentMethod={this.state.transaction.paymentMethod}
@@ -105,19 +117,131 @@ class ChargeView extends React.Component {
         }
     }
 
+
+    getPaymentStatus() {
+        let status = this.props.paymentStatus.paymentStatus;
+
+        function findPaymentStatus(type) {
+
+            for (item of status) {
+                if (item.type === type) {
+                    return item
+                }
+            }
+        }
+        if (this.state.transaction.paid === 0) {
+            return findPaymentStatus("unpaid")
+        }
+        if (this.state.transaction.paid > this.state.transaction.totalPrice) {
+            return findPaymentStatus("paid")
+        }
+        if (this.state.transaction.paid < this.state.transaction.totalPrice) {
+            return findPaymentStatus("indebtedness")
+        }
+    }
+
+    checkCondition() {
+        if (this.state.transaction.paymentMethod.type === 'prepaid' && this.state.transaction.totalPrice <= this.state.transaction.paid) {
+            return true;
+        }
+        if ((this.state.transaction.paymentMethod.type === 'postpaid' || this.state.transaction.paymentMethod.type === "indebtedness") && this.state.transaction.dueDate !== null) {
+            return true
+        }
+        return false;
+    }
+
+    subtractInventoryLocal() {
+        this.state.transaction.productItems.forEach(item => {
+
+            console.warn(item);
+            client.writeFragment({
+                id: item._id ,
+                fragment: FRAGMENT.INVETORY_PRODUCT,
+                data: {
+                    quantity: 100,
+                    __typename: "ProductInventoryEmployee"
+                },
+            });
+        });
+    }
+
+    async onCharge() {
+
+
+        let condition = await this.checkCondition();
+        //this.subtractInventoryLocal()
+        if (condition) {
+            Alert.alert(
+                'Thông báo !',
+                'Bạn có muốn thực hiện giao dịch này ?',
+                [
+                    {text: 'Không', style: 'cancel'},
+                    {
+                        text: 'Có', onPress: async() => {
+                       await this.setState({
+                            transaction: {
+                                ...this.state.transaction,
+                                paymentStatus: this.getPaymentStatus()
+                            }
+                        });
+                        let paymentStatus = await removeTypeName(this.getPaymentStatus()),
+                            paymentMethod = await removeTypeName(this.state.transaction.paymentMethod),
+                            productItems = await normalizeProductItemsInput(this.state.transaction.productItems);
+                        this.props.createTransaction({
+                            variables: {
+                                productItems: productItems,
+                                type: "pay",
+                                paymentStatus: paymentStatus,
+                                paymentMethod: paymentMethod,
+                                dueDate: this.state.transaction.dueDate,
+                                totalQuantity: this.state.transaction.totalQuantity,
+                                totalPrice: this.state.transaction.totalPrice,
+                                paid: this.state.transaction.paid,
+                                description: this.state.transaction.description,
+                                date: new Date()
+
+                            }
+                        });
+                        this.props.clearCart();
+                        this.props.closePopup();
+                    }
+                    },
+                ],
+                {cancelable: false}
+            )
+
+        } else {
+            Alert.alert(
+                'Thông báo !',
+                'Bạn phải điền đúng thông tin',
+                [
+                    {
+                        text: 'OK', onPress: () => {
+                    }
+                    },
+                ],
+                {cancelable: false})
+        }
+
+
+        //this.chargeProgressing.setLoading()
+    }
+
     render() {
+         console.warn(this.state.transaction.productItems);
         return (
             <View style={style.container}>
                 <PopupHeader
-                    title={`Tổng tiền: ${numberwithThousandsSeparator(this.getTotalPrice())}${this.props.currency.currency[0].symbol}`}
+                    title={`Tổng tiền: ${numberwithThousandsSeparator(this.getTotalPrice())}${_.get(this.props.currency, "currency[0].symbol", "")}`}
                     isBack={this.state.currentView !== 'main'}
+                    submitFunction={() => this.onCharge()}
                     backFunction={() => {
                         this.setState({
                             currentView: 'main'
                         });
                         this.navigator.pop()
                     }}
-                    buttonText={"Tiếp theo"}/>
+                    buttonText={"Thanh toán"}/>
                 <View style={[style.body, style.container]}>
                     <Navigator
                         ref={(ref) => {
@@ -128,6 +252,10 @@ class ChargeView extends React.Component {
                         renderScene={this.renderScene.bind(this)}
                     />
                 </View>
+                <LoadingOverlay ref={ref => {
+                    if (this.chargeProgressing === null) this.chargeProgressing = ref
+                }}
+                                loading={false}/>
             </View>
         )
     }
@@ -140,6 +268,7 @@ class Main extends React.Component {
         this.state = {
             width,
             height,
+            cashInput: 0
         }
 
     }
@@ -172,15 +301,56 @@ class Main extends React.Component {
 
     render() {
         return (
-            <View style={style.container}>
+            <ScrollView style={style.container}>
                 <TouchableWithoutFeedback onPress={() => this.navigatingView("paymentMethod")}>
-                    <TextNormal>Hình thức thanh
+                    <TextNormal style={[style.spaceLine]}>Hình thức thanh
                         toán: {this.props.transaction.paymentMethod ? this.props.transaction.paymentMethod.name : ""}</TextNormal>
                 </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress={() => this.navigatingView("selectDueDate")}>
-                    <TextNormal>Hạn thanh toán:{this.props.instance.state.dueDate && Moment(this.props.instance.state.dueDate).format("dddd [ngày] DD MMMM [năm] YYYY")}</TextNormal>
-                </TouchableWithoutFeedback>
-            </View>
+                {
+                    _.get(this.props.transaction, "paymentMethod.type", "") !== "prepaid" &&
+                    <TouchableWithoutFeedback onPress={() => this.navigatingView("selectDueDate")}>
+                        <TextNormal style={[style.spaceLine]}>Hạn thanh
+                            toán:{this.props.instance.state.transaction.dueDate && Moment(this.props.instance.state.transaction.dueDate).format("dddd [ngày] DD MMMM [năm] YYYY")}</TextNormal>
+                    </TouchableWithoutFeedback>
+                }
+                <View style={style.spaceLine}>
+                    <View style={[{flexDirection: 'row'}]}>
+                        <TextNormal>Tiền nhận:</TextNormal>
+                        <TextInputPriceMask style={{flex: 1}} value={this.props.transaction.paid}
+                                            onChangeText={(cash) => {
+                                                this.props.instance.setState({
+                                                    transaction: {
+                                                        ...this.props.instance.state.transaction,
+                                                        paid: cash
+                                                    }
+                                                })
+                                            }}/>
+                    </View>
+                    {
+                        this.props.transaction.paid > 0 &&
+                        <View>
+                            <TextSmall
+                                style={[style.priceHint]}>{this.props.transaction.paid < this.props.transaction.totalPrice ? "Thiếu" : "Thừa"} {numberwithThousandsSeparator(Math.abs(this.props.transaction.totalPrice - this.props.transaction.paid))} {_.get(this.props.instance.props.currency, "currency[0].symbol", "")}</TextSmall>
+                        </View>
+                    }
+                </View>
+                <TextInputNormal style={[style.description, style.spaceLine]} value={this.props.transaction.description}
+                                 placeholder={"ghi chú"}
+                                 onChangeText={(text) => this.props.instance.setState(
+                                     {
+                                         transaction: {
+                                             ...this.props.instance.state.transaction,
+                                             description: text
+                                         }
+                                     }
+                                 )}/>
+                <View>
+                    <TextNormal style={[style.spaceLine]}>Danh sách mặt hàng:</TextNormal>
+                    <ListProduct data={this.props.cart}/>
+                </View>
+
+
+            </ScrollView>
         )
     }
 }
@@ -263,9 +433,14 @@ class SelectDueDate extends React.Component {
     render() {
         return (
             <View style={style.container}>
-                <MyDatePicker selectedDate={this.props.instance.state.dueDate}
+                <MyDatePicker selectedDate={this.props.instance.state.transaction.dueDate}
                               onSelectDate={(date) => {
-                                  this.props.instance.setState({dueDate: date})
+                                  this.props.instance.setState({
+                                      transaction: {
+                                          ...this.props.instance.state.transaction,
+                                          dueDate: date
+                                      }
+                                  })
                               }}/>
             </View>
         )
@@ -275,12 +450,20 @@ class SelectDueDate extends React.Component {
 const style = EStyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: constantStyle.color2
+    },
+    spaceLine: {
+        marginBottom: constantStyle.lg
     },
     body: {
         padding: constantStyle.headerHeight
     },
     titlePrice: {
         marginBottom: constantStyle.paddingHorizontal
+    },
+    priceHint: {
+        color: 'gray',
+        marginLeft: constantStyle.marginVerticalNormal
     },
     paymentMethodItem: {
         padding: constantStyle.paddingHorizontal,
@@ -302,6 +485,7 @@ const style = EStyleSheet.create({
         width: constantStyle.sizeSmall,
         height: constantStyle.sizeSmall,
     },
+    description: {},
     '@media (min-width: 768) and (max-width: 1024)': {},
     '@media (min-width: 1024)': {}
 });
@@ -312,14 +496,14 @@ const mapStateToProps = (state) => {
     }
 };
 const mapDispatchToProps = {
-    addToCart,
-    removeFromCart,
-    closePopup
+    closePopup,
+    clearCart
 };
 
 let ChargeViewApollo = compose(
     graphql(QUERY.CURRENCY, {name: 'currency', options: {fetchPolicy: "cache-and-network"}}),
     graphql(QUERY.PAYMENT_STATUS, {name: 'paymentStatus', options: {fetchPolicy: "cache-and-network"}}),
     graphql(QUERY.PAYMENT_METHOD, {name: 'paymentMethod', options: {fetchPolicy: "cache-and-network"}}),
+    graphql(MUTATION.CREATE_TRANSACTION, {name: 'createTransaction'})
 )(ChargeView);
 export default connect(mapStateToProps, mapDispatchToProps)(ChargeViewApollo);
