@@ -38,15 +38,14 @@ class Transaction extends React.Component {
         this.state = {
             selectedTransaction: {},
             currentTransactionOption: this.transactionOptionItems[0],
-            transactionOptionVisible: false
-
+            transactionOptionVisible: false,
         }
 
     }
 
     getTitleDate(date) {
 
-        return moment(date).format(`dddd,DD [tháng] MM [năm] YYYY `)
+        return moment(date).format(`dddd, DD [tháng] MM [năm] YYYY `)
     }
 
     getTime(date) {
@@ -65,15 +64,22 @@ class Transaction extends React.Component {
         return item.name
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.hasOwnProperty("transaction")) {
-            if (!this.state.selectedTransaction._id) {
-                this.setState({
-                    selectedTransaction: nextProps.transaction.getTransactionEmployee[0]
-                })
-            }
-        }
-    }
+    //
+    // componentWillReceiveProps(nextProps) {
+    //     if (nextProps.hasOwnProperty("transaction")) {
+    //         if (nextProps.transaction.getTransactionEmployee.length > 0) {
+    //             this.setState({
+    //                 listTransaction: normalizeTransactionSectionList(this.filterTransaction(nextProps.transaction.getTransactionEmployee))
+    //             });
+    //             if (!this.state.selectedTransaction._id) {
+    //                 this.setState({
+    //                     selectedTransaction: nextProps.transaction.getTransactionEmployee[0]
+    //                 })
+    //             }
+    //         }
+    //
+    //     }
+    // }
 
     _renderListTransactionHeader = ({section}) => (
         <View style={style.listHeader}
@@ -102,11 +108,52 @@ class Transaction extends React.Component {
         </TouchableWithoutFeedback>
     );
 
+    filterTransaction(data) {
+        let result = [];
+        if (this.state.currentTransactionOption.id === this.transactionOptionItems[0].id) {
+            result = data;
+        }
+
+        if (this.state.currentTransactionOption.id === this.transactionOptionItems[1].id) {
+            for (items of data) {
+                if (items.paid < items.totalPrice && items.issueRefund == 'false') {
+                    result.push(items);
+                }
+            }
+        }
+        if (this.state.currentTransactionOption.id === this.transactionOptionItems[2].id) {
+            for (items of data) {
+                if (items.paid > items.totalPrice && items.issueRefund == 'false') {
+                    result.push(items);
+                }
+            }
+        }
+        if (this.state.currentTransactionOption.id === this.transactionOptionItems[3].id) {
+            for (items of data) {
+                if (items.issueRefund == 'true') {
+                    result.push(items);
+                }
+            }
+        }
+
+        return result;
+
+    }
+
+    async onChangeTransactionOption(item) {
+        await this.setState({
+            currentTransactionOption: item,
+            transactionOptionVisible: false,
+            selectedTransaction: {}
+        });
+
+    }
+
     render() {
 
-        let transactions = normalizeTransactionSectionList(this.props.transaction.getTransactionEmployee);
+
         // console.warn(transactions)
-        let issueRefund = this.state.selectedTransaction.issueRefund;
+
         return (
             <View style={style.container}>
                 <Header type={"custom-right"} titleLeft={this.state.currentTransactionOption.name}
@@ -116,7 +163,13 @@ class Transaction extends React.Component {
                     {
                         this.state.selectedTransaction._id &&
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <TextNormal style={style.functionButton}>In hoá đơn</TextNormal>
+                            {
+                                this.state.selectedTransaction._id &&
+                                <TouchableWithoutFeedback>
+                                    <TextNormal style={style.functionButton}>In hoá đơn</TextNormal>
+                                </TouchableWithoutFeedback>
+                            }
+
                             <View style={{flex: 1}}/>
                             {
                                 this.state.selectedTransaction.issueRefund == "false" &&
@@ -134,7 +187,6 @@ class Transaction extends React.Component {
                 <View style={style.body}>
 
                     <View style={style.leftView}>
-
                         <SectionList
                             // refreshControl={
                             //     <RefreshControl
@@ -149,7 +201,7 @@ class Transaction extends React.Component {
                             //     this.transactionLoadmore()
                             // }}
                             onEndReachedThreshold={0.1}
-                            sections={transactions}
+                            sections={normalizeTransactionSectionList(this.filterTransaction(this.props.transaction.getTransactionEmployee))}
                             ListEmptyComponent={() => <NoData/>}
                         />
                         {/*menu option */}
@@ -160,12 +212,8 @@ class Transaction extends React.Component {
                                     this.transactionOptionItems.map((item) => {
                                         if (item.id !== this.state.currentTransactionOption.id) {
                                             return (
-                                                <TouchableWithoutFeedback key={item.id} onPress={() => {
-                                                    this.setState({
-                                                        currentTransactionOption: item,
-                                                        transactionOptionVisible: false
-                                                    })
-                                                }}>
+                                                <TouchableWithoutFeedback key={item.id}
+                                                                          onPress={() => this.onChangeTransactionOption(item)}>
                                                     <TextNormal
                                                         style={style.transactionOptionItems}>{item.name}</TextNormal>
                                                 </TouchableWithoutFeedback>
@@ -180,43 +228,46 @@ class Transaction extends React.Component {
                     </View>
                     <View style={style.rightView}>
                         {
-                            this.state.selectedTransaction._id &&
-                            <ScrollView style={{padding: constantStyle.xl, flex: 1}}>
-                                <View style={[style.spaceLine]}>
-                                    <TextNormal>Ngày giao
-                                        dịch: {this.getTitleDate(this.state.selectedTransaction.date)}</TextNormal>
-                                </View>
-                                <View style={[style.spaceLine]}>
-                                    <TextNormal>Hình thức thanh
-                                        toán: {this.getPaymentMethod(this.state.selectedTransaction.paymentMethod)}</TextNormal>
-                                </View>
-                                <View style={[style.spaceLine]}>
-                                    <TextNormal>Tình
-                                        trạng: {this.getPaymentStatus(this.state.selectedTransaction.paymentStatus)}</TextNormal>
-                                </View>
-                                {
-                                    this.state.selectedTransaction.issueRefund == "true" &&
+                            this.state.selectedTransaction._id ?
+                                <ScrollView style={{padding: constantStyle.xl, flex: 1}}>
                                     <View style={[style.spaceLine]}>
-                                        <TextNormal>Ngày hoàn
-                                            trả: {this.getTitleDate(this.state.selectedTransaction.refundDate)}</TextNormal>
+                                        <TextNormal>Ngày giao
+                                            dịch: {this.getTitleDate(this.state.selectedTransaction.date)}</TextNormal>
                                     </View>
-                                }
-
-                                {
-                                    !!this.state.selectedTransaction.description &&
                                     <View style={[style.spaceLine]}>
-                                        <TextNormal style={{textAlign: 'justify'}}>Ghi
-                                            chú: {this.state.selectedTransaction.description}</TextNormal>
+                                        <TextNormal>Hình thức thanh
+                                            toán: {this.getPaymentMethod(this.state.selectedTransaction.paymentMethod)}</TextNormal>
                                     </View>
-                                }
+                                    <View style={[style.spaceLine]}>
+                                        <TextNormal>Tình
+                                            trạng: {this.getPaymentStatus(this.state.selectedTransaction.paymentStatus)}</TextNormal>
+                                    </View>
+                                    {
+                                        this.state.selectedTransaction.issueRefund == "true" &&
+                                        <View style={[style.spaceLine]}>
+                                            <TextNormal>Ngày hoàn
+                                                trả: {this.getTitleDate(this.state.selectedTransaction.refundDate)}</TextNormal>
+                                        </View>
+                                    }
 
-                                <View>
-                                    <TextNormal>Mặt hàng:</TextNormal>
-                                    <ListProduct data={this.state.selectedTransaction.productItems}/>
+                                    {
+                                        !!this.state.selectedTransaction.description &&
+                                        <View style={[style.spaceLine]}>
+                                            <TextNormal style={{textAlign: 'justify'}}>Ghi
+                                                chú: {this.state.selectedTransaction.description}</TextNormal>
+                                        </View>
+                                    }
+
+                                    <View>
+                                        <TextNormal>Mặt hàng:</TextNormal>
+                                        <ListProduct data={this.state.selectedTransaction.productItems}/>
+                                    </View>
+
+
+                                </ScrollView> :
+                                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                                    <TextNormal>Hãy chọn giao dịch để hiển thị !</TextNormal>
                                 </View>
-
-
-                            </ScrollView>
                         }
 
                     </View>
