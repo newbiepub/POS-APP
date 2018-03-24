@@ -89,7 +89,7 @@ class Login extends PureComponent {
                                            onChangeText={(text) => this.setState({password: text})}/>
                     </View>
                     <TouchableOpacity onPress={() => this.onLogin()} style={style.buttonWrapper}>
-                        <TextNormal>Đăng nhập</TextNormal>
+                        <TextNormal style={{color:constantStyle.color2}}>Đăng nhập</TextNormal>
                     </TouchableOpacity>
 
                 </View>

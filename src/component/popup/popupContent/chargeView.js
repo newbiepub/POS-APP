@@ -38,7 +38,14 @@ class ChargeView extends React.Component {
                 paymentMethod: null,
                 paid: 0,
                 dueDate: null,
-                description: ""
+                description: "",
+                customer: {
+                    name: "",
+                    email: "",
+                    address: "",
+                    phone: "",
+                    description:""
+                }
             },
 
 
@@ -51,7 +58,7 @@ class ChargeView extends React.Component {
             this.setState({
                 transaction: {
                     ...this.state.transaction,
-                    paymentStatus: nextProps.paymentStatus.paymentStatus[0]
+                    paymentStatus: _.get(nextProps,"paymentStatus.paymentStatus[0]", null)
                 }
             });
         }
@@ -59,7 +66,7 @@ class ChargeView extends React.Component {
             this.setState({
                 transaction: {
                     ...this.state.transaction,
-                    paymentMethod: nextProps.paymentMethod.paymentMethod[0]
+                    paymentMethod:_.get(nextProps,"paymentMethod.paymentMethod[0]",null)
                 }
 
             });
@@ -113,10 +120,12 @@ class ChargeView extends React.Component {
             case "selectDueDate":
                 return <SelectDueDate navigator={navigator} instance={this}
                                       dueDate={this.state.dueDate}/>;
+            case "customerInformation":
+                return <CustomerInformation navigator={navigator} instance={this}
+                                           customer={this.state.transaction.customer}/>;
 
         }
     }
-
 
     getPaymentStatus() {
         let status = this.props.paymentStatus.paymentStatus;
@@ -129,10 +138,11 @@ class ChargeView extends React.Component {
                 }
             }
         }
+        // console.warn(this.state.transaction.totalPrice)
         if (this.state.transaction.paid === 0) {
             return findPaymentStatus("unpaid")
         }
-        if (this.state.transaction.paid > this.state.transaction.totalPrice) {
+        if (this.state.transaction.paid >= this.state.transaction.totalPrice) {
             return findPaymentStatus("paid")
         }
         if (this.state.transaction.paid < this.state.transaction.totalPrice) {
@@ -152,10 +162,8 @@ class ChargeView extends React.Component {
 
     subtractInventoryLocal() {
         this.state.transaction.productItems.forEach(item => {
-
-            console.warn(item);
             client.writeFragment({
-                id: item._id ,
+                id: item._id,
                 fragment: FRAGMENT.INVETORY_PRODUCT,
                 data: {
                     quantity: 100,
@@ -177,8 +185,8 @@ class ChargeView extends React.Component {
                 [
                     {text: 'Không', style: 'cancel'},
                     {
-                        text: 'Có', onPress: async() => {
-                       await this.setState({
+                        text: 'Có', onPress: async () => {
+                        await this.setState({
                             transaction: {
                                 ...this.state.transaction,
                                 paymentStatus: this.getPaymentStatus()
@@ -187,6 +195,7 @@ class ChargeView extends React.Component {
                         let paymentStatus = await removeTypeName(this.getPaymentStatus()),
                             paymentMethod = await removeTypeName(this.state.transaction.paymentMethod),
                             productItems = await normalizeProductItemsInput(this.state.transaction.productItems);
+                        console.warn(paymentStatus);
                         this.props.createTransaction({
                             variables: {
                                 productItems: productItems,
@@ -196,9 +205,9 @@ class ChargeView extends React.Component {
                                 dueDate: this.state.transaction.dueDate,
                                 totalQuantity: this.state.transaction.totalQuantity,
                                 totalPrice: this.state.transaction.totalPrice,
-                                paid: this.state.transaction.paid,
+                                paid: {date: new Date() ,amount:this.state.transaction.paid},
                                 description: this.state.transaction.description,
-                                date: new Date()
+                                customer: this.state.transaction.customer,
 
                             }
                         });
@@ -228,7 +237,6 @@ class ChargeView extends React.Component {
     }
 
     render() {
-         console.warn(this.state.transaction.productItems);
         return (
             <View style={style.container}>
                 <PopupHeader
@@ -285,18 +293,10 @@ class Main extends React.Component {
     }
 
     navigatingView(type) {
-        if (type === "paymentMethod") {
-            this.props.instance.setState({
-                currentView: type
-            });
-            this.props.navigator.push({id: 'paymentMethod'})
-        }
-        if (type === "selectDueDate") {
-            this.props.instance.setState({
-                currentView: type
-            });
-            this.props.navigator.push({id: 'selectDueDate'})
-        }
+        this.props.instance.setState({
+            currentView: type
+        });
+        this.props.navigator.push({id: type})
     }
 
     render() {
@@ -334,6 +334,10 @@ class Main extends React.Component {
                         </View>
                     }
                 </View>
+                <TouchableWithoutFeedback onPress={() => {this.navigatingView("customerInformation")
+                }}>
+                    <TextNormal style={[style.spaceLine]}>Thông tin khách hàng</TextNormal>
+                </TouchableWithoutFeedback>
                 <TextInputNormal style={[style.description, style.spaceLine]} value={this.props.transaction.description}
                                  placeholder={"ghi chú"}
                                  onChangeText={(text) => this.props.instance.setState(
@@ -417,6 +421,115 @@ class PaymentMethod extends React.Component {
         )
     }
 }
+
+class CustomerInformation extends React.Component {
+    constructor(props) {
+        super(props);
+        let {width, height} = Dimensions.get('window');
+        this.state = {
+            width,
+            height,
+        }
+
+    }
+
+    onChangeValue(key,value) {
+        if(key=== "name")
+        {
+            this.props.instance.setState({
+                transaction:{
+                    ...this.props.instance.state.transaction,
+                    customer:{
+                        ...this.props.instance.state.transaction.customer,
+                        name:value
+                    }
+                }
+
+            })
+        }
+        if(key=== "email")
+        {
+            this.props.instance.setState({
+                transaction:{
+                    ...this.props.instance.state.transaction,
+                    customer:{
+                        ...this.props.instance.state.transaction.customer,
+                        email:value
+                    }
+                }
+
+            })
+        }
+        if(key=== "address")
+        {
+            this.props.instance.setState({
+                transaction:{
+                    ...this.props.instance.state.transaction,
+                    customer:{
+                        ...this.props.instance.state.transaction.customer,
+                        address:value
+                    }
+                }
+
+            })
+        }
+        if(key=== "description")
+        {
+            this.props.instance.setState({
+                transaction:{
+                    ...this.props.instance.state.transaction,
+                    customer:{
+                        ...this.props.instance.state.transaction.customer,
+                        description:value
+                    }
+                }
+
+            })
+        }
+        if(key=== "phoneNumber")
+        {
+            this.props.instance.setState({
+                transaction:{
+                    ...this.props.instance.state.transaction,
+                    customer:{
+                        ...this.props.instance.state.transaction.customer,
+                        phone:value
+                    }
+                }
+
+            })
+        }
+
+    }
+
+    render() {
+        return (
+            <View style={style.container}>
+                <TextInputNormal style={[style.description, style.spaceLine]} value={this.props.customer.name}
+                                 placeholder={"Tên khách hàng"}
+                                 onChangeText={(text) => this.onChangeValue("name",text)}/>
+
+                <TextInputNormal style={[style.description, style.spaceLine]} value={this.props.customer.email}
+                                 placeholder={"Địa chỉ email"}
+                                 onChangeText={(text) => this.onChangeValue("email",text)}/>
+
+                <TextInputNormal style={[style.description, style.spaceLine]} value={this.props.customer.address}
+                                 placeholder={"Địa chỉ nhà"}
+                                 onChangeText={(text) => this.onChangeValue("address",text)}/>
+
+
+                <TextInputNormal style={[style.description, style.spaceLine]} value={this.props.customer.phone}
+                                 placeholder={"Số điện thoại"}
+                                 onChangeText={(text) => this.onChangeValue("phoneNumber",text)}/>
+
+                <TextInputNormal style={[style.description, style.spaceLine]} value={this.props.customer.description}
+                                 placeholder={"Ghi chú"}
+                                 onChangeText={(text) => this.onChangeValue("description",text)}/>
+            </View>
+        )
+    }
+}
+
 
 class SelectDueDate extends React.Component {
     constructor(props) {

@@ -60,7 +60,7 @@ class POS extends PureComponent {
                 </Header>
                 <View style={{flex: 1, flexDirection: "row"}}>
                     {/*---------------Left Side------------------------*/}
-                    <View style={{flex: 0.6}}>
+                    <View style={{flex: 0.7}}>
                         {
                             this.state.currentView === 'gridProduct' &&
                             <GridProduct checkLoginExpire={(data) => this.props.checkLoginExpire(data)}/>
@@ -76,7 +76,7 @@ class POS extends PureComponent {
 
                     </View>
                     {/*---------------Right Side------------------------*/}
-                    <View style={{flex: 0.4, borderLeftColor: constantStyle.colorBorder, borderLeftWidth: 1}}>
+                    <View style={{flex: 0.3, borderLeftColor: constantStyle.colorBorder, borderLeftWidth: 1}}>
                         <Cart/>
                     </View>
                 </View>

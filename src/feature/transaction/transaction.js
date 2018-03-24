@@ -24,6 +24,7 @@ import {connect} from 'react-redux';
 import ListProduct from '../../component/listProduct/listProduct';
 import IssueRefund from '../../component/popup/popupContent/issueRefund';
 import {openPopup} from '../../component/popup/popupAction';
+import UpdateTransaction from '../../component/popup/popupContent/updateTransaction';
 
 class Transaction extends React.Component {
     constructor(props) {
@@ -101,29 +102,39 @@ class Transaction extends React.Component {
                     <TextNormal
                         style={[{flex: 1}, this.state.selectedTransaction._id === item._id && style.listTextSelected]}>{numberwithThousandsSeparator(item.totalPrice)}{_.get(this.props.currency, "currency[0].symbol", "")}</TextNormal>
                     <TextSmall
-                        style={this.state.selectedTransaction._id === item._id && style.listTextSelected}>{this.getTime(item.date)}</TextSmall>
+                        style={this.state.selectedTransaction._id === item._id && style.listTextSelected}>{this.getTime(item.createdAt)}</TextSmall>
                 </View>
 
             </View>
         </TouchableWithoutFeedback>
     );
 
+    getTotalPaid(paid) {
+        let price = 0;
+        for (itemsPaid of paid) {
+            price = price + itemsPaid.amount;
+        }
+
+        return price
+    }
+
     filterTransaction(data) {
+        //console.warn(data)
         let result = [];
         if (this.state.currentTransactionOption.id === this.transactionOptionItems[0].id) {
             result = data;
         }
-
         if (this.state.currentTransactionOption.id === this.transactionOptionItems[1].id) {
             for (items of data) {
-                if (items.paid < items.totalPrice && items.issueRefund == 'false') {
+
+                if (this.getTotalPaid(items.paid) < items.totalPrice && items.issueRefund == 'false') {
                     result.push(items);
                 }
             }
         }
         if (this.state.currentTransactionOption.id === this.transactionOptionItems[2].id) {
             for (items of data) {
-                if (items.paid > items.totalPrice && items.issueRefund == 'false') {
+                if (this.getTotalPaid(items.paid) > items.totalPrice && items.issueRefund == 'false') {
                     result.push(items);
                 }
             }
@@ -149,11 +160,14 @@ class Transaction extends React.Component {
 
     }
 
+    onUpdateTransaction() {
+        if (this.state.selectedTransaction._id)
+            this.props.openPopup(<UpdateTransaction transaction={this.state.selectedTransaction}/>)
+    }
+
     render() {
-
-
-        // console.warn(transactions)
-
+        let currentTransaction = this.state.selectedTransaction;
+        let totalPaid = this.state.selectedTransaction._id ? this.getTotalPaid(this.state.selectedTransaction.paid) : 0;
         return (
             <View style={style.container}>
                 <Header type={"custom-right"} titleLeft={this.state.currentTransactionOption.name}
@@ -161,18 +175,24 @@ class Transaction extends React.Component {
                             this.setState({transactionOptionVisible: !this.state.transactionOptionVisible})
                         }}>
                     {
-                        this.state.selectedTransaction._id &&
+                        currentTransaction._id &&
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
                             {
-                                this.state.selectedTransaction._id &&
+                                this.state.selectedTransaction._id && totalPaid >= this.state.selectedTransaction.totalPrice &&
                                 <TouchableWithoutFeedback>
                                     <TextNormal style={style.functionButton}>In hoá đơn</TextNormal>
+                                </TouchableWithoutFeedback>
+                            }
+                            {
+                                this.state.selectedTransaction._id && totalPaid < this.state.selectedTransaction.totalPrice &&
+                                <TouchableWithoutFeedback onPress={() => this.onUpdateTransaction()}>
+                                    <TextNormal style={style.functionButton}>Tiếp tục thanh toán</TextNormal>
                                 </TouchableWithoutFeedback>
                             }
 
                             <View style={{flex: 1}}/>
                             {
-                                this.state.selectedTransaction.issueRefund == "false" &&
+                                currentTransaction.issueRefund == "false" &&
                                 <TouchableWithoutFeedback onPress={() => this.props.openPopup(<IssueRefund
                                     id={this.state.selectedTransaction._id}
                                     productItems={this.state.selectedTransaction.productItems}/>)}>
@@ -228,39 +248,100 @@ class Transaction extends React.Component {
                     </View>
                     <View style={style.rightView}>
                         {
-                            this.state.selectedTransaction._id ?
+                            currentTransaction._id ?
                                 <ScrollView style={{padding: constantStyle.xl, flex: 1}}>
                                     <View style={[style.spaceLine]}>
                                         <TextNormal>Ngày giao
-                                            dịch: {this.getTitleDate(this.state.selectedTransaction.date)}</TextNormal>
+                                            dịch: {this.getTitleDate(currentTransaction.date)}</TextNormal>
                                     </View>
                                     <View style={[style.spaceLine]}>
                                         <TextNormal>Hình thức thanh
-                                            toán: {this.getPaymentMethod(this.state.selectedTransaction.paymentMethod)}</TextNormal>
+                                            toán: {this.getPaymentMethod(currentTransaction.paymentMethod)}</TextNormal>
                                     </View>
                                     <View style={[style.spaceLine]}>
                                         <TextNormal>Tình
-                                            trạng: {this.getPaymentStatus(this.state.selectedTransaction.paymentStatus)}</TextNormal>
+                                            trạng: {this.getPaymentStatus(currentTransaction.paymentStatus)}</TextNormal>
                                     </View>
                                     {
                                         this.state.selectedTransaction.issueRefund == "true" &&
                                         <View style={[style.spaceLine]}>
                                             <TextNormal>Ngày hoàn
-                                                trả: {this.getTitleDate(this.state.selectedTransaction.refundDate)}</TextNormal>
+                                                trả: {this.getTitleDate(currentTransaction.refundDate)}</TextNormal>
                                         </View>
                                     }
-
+                                    <View style={[style.spaceLine]}>
+                                        <TextNormal style={{textAlign: 'justify'}}>
+                                           Lịch sử thanh toán:</TextNormal>
+                                        {
+                                            this.state.selectedTransaction.paid.map((item,index)=>{
+                                                return(
+                                                    <View key={index} style={style.transactionPaidItem}>
+                                                        <TextNormal style={style.transactionPaidDate}>
+                                                            {moment(item.date).format(`DD/MM/YYYY: hh:mm a`)}</TextNormal>
+                                                        <TextNormal style={style.transactionPaidIAmount}>{numberwithThousandsSeparator(item.amount)} {_.get(this.props.currency, "currency[0].symbol", "")}</TextNormal>
+                                                    </View>
+                                                )
+                                            })
+                                        }
+                                    </View>
                                     {
-                                        !!this.state.selectedTransaction.description &&
+                                        currentTransaction.customer && (
+                                            !!currentTransaction.customer.name ||
+                                            !!currentTransaction.customer.email ||
+                                            !!currentTransaction.customer.address ||
+                                            !!currentTransaction.customer.company ||
+                                            !!currentTransaction.customer.phoneNumber
+                                        )
+                                        &&
+
+                                        <View style={[style.spaceLine]}>
+                                            <TextNormal style={{textAlign: 'justify'}}>
+                                                Thông tin khách hàng</TextNormal>
+                                            {
+                                                !!currentTransaction.customer.name &&
+                                                <TextNormal
+                                                    style={[style.transactionCustomerDetailText, {textAlign: 'justify'}]}>
+                                                    Tên khách hàng: {currentTransaction.customer.name}</TextNormal>
+                                            }
+                                            {
+                                                !!currentTransaction.customer.email &&
+                                                <TextNormal
+                                                    style={[style.transactionCustomerDetailText, {textAlign: 'justify'}]}>
+                                                    Email: {currentTransaction.customer.email}</TextNormal>
+                                            }
+                                            {
+                                                !!currentTransaction.customer.address &&
+                                                <TextNormal
+                                                    style={[style.transactionCustomerDetailText, {textAlign: 'justify'}]}>
+                                                    Địa chỉ: {currentTransaction.customer.address}</TextNormal>
+                                            }
+                                            {
+                                                !!currentTransaction.customer.company &&
+                                                <TextNormal
+                                                    style={[style.transactionCustomerDetailText, {textAlign: 'justify'}]}>
+                                                    Công ty: {currentTransaction.customer.company}</TextNormal>
+                                            }
+                                            {
+                                                !!currentTransaction.customer.phoneNumber &&
+                                                <TextNormal
+                                                    style={[style.transactionCustomerDetailText, {textAlign: 'justify'}]}>
+                                                    Số điện
+                                                    thoại: {currentTransaction.customer.phoneNumber}</TextNormal>
+                                            }
+
+                                        </View>
+                                    }
+                                    {
+                                        !!currentTransaction.description &&
                                         <View style={[style.spaceLine]}>
                                             <TextNormal style={{textAlign: 'justify'}}>Ghi
-                                                chú: {this.state.selectedTransaction.description}</TextNormal>
+                                                chú: {currentTransaction.description}</TextNormal>
                                         </View>
                                     }
 
                                     <View>
                                         <TextNormal>Mặt hàng:</TextNormal>
-                                        <ListProduct data={this.state.selectedTransaction.productItems}/>
+                                        <ListProduct data={currentTransaction.productItems}/>
                                     </View>
 
 
@@ -340,6 +421,20 @@ const style = EStyleSheet.create({
     transactionOptionItems: {
         paddingVertical: constantStyle.sm,
         paddingHorizontal: constantStyle.md
+    },
+    transactionCustomerDetailText: {
+        paddingLeft:constantStyle.lg
+    },
+    transactionPaidItem:{
+        flexDirection:'row',
+        flex:1
+    },
+    transactionPaidIAmount:{
+
+    },
+    transactionPaidDate:{
+        flex:1,
+        paddingLeft:constantStyle.lg
     },
     '@media (min-width: 768) and (max-width: 1024)': {},
     '@media (min-width: 1024)': {}

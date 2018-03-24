@@ -27,24 +27,21 @@ class GridProduct extends React.Component {
     constructor(props) {
         super(props);
         let {width, height} = Dimensions.get('window');
+        this.gridWidthPercent = 70;
         this.state = {
-            gridViewWidth: width * 60 / 100,
+            gridViewWidth: width * this.gridWidthPercent / 100,
             height,
-            columnNumber: 2,
+            columnNumber: 3,
             categoryFilter: 'all',
             searchText: ''
         };
-        this.state.gridViewItemSize = ((width * 60) / 100 - 20 - constantStyle.headerHeight) / this.state.columnNumber;
+        this.state.gridViewItemSize = ((width * this.gridWidthPercent) / 100 - 20 - constantStyle.headerHeight) / this.state.columnNumber;
     }
 
     componentDidMount() {
         Dimensions.addEventListener("change", () => {
             let {width, height} = Dimensions.get('window');
-            this.setState({
-                gridViewWidth: width * 60 / 100,
-                height,
-                gridViewItemSize: ((width * 60) / 100 - 20 - constantStyle.headerHeight ) / this.state.columnNumber
-            })
+
         })
 
     }
@@ -147,13 +144,27 @@ class GridProduct extends React.Component {
             height: this.state.height - constantStyle.headerHeight - constantStyle.paddingGridItem * 2
         }}/>
     );
-
+    onLayout(event) {
+        const {width} = event.nativeEvent.layout;
+        this.setState({
+            gridViewWidth: width,
+            gridViewItemSize: (width - 20 - constantStyle.headerHeight ) / this.state.columnNumber
+        })
+    }
+    getNumberColumn()
+    {
+        if(this.state.gridViewWidth > 768)
+        {
+            return 3
+        }
+        return 2
+    }
 
     render() {
         this.props.checkLoginExpire(this.props.inventoryProduct);
         let data = this.filterByCategory();
         return (
-            <View style={style.container}>
+            <View style={style.container}  onLayout={(event) => this.onLayout(event)} >
                 {/*View category*/}
                 <ListCategory onChangeCategoryFilter={(id) => this.onChangeCategoryFilter(id)}
                               categoryFilter={this.state.categoryFilter}/>
@@ -161,9 +172,8 @@ class GridProduct extends React.Component {
                     data !== [] ?
                         <FlatList
                             data={data}
-                            numColumns={this.state.columnNumber}
-                            extraData={this.state}
-                            initialNumToRender={0}
+                            numColumns={this.getNumberColumn()}
+                            initialNumToRender={1}
                             keyExtractor={(item) => item.product._id}
                             contentContainerStyle={style.gridView}
                             ListEmptyComponent={this._listEmptyComponent}
@@ -224,7 +234,7 @@ let GridProductApollo = compose(
     graphql(QUERY.INVENTORY_PRODUCT, {
         name: 'inventoryProduct', options: (props) => ({
             variables: {
-                userId: props.currentUser.currentUser._id,
+                userId: _.get(props,"currentUser.currentUser._id", ""),
             },
             fetchPolicy: "cache-and-network"
         })

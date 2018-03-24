@@ -10,7 +10,7 @@ const initialState = {
 
     menuVisible: false
 };
-initialState.currentItem = initialState.menuItems[2];
+initialState.currentItem = initialState.menuItems[5];
 export default function (state = initialState, action = {}) {
     switch (action.type) {
 

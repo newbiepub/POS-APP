@@ -131,7 +131,7 @@ class Home extends PureComponent {
                 }
                 {
                     this.props.router.currentItem.id === this.props.router.menuItems[5].id &&
-                    <Setting/>
+                    <Setting navigator={this.props.navigator}/>
                 }
                 <Popup/>
                 <Menu/>

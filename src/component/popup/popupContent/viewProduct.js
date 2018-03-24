@@ -1,7 +1,7 @@
 import React from "react";
 import {ScrollView, View, TouchableWithoutFeedback, Dimensions, FlatList} from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
-import {TextLarge, TextNormal, TextSmall, TextInputNumber} from '../../text';
+import {TextLarge, TextNormal, TextSmall, TextInputNumber, TextInputPriceMask} from '../../text';
 import {constantStyle} from '../../../style/base';
 import {connect} from 'react-redux';
 import PopupHeader from './_popupHeader';
@@ -28,7 +28,7 @@ class ViewProduct extends React.Component {
                 unit: this.props.item.product.unit,
                 inventoryQuantity: this.props.item.quantity
             },
-
+            otherPrice: 0
         };
         this.state.product.totalPrice = this.computeTotalPrice();
 
@@ -45,7 +45,12 @@ class ViewProduct extends React.Component {
     }
 
     computeTotalPrice() {
-        return this.state.product.price.price * this.state.product.quantity
+        try {
+            return !!this.state.otherPrice ? this.state.otherPrice * this.state.product.quantity : this.state.product.price.price * this.state.product.quantity
+        } catch (e) {
+            return 0
+        }
+
     }
 
     async onChangePrice(item, index) {
@@ -55,12 +60,7 @@ class ViewProduct extends React.Component {
                 price: item,
             },
         });
-        this.setState({
-            product: {
-                ...this.state.product,
-                totalPrice: this.computeTotalPrice()
-            }
-        });
+        this.updateProduct()
     }
 
     async changeQuantity(subtend, value) {
@@ -95,6 +95,10 @@ class ViewProduct extends React.Component {
                 })
             }
         }
+        this.updateProduct()
+    }
+
+    updateProduct() {
         this.setState({
             product: {
                 ...this.state.product,
@@ -119,12 +123,16 @@ class ViewProduct extends React.Component {
 
     addToCart() {
         // console.warn(this.state.product)
+        // if(!!this.state.otherPrice)
+        // {
+        //     this.state.product.price.
+        // }
         this.props.addToCart(this.state.product);
         this.props.closePopup()
     }
 
     render() {
-       // console.warn(this.props.item)
+        // console.warn(this.props.item)
         let item = this.props.edit ? this.props.item : this.props.item.product;
         return (
             <View style={style.container}>
@@ -135,8 +143,7 @@ class ViewProduct extends React.Component {
                     }}
                     buttonText={this.props.edit ? "Sửa" : "Thêm vào giỏ"}/>
                 <ScrollView style={style.body}>
-                    <TextNormal style={style.titlePrice}>{item.name} chọn
-                        giá:</TextNormal>
+                    <TextNormal style={style.titlePrice}>{item.name} giá:</TextNormal>
                     <FlatList
                         data={this.state.product.prices}
                         numColumns={2}
@@ -144,6 +151,23 @@ class ViewProduct extends React.Component {
                         keyExtractor={(item) => item.name}
                         renderItem={this._renderPrice}
                     />
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <TextNormal>Nhập giá: </TextNormal>
+                        <TextInputPriceMask value={this.state.product.price.price} style={{flex: 1}}
+                                            onChangeText={async (num) => {
+                                                await this.setState({
+                                                    product: {
+                                                        ...this.state.product,
+                                                        price:{
+                                                            ...this.state.product.price,
+                                                            price: num
+                                                        }
+                                                    }
+                                                });
+                                                this.updateProduct()
+                                            }}/>
+                    </View>
+
                     <TextNormal
                         style={style.titleQuantity}>Chọn số lượng (Trong kho có
                         : {this.state.product.inventoryQuantity} {this.state.product.unit}) </TextNormal>

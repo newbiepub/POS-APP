@@ -17,7 +17,7 @@ import {QUERY} from '../../../constant/query';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {graphql} from 'react-apollo';
-
+import {Var}from '../../../constant/variable';
 class CategoryView extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -25,9 +25,8 @@ class CategoryView extends React.PureComponent {
         this.categoryWidthOpen = 200;
         this.categoryWidthClose = constantStyle.headerHeight;
         this.state = {
-            isCategoryViewOpen: new Animated.Value(0),
-            categoryOpen: false,
-            categoryWidth: new Animated.Value(this.categoryWidthClose),
+            isCategoryViewOpen: new Animated.Value(Var.categoryVisible ? 1: 0),
+            categoryWidth: new Animated.Value(Var.categoryVisible? this.categoryWidthOpen: this.categoryWidthClose),
         };
     }
 
@@ -50,9 +49,7 @@ class CategoryView extends React.PureComponent {
                 useNativeDriver: true
             }
         ).start();
-        this.setState({
-            categoryOpen: true,
-        })
+        Var.categoryVisible = true
     }
 
     closeCategoryView() {
@@ -72,13 +69,11 @@ class CategoryView extends React.PureComponent {
                 useNativeDriver: true
             }
         ).start();
-        this.setState({
-            categoryOpen: false,
-        })
+        Var.categoryVisible = false
     }
 
     switchCategoryView() {
-        if (this.state.categoryOpen) {
+        if (Var.categoryVisible) {
             this.closeCategoryView()
         } else {
             this.openCategoryView()
@@ -114,20 +109,26 @@ class CategoryView extends React.PureComponent {
             inputRange: [0, 1],
             outputRange: ['0 deg', '180 deg']
         });
+        // console.warn(this.props.categoryFilter)
         return (
             <Animated.View
                 style={[style.categoryView, {width: this.state.categoryWidth}]}>
-                <TouchableWithoutFeedback onPress={() => this.switchCategoryView()}>
-                    <View style={style.categoryButtonSwitch}>
-                        <Animated.View style={[style.categoryButtonSwitchIcon, {
-                            transform: [{rotate: spinArrow}]
-                        }]}>
-                            <Entypo name="chevron-thin-right"
-                                    style={[{fontSize: constantStyle.sizeLarge, color: constantStyle.color1}]}/>
-                        </Animated.View>
-                    </View>
-                </TouchableWithoutFeedback>
+
                 <ScrollView>
+                    <TouchableWithoutFeedback onPress={() => this.switchCategoryView()}>
+                        <View style={style.categoryItem}>
+                            <Animated.View style={[style.categoryButtonSwitchIcon, {
+                                transform: [{rotate: spinArrow}]
+                            }]}>
+                                <Entypo name="chevron-thin-right"
+                                        style={[{fontSize: constantStyle.sizeLarge, color: constantStyle.color1}]}/>
+                            </Animated.View>
+                            <View style={style.categoryName}>
+                                <TextNormal>Loại hàng</TextNormal>
+                            </View>
+                        </View>
+
+                    </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback onPress={() => {
                         this.onPressCategory("all")
                     }}>
@@ -148,7 +149,7 @@ class CategoryView extends React.PureComponent {
                     </TouchableWithoutFeedback>
                     <FlatList
                         data={this.props.category.categories}
-                        extraData={this.state}
+                        extraData={this.props}
                         initialNumToRender={5}
                         keyExtractor={(item) => item._id}
                         renderItem={this._renderItem}
@@ -169,7 +170,8 @@ const style = EStyleSheet.create({
 
     },
     categoryButtonSwitch: {
-        alignItems: 'flex-end'
+        alignItems: 'flex-end',
+        flexDirection: 'row'
     },
     categoryButtonSwitchIcon: {
         height: constantStyle.headerHeight,

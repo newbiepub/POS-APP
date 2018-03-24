@@ -9,11 +9,22 @@ export const MUTATION = {
         $dueDate:Date,
         $totalQuantity:Int!,
         $totalPrice:Float!,
-        $paid:Float!,
-        $description:String,$date:Date){
+        $paid:TransactionPaidInput!,
+        $customer: TransactionCustomerInput,
+        $description:String){
             createTransaction(productItems:$productItems, type:$type,paymentStatus:$paymentStatus,
-                paymentMethod:$paymentMethod,dueDate:$dueDate, totalQuantity:$totalQuantity,totalPrice:$totalPrice,paid:$paid,description:$description,date:$date
+                paymentMethod:$paymentMethod,dueDate:$dueDate, totalQuantity:$totalQuantity,totalPrice:$totalPrice,paid:$paid,description:$description,customer:$customer
             ) {
+                _id
+            }
+        }`,
+    UPDATE_TRANSACTION: gql`
+        mutation updateTransaction(
+        $_id:String!,
+        $dueDate:Date,
+        $paid:TransactionPaidInput!,
+        $description:String){
+            updateTransaction(_id:$_id, dueDate:$dueDate,paid:$paid,description:$description){
                 _id
             }
         }`,

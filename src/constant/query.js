@@ -101,12 +101,13 @@ export const QUERY = {
         query {
             getTransactionEmployee{
                 _id
+                createdAt
                 productItems{
                     _id
+                    productId
                     productName
                     quantity
                     price{
-                        _id
                         name
                         price
                         currency{
@@ -121,7 +122,6 @@ export const QUERY = {
                 type
                 issueRefund
                 issueRefundReason
-                date
                 paymentStatus{
                     _id
                     type
@@ -145,7 +145,17 @@ export const QUERY = {
                 }
                 totalQuantity
                 totalPrice
-                paid
+                paid{
+                    date
+                    amount
+                }
+                customer{
+                    name
+                    email
+                    address
+                    phone
+                    description
+                }
                 description
             }
         }

@@ -30,11 +30,13 @@ class ListProduct extends React.Component {
         <View style={style.itemWrapper}>
             <View style={style.item}>
                 <View style={style.itemName}>
-                    <TextNormal
-                        style={style.itemNameText}>{item.name|| item.productName}{item.quantity > 1 && ` x${item.quantity}`}</TextNormal>
+                    <TextNormal numberOfLines={1}
+                        style={[style.itemNameText,{flex:1}]}>{item.name|| item.productName}</TextNormal>
+                    <TextNormal numberOfLines={1}
+                                style={style.itemNameText}>{item.quantity > 1 && ` x${item.quantity}`}</TextNormal>
                 </View>
                 <View style={style.itemPrice}>
-                    <TextNormal
+                    <TextNormal numberOfLines={1}
                         style={style.itemPriceText}>{numberwithThousandsSeparator(item.totalPrice)} {_.get(item,"price.currency.symbol","")}</TextNormal>
                 </View>
             </View>
@@ -88,25 +90,27 @@ const style = EStyleSheet.create({
         marginVertical: constantStyle.marginVerticalSmall
     },
     item: {
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     itemName: {
         backgroundColor: constantStyle.color1,
         paddingVertical: constantStyle.paddingVerticalSmall,
-        paddingHorizontal: constantStyle.paddingHorizontal
+        paddingHorizontal: constantStyle.paddingHorizontal,
+        flexDirection: 'row',
+        flex: 1,
     },
     itemNameText: {
         color: constantStyle.color2
     },
     itemPrice: {
         backgroundColor: constantStyle.color2,
-        flex: 1,
+
         paddingVertical: constantStyle.paddingVerticalSmall,
         paddingHorizontal: constantStyle.paddingHorizontal,
         marginLeft: constantStyle.marginVerticalSmall,
         justifyContent: 'flex-end',
-        borderWidth: 1,
-        borderColor: constantStyle.colorBorder
+        // borderWidth: 1,
+        // borderColor: constantStyle.colorBorder
     },
     itemPriceText: {
         color: "gray",
