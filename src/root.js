@@ -30,9 +30,8 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
 const cache = new InMemoryCache({ fragmentMatcher,dataIdFromObject: object => {
     switch(object.__typename)
     {
-
         case "ProductInventoryEmployee": {
-            return object.product._id
+            return object._id
         }
         default:{
             return object._id

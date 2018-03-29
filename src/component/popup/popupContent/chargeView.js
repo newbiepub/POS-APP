@@ -44,7 +44,7 @@ class ChargeView extends React.Component {
                     email: "",
                     address: "",
                     phone: "",
-                    description:""
+                    description: ""
                 }
             },
 
@@ -58,7 +58,7 @@ class ChargeView extends React.Component {
             this.setState({
                 transaction: {
                     ...this.state.transaction,
-                    paymentStatus: _.get(nextProps,"paymentStatus.paymentStatus[0]", null)
+                    paymentStatus: _.get(nextProps, "paymentStatus.paymentStatus[0]", null)
                 }
             });
         }
@@ -66,7 +66,7 @@ class ChargeView extends React.Component {
             this.setState({
                 transaction: {
                     ...this.state.transaction,
-                    paymentMethod:_.get(nextProps,"paymentMethod.paymentMethod[0]",null)
+                    paymentMethod: _.get(nextProps, "paymentMethod.paymentMethod[0]", null)
                 }
 
             });
@@ -122,7 +122,7 @@ class ChargeView extends React.Component {
                                       dueDate={this.state.dueDate}/>;
             case "customerInformation":
                 return <CustomerInformation navigator={navigator} instance={this}
-                                           customer={this.state.transaction.customer}/>;
+                                            customer={this.state.transaction.customer}/>;
 
         }
     }
@@ -138,6 +138,7 @@ class ChargeView extends React.Component {
                 }
             }
         }
+
         // console.warn(this.state.transaction.totalPrice)
         if (this.state.transaction.paid === 0) {
             return findPaymentStatus("unpaid")
@@ -160,16 +161,31 @@ class ChargeView extends React.Component {
         return false;
     }
 
-    subtractInventoryLocal() {
-        this.state.transaction.productItems.forEach(item => {
-            client.writeFragment({
-                id: item._id,
-                fragment: FRAGMENT.INVETORY_PRODUCT,
-                data: {
-                    quantity: 100,
-                    __typename: "ProductInventoryEmployee"
-                },
-            });
+    async subtractInventoryLocal() {
+        let query = await QUERY.INVENTORY_PRODUCT;
+        const data = await client.readQuery({
+            query, variables: {
+                userId: _.get(this.props, "currentUser.currentUser._id", "")
+            }
+        });
+        for (items of this.state.transaction.productItems) {
+
+            for (itemsData of data.getUserProductInventory) {
+                if (items._id === itemsData.product._id) {
+                    itemsData.quantity = itemsData.quantity - items.quantity;
+                    break;
+                }
+            }
+        }
+
+        client.writeQuery({
+            query,
+            data: {
+                getUserProductInventory: data.getUserProductInventory,
+            },
+            variables: {
+                userId: _.get(this.props, "currentUser.currentUser._id", "")
+            }
         });
     }
 
@@ -177,7 +193,7 @@ class ChargeView extends React.Component {
 
 
         let condition = await this.checkCondition();
-        //this.subtractInventoryLocal()
+
         if (condition) {
             Alert.alert(
                 'Thông báo !',
@@ -195,7 +211,8 @@ class ChargeView extends React.Component {
                         let paymentStatus = await removeTypeName(this.getPaymentStatus()),
                             paymentMethod = await removeTypeName(this.state.transaction.paymentMethod),
                             productItems = await normalizeProductItemsInput(this.state.transaction.productItems);
-                        console.warn(paymentStatus);
+                        // console.warn(paymentStatus);
+                        this.subtractInventoryLocal()
                         this.props.createTransaction({
                             variables: {
                                 productItems: productItems,
@@ -205,7 +222,7 @@ class ChargeView extends React.Component {
                                 dueDate: this.state.transaction.dueDate,
                                 totalQuantity: this.state.transaction.totalQuantity,
                                 totalPrice: this.state.transaction.totalPrice,
-                                paid: {date: new Date() ,amount:this.state.transaction.paid},
+                                paid: {date: new Date(), amount: this.state.transaction.paid},
                                 description: this.state.transaction.description,
                                 customer: this.state.transaction.customer,
 
@@ -334,7 +351,8 @@ class Main extends React.Component {
                         </View>
                     }
                 </View>
-                <TouchableWithoutFeedback onPress={() => {this.navigatingView("customerInformation")
+                <TouchableWithoutFeedback onPress={() => {
+                    this.navigatingView("customerInformation")
                 }}>
                     <TextNormal style={[style.spaceLine]}>Thông tin khách hàng</TextNormal>
                 </TouchableWithoutFeedback>
@@ -433,67 +451,62 @@ class CustomerInformation extends React.Component {
 
     }
 
-    onChangeValue(key,value) {
-        if(key=== "name")
-        {
+    onChangeValue(key, value) {
+        if (key === "name") {
             this.props.instance.setState({
-                transaction:{
+                transaction: {
                     ...this.props.instance.state.transaction,
-                    customer:{
+                    customer: {
                         ...this.props.instance.state.transaction.customer,
-                        name:value
+                        name: value
                     }
                 }
 
             })
         }
-        if(key=== "email")
-        {
+        if (key === "email") {
             this.props.instance.setState({
-                transaction:{
+                transaction: {
                     ...this.props.instance.state.transaction,
-                    customer:{
+                    customer: {
                         ...this.props.instance.state.transaction.customer,
-                        email:value
+                        email: value
                     }
                 }
 
             })
         }
-        if(key=== "address")
-        {
+        if (key === "address") {
             this.props.instance.setState({
-                transaction:{
+                transaction: {
                     ...this.props.instance.state.transaction,
-                    customer:{
+                    customer: {
                         ...this.props.instance.state.transaction.customer,
-                        address:value
+                        address: value
                     }
                 }
 
             })
         }
-        if(key=== "description")
-        {
+        if (key === "description") {
             this.props.instance.setState({
-                transaction:{
+                transaction: {
                     ...this.props.instance.state.transaction,
-                    customer:{
+                    customer: {
                         ...this.props.instance.state.transaction.customer,
-                        description:value
+                        description: value
                     }
                 }
 
             })
         }
-        if(key=== "phoneNumber")
-        {
+        if (key === "phoneNumber") {
             this.props.instance.setState({
-                transaction:{
+                transaction: {
                     ...this.props.instance.state.transaction,
-                    customer:{
+                    customer: {
                         ...this.props.instance.state.transaction.customer,
-                        phone:value
+                        phone: value
                     }
                 }
 
@@ -507,24 +520,24 @@ class CustomerInformation extends React.Component {
             <View style={style.container}>
                 <TextInputNormal style={[style.description, style.spaceLine]} value={this.props.customer.name}
                                  placeholder={"Tên khách hàng"}
-                                 onChangeText={(text) => this.onChangeValue("name",text)}/>
+                                 onChangeText={(text) => this.onChangeValue("name", text)}/>
 
                 <TextInputNormal style={[style.description, style.spaceLine]} value={this.props.customer.email}
                                  placeholder={"Địa chỉ email"}
-                                 onChangeText={(text) => this.onChangeValue("email",text)}/>
+                                 onChangeText={(text) => this.onChangeValue("email", text)}/>
 
                 <TextInputNormal style={[style.description, style.spaceLine]} value={this.props.customer.address}
                                  placeholder={"Địa chỉ nhà"}
-                                 onChangeText={(text) => this.onChangeValue("address",text)}/>
+                                 onChangeText={(text) => this.onChangeValue("address", text)}/>
 
 
                 <TextInputNormal style={[style.description, style.spaceLine]} value={this.props.customer.phone}
                                  placeholder={"Số điện thoại"}
-                                 onChangeText={(text) => this.onChangeValue("phoneNumber",text)}/>
+                                 onChangeText={(text) => this.onChangeValue("phoneNumber", text)}/>
 
                 <TextInputNormal style={[style.description, style.spaceLine]} value={this.props.customer.description}
                                  placeholder={"Ghi chú"}
-                                 onChangeText={(text) => this.onChangeValue("description",text)}/>
+                                 onChangeText={(text) => this.onChangeValue("description", text)}/>
             </View>
         )
     }
@@ -614,6 +627,11 @@ const mapDispatchToProps = {
 };
 
 let ChargeViewApollo = compose(
+    graphql(QUERY.CURRENT_USER, {
+        name: 'currentUser', options: {
+            fetchPolicy: "cache-and-network"
+        }
+    }),
     graphql(QUERY.CURRENCY, {name: 'currency', options: {fetchPolicy: "cache-and-network"}}),
     graphql(QUERY.PAYMENT_STATUS, {name: 'paymentStatus', options: {fetchPolicy: "cache-and-network"}}),
     graphql(QUERY.PAYMENT_METHOD, {name: 'paymentMethod', options: {fetchPolicy: "cache-and-network"}}),

@@ -108,10 +108,10 @@ class GridProduct extends React.Component {
             <TouchableWithoutFeedback onPress={() => this.onClickProduct(item)}>
                 <View style={{flex: 1}}>
                     <View style={style.gridItem}>
-                        <TextSmall>Giá:{numberwithThousandsSeparator(_.get(item,"product.price[0].price",0))}{_.get(item,"product.price[0].currency.symbol","")}/{item.product.unit|| ""}</TextSmall>
+                        <TextSmall>Giá:{numberwithThousandsSeparator(_.get(item, "product.price[0].price", 0))}{_.get(item, "product.price[0].currency.symbol", "")}/{item.product.unit || ""}</TextSmall>
                         <TextSmall>Số lượng: {item.quantity} {item.product.unit}</TextSmall>
                         <TextSmall>Mã sản phẩm: {item.product.productCode}</TextSmall>
-                        <TextSmall>Loại hàng:{item.product.categoryId.name}</TextSmall>
+                        <TextSmall>Loại hàng:{_.get(item, "product.categoryId.name", "")}</TextSmall>
 
                     </View>
 
@@ -144,6 +144,7 @@ class GridProduct extends React.Component {
             height: this.state.height - constantStyle.headerHeight - constantStyle.paddingGridItem * 2
         }}/>
     );
+
     onLayout(event) {
         const {width} = event.nativeEvent.layout;
         this.setState({
@@ -151,10 +152,9 @@ class GridProduct extends React.Component {
             gridViewItemSize: (width - 20 - constantStyle.headerHeight ) / this.state.columnNumber
         })
     }
-    getNumberColumn()
-    {
-        if(this.state.gridViewWidth > 768)
-        {
+
+    getNumberColumn() {
+        if (this.state.gridViewWidth > 768) {
             return 3
         }
         return 2
@@ -163,8 +163,9 @@ class GridProduct extends React.Component {
     render() {
         this.props.checkLoginExpire(this.props.inventoryProduct);
         let data = this.filterByCategory();
+        // console.warn(this.props.inventoryProduct)
         return (
-            <View style={style.container}  onLayout={(event) => this.onLayout(event)} >
+            <View style={style.container} onLayout={(event) => this.onLayout(event)}>
                 {/*View category*/}
                 <ListCategory onChangeCategoryFilter={(id) => this.onChangeCategoryFilter(id)}
                               categoryFilter={this.state.categoryFilter}/>
@@ -172,6 +173,7 @@ class GridProduct extends React.Component {
                     data !== [] ?
                         <FlatList
                             data={data}
+                            extraData={this.props}
                             numColumns={this.getNumberColumn()}
                             initialNumToRender={1}
                             keyExtractor={(item) => item.product._id}
@@ -225,7 +227,6 @@ const style = EStyleSheet.create({
 });
 
 let GridProductApollo = compose(
-
     graphql(QUERY.CURRENT_USER, {
         name: 'currentUser', options: {
             fetchPolicy: "cache-and-network"
@@ -234,7 +235,7 @@ let GridProductApollo = compose(
     graphql(QUERY.INVENTORY_PRODUCT, {
         name: 'inventoryProduct', options: (props) => ({
             variables: {
-                userId: _.get(props,"currentUser.currentUser._id", ""),
+                userId: _.get(props, "currentUser.currentUser._id", ""),
             },
             fetchPolicy: "cache-and-network"
         })
