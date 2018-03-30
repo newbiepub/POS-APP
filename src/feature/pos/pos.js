@@ -38,15 +38,15 @@ class POS extends PureComponent {
                                         style={[style.tabIcon, this.state.currentView === 'gridProduct' && style.tabIconSelected]}/>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => {
-                            this.setState({currentView: 'library'})
-                        }}
-                                          style={[style.tabItem, this.state.currentView === 'library' && style.tabItemSelected]}>
-                            <View>
-                                <Entypo name="list"
-                                        style={[style.tabIcon, this.state.currentView === 'library' && style.tabIconSelected]}/>
-                            </View>
-                        </TouchableOpacity>
+                        {/*<TouchableOpacity onPress={() => {*/}
+                            {/*this.setState({currentView: 'library'})*/}
+                        {/*}}*/}
+                                          {/*style={[style.tabItem, this.state.currentView === 'library' && style.tabItemSelected]}>*/}
+                            {/*<View>*/}
+                                {/*<Entypo name="list"*/}
+                                        {/*style={[style.tabIcon, this.state.currentView === 'library' && style.tabIconSelected]}/>*/}
+                            {/*</View>*/}
+                        {/*</TouchableOpacity>*/}
                         <TouchableOpacity onPress={() => {
                             this.setState({currentView: 'customAmount'})
                         }}

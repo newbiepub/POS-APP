@@ -189,6 +189,31 @@ class ChargeView extends React.Component {
         });
     }
 
+    async addTransactionLocal(transaction) {
+        let item = Object.assign({}, transaction)
+        for (itemsProduct of item.productItems) {
+            itemsProduct._id = Math.round(Math.random() * -1000000).toString();
+            itemsProduct.price.__typename = "TransactionProductPrice";
+            itemsProduct.price.currency.__typename = "TransactionCurrency";
+            itemsProduct.__typename = "TransactionProductItems"
+        }
+        item.paymentMethod.__typename = "PaymentMethod";
+        item.paymentStatus.__typename = "PaymentStatus";
+        item.paid.__typename = "TransactionPaid";
+        item.customer.__typename = "TransactionCustomer";
+        let query = await QUERY.TRANSACTION;
+        const transactionData = await client.readQuery({
+            query
+        });
+        // console.warn(item);
+        client.writeQuery({
+            query,
+            data: {
+                getTransactionEmployee: [...transactionData.getTransactionEmployee, item],
+            }
+        });
+    }
+
     async onCharge() {
 
 
@@ -212,8 +237,8 @@ class ChargeView extends React.Component {
                             paymentMethod = await removeTypeName(this.state.transaction.paymentMethod),
                             productItems = await normalizeProductItemsInput(this.state.transaction.productItems);
                         // console.warn(paymentStatus);
-                        this.subtractInventoryLocal()
-                        this.props.createTransaction({
+                        this.subtractInventoryLocal();
+                        await this.props.createTransaction({
                             variables: {
                                 productItems: productItems,
                                 type: "pay",
@@ -227,6 +252,23 @@ class ChargeView extends React.Component {
                                 customer: this.state.transaction.customer,
 
                             }
+                        });
+                        this.addTransactionLocal({
+                            __typename: "Transaction",
+                            _id: Math.round(Math.random() * -1000000).toString(),
+                            createdAt: new Date(),
+                            productItems: productItems,
+                            type: "pay",
+                            paymentStatus: paymentStatus,
+                            paymentMethod: paymentMethod,
+                            dueDate: this.state.transaction.dueDate,
+                            totalQuantity: this.state.transaction.totalQuantity,
+                            totalPrice: this.state.transaction.totalPrice,
+                            issueRefund: false,
+                            issueRefundReason: "",
+                            paid: {date: new Date(), amount: this.state.transaction.paid},
+                            description: this.state.transaction.description,
+                            customer: this.state.transaction.customer,
                         });
                         this.props.clearCart();
                         this.props.closePopup();

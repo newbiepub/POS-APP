@@ -22,6 +22,7 @@ import NoData from '../../noData';
 import ListCategory from './listCategory';
 import {graphql, compose} from 'react-apollo';
 import _ from 'lodash';
+import {client} from '../../../root';
 
 class GridProduct extends React.Component {
     constructor(props) {
@@ -36,13 +37,25 @@ class GridProduct extends React.Component {
             searchText: ''
         };
         this.state.gridViewItemSize = ((width * this.gridWidthPercent) / 100 - 20 - constantStyle.headerHeight) / this.state.columnNumber;
+        this.props.length = 0;
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         Dimensions.addEventListener("change", () => {
             let {width, height} = Dimensions.get('window');
 
-        })
+        });
+        // for (let i = 0; i < _.get(this.props, "inventoryAmount.getAmountUserProductInventory.inventoryAmount", 100); i = i + 10) {
+        //     await client.query({
+        //         query: QUERY.INVENTORY_PRODUCT,
+        //         variables: {
+        //             userId: _.get(this.props, "currentUser.currentUser._id", ""),
+        //             limit: i + 10,
+        //             skip: i
+        //         },
+        //     })
+        // }
+
 
     }
 
@@ -164,6 +177,7 @@ class GridProduct extends React.Component {
         this.props.checkLoginExpire(this.props.inventoryProduct);
         let data = this.filterByCategory();
         // console.warn(this.props.inventoryProduct)
+        // console.warn(this.props.inventoryAmount)
         return (
             <View style={style.container} onLayout={(event) => this.onLayout(event)}>
                 {/*View category*/}
@@ -175,7 +189,7 @@ class GridProduct extends React.Component {
                             data={data}
                             extraData={this.props}
                             numColumns={this.getNumberColumn()}
-                            initialNumToRender={1}
+                            initialNumToRender={4}
                             keyExtractor={(item) => item.product._id}
                             contentContainerStyle={style.gridView}
                             ListEmptyComponent={this._listEmptyComponent}
@@ -231,6 +245,15 @@ let GridProductApollo = compose(
         name: 'currentUser', options: {
             fetchPolicy: "cache-and-network"
         }
+    }),
+    graphql(QUERY.GET_AMOUNT_INVENTORY_PRODUCT, {
+        name: 'inventoryAmount', options: (props) => ({
+            variables: {
+                userId: _.get(props, "currentUser.currentUser._id", ""),
+            },
+            fetchPolicy: "cache-and-network"
+        }),
+
     }),
     graphql(QUERY.INVENTORY_PRODUCT, {
         name: 'inventoryProduct', options: (props) => ({

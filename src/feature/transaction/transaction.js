@@ -443,6 +443,7 @@ const mapDispatchToProps = {
     openPopup
 };
 let TransactionApollo = compose(
+    graphql(QUERY.GET_TRANSACTION_AMOUNT, {name: 'transactionAmount', options: {fetchPolicy: "cache-and-network"}}),
     graphql(QUERY.TRANSACTION, {name: 'transaction', options: {fetchPolicy: "cache-and-network"}}),
     graphql(QUERY.CURRENCY, {name: 'currency', options: {fetchPolicy: "cache-and-network"}}),
 )(Transaction);

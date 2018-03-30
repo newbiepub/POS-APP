@@ -44,8 +44,8 @@ export const QUERY = {
             }
         }`,
     INVENTORY_PRODUCT: gql`
-        query getUserProductInventory($userId: String!){
-            getUserProductInventory(type: "employee", userId: $userId) {
+        query getUserProductInventory($userId: String!,$limit:Int, $skip: Int){
+            getUserProductInventory(type: "employee", userId: $userId, limit:$limit, skip: $skip) {
                 product {
                     _id
                     name
@@ -70,6 +70,13 @@ export const QUERY = {
                 ... on updateProductInventoryQuantityFragment{
                     quantity
                 }
+            }
+
+        }`,
+    GET_AMOUNT_INVENTORY_PRODUCT:gql`
+        query getAmountUserProductInventory($userId: String!){
+            getAmountUserProductInventory(type: "employee", userId: $userId) {
+                inventoryAmount
             }
 
         }`,
@@ -159,5 +166,11 @@ export const QUERY = {
                 description
             }
         }
-    `
+    `,
+    GET_TRANSACTION_AMOUNT: gql`
+        query {
+            getAmountTransactionEmployee{
+                transactionAmount
+            }
+        }`,
 };
