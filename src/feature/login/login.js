@@ -5,6 +5,7 @@ import EStyleSheet from "react-native-extended-stylesheet";
 import config from '../../config';
 import {ASYNC_STORAGE} from '../../constant/constant';
 import {constantStyle} from '../../style/base';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 
 class Login extends PureComponent {
     constructor(props) {
@@ -91,7 +92,7 @@ class Login extends PureComponent {
                     <TouchableOpacity onPress={() => this.onLogin()} style={style.buttonWrapper}>
                         <TextNormal style={{color:constantStyle.color2}}>Đăng nhập</TextNormal>
                     </TouchableOpacity>
-
+                    <KeyboardSpacer/>
                 </View>
             </View>
         )
