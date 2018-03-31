@@ -157,6 +157,9 @@ class GridProduct extends React.Component {
             height: this.state.height - constantStyle.headerHeight - constantStyle.paddingGridItem * 2
         }}/>
     );
+    _renderFooter = () => (
+       <View style={{height:90}}/>
+    );
 
     onLayout(event) {
         const {width} = event.nativeEvent.layout;
@@ -170,7 +173,7 @@ class GridProduct extends React.Component {
         this.props.checkLoginExpire(this.props.inventoryProduct);
         let data = this.filterByCategory();
         // console.warn(this.props.inventoryProduct)
-        // console.warn(this.props.inventoryAmount)
+        // console.warn(this.props.inventoryProduct)
         return (
             <View style={style.container} onLayout={(event) => this.onLayout(event)}>
                 {/*View category*/}
@@ -187,6 +190,7 @@ class GridProduct extends React.Component {
                             contentContainerStyle={style.gridView}
                             ListEmptyComponent={this._listEmptyComponent}
                             ListHeaderComponent={this._listHeaderComponent(data)}
+                            ListFooterComponent={this._renderFooter}
                             renderItem={this._renderItem}
                         /> :
                         <View style={[{flex: 1, justifyContent: "center", alignItems: 'center'}]}>

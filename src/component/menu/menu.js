@@ -7,7 +7,7 @@ import {
     Image,
     TouchableOpacity,
     Dimensions,
-    TouchableWithoutFeedback
+    ScrollView
 } from "react-native";
 import {TextLarge} from '../text';
 import {constantStyle} from '../../style/base';
@@ -64,13 +64,14 @@ class Menu extends PureComponent {
                 supportedOrientations={['portrait', 'landscape']}
                 visible={this.props.menuVisible}>
 
-                <View style={{flex: 1}}>
-                    <View
+                <View style={{
+                    flex: 1, width: this.state.width * 30 / 100,
+                    height: this.state.height, backgroundColor: constantStyle.color1,
+                }}>
+                    <ScrollView
                         style={[style.menuContainer, {
                             width: this.state.width * 30 / 100,
-                            height: this.state.height,
                         }]}>
-
                         <FlatList
                             data={this.props.menuItems}
                             keyExtractor={item => item.name}
@@ -78,7 +79,7 @@ class Menu extends PureComponent {
                             contentContainerStyle={style.listMenu}
                         />
 
-                    </View>
+                    </ScrollView>
                 </View>
             </ModalWrapper>
 
@@ -89,7 +90,7 @@ class Menu extends PureComponent {
 
 const style = EStyleSheet.create({
     menuContainer: {
-        backgroundColor: constantStyle.color1,
+
         position: 'absolute',
 
     },

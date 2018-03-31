@@ -11,7 +11,7 @@ import {ApolloClient} from "apollo-client";
 import {Provider} from "react-redux";
 import store from './store/store';
 import introspectionQueryResultData from './util/fragmentTypes.json';
-
+import Config from './config';
 const authLink = setContext(async (req, {headers}) => {
     let authToken = await AsyncStorage.getItem(ASYNC_STORAGE.AUTH_TOKEN);
     authToken = JSON.parse(authToken);
@@ -39,7 +39,7 @@ const cache = new InMemoryCache({ fragmentMatcher,dataIdFromObject: object => {
     }
 }  });
 const httpLink = new HttpLink({
-    uri: "http://localhost:3000/api"
+    uri: `${Config.api}/api`
 });
 
 persistCache({
