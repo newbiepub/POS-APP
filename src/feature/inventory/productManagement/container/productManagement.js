@@ -2,8 +2,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import {DropDownMenu, Icon, NavigationBar, Screen, Title, TouchableOpacity, View} from "@shoutem/ui";
 import {isEqual} from "lodash";
-import NoData from "../../../component/noData/noData";
+import NoData from "../../../../component/noData/noData";
 import ProductList from "../component/productList";
+import CommingSoon from "../../../../component/commingSoon/commingSoon";
 
 class ProductManagement extends React.Component {
     constructor(props) {
@@ -67,8 +68,6 @@ class ProductManagement extends React.Component {
 
     render() {
         try {
-
-
             return (
                 <Screen styleName="paper">
                     <NavigationBar
@@ -82,11 +81,15 @@ class ProductManagement extends React.Component {
                         this.state.currentRoute.route === "product" &&
                         <ProductList {...this.props}/>
                     }
+                    {
+                        this.state.currentRoute.route === "category" &&
+                        <CommingSoon/>
+                    }
 
                 </Screen>
             )
         }
-        catch(e) {
+        catch (e) {
             console.log(e);
             console.warn("error - render productManagement");
             return (

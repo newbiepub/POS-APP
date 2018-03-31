@@ -7,8 +7,13 @@ import Home from "../feature/home/container/home";
 import Popup from "../component/popup/popup";
 import styleBase from "../styles/base";
 import POSDetail from "../feature/pos/container/posDetail";
-import ProductManagement from "../feature/productManagement/container/productManagement";
-import CompanyInventory from "../feature/companyInventory/container/companyInventory";
+import ProductManagement from "../feature/inventory/productManagement/container/productManagement";
+import CompanyInventory from "../feature/inventory/companyInventory/container/companyInventory";
+import emitter from "../event/emitter";
+import {EVENT_TYPE} from "../constant/eventType";
+import IngredientManagement from "../feature/inventory/ingredientManagement/container/ingredientManagement";
+import ImportExportManagement from "../feature/inventory/importExportManagement/index";
+import ConfirmExport from "../feature/inventory/importExportManagement/confirmExport";
 
 EStyleSheet.build(); //Build Extended StyleSheet
 
@@ -22,8 +27,16 @@ class AppContainer extends React.Component {
 
     static defaultProps = {};
 
+    componentDidMount() {
+        // User logout handler
+        emitter.addListener(EVENT_TYPE.USER_LOGOUT, () => {
+            this.navigator.resetTo({id: 'login'}); // Reset to login view
+        })
+    }
+
     configureScene(route, navigator) {
-        if (route.id === "home" || route.id === "pos_product_management" || route.id === "company_product_management") return Navigator.SceneConfigs.FadeAndroid;
+        if (route.id === "home" || route.id === "pos_product_management" || route.id === "company_product_management" ||  route.id === 'company_ingredient_management' || 'company_inventory_activity_management')
+            return Navigator.SceneConfigs.FadeAndroid;
 
         if(route.id === "pos_detail") return Navigator.SceneConfigs.FloatFromBottom;
 
@@ -41,6 +54,12 @@ class AppContainer extends React.Component {
                 return <ProductManagement navigator={navigator} title={route.title} user={route.user} type={"employee"}/>;
             case "company_product_management":
                 return <ProductManagement navigator={navigator} title={route.title} user={route.user} type={"company"}/>;
+            case 'company_ingredient_management':
+                return <IngredientManagement navigator={navigator} title={route.title} user={route.user} type="company"/>;
+            case 'company_inventory_activity_management':
+                return <ImportExportManagement navigator={navigator} title={route.title} user={route.user} type="company"/>;
+            case 'company_inventory_export_action':
+                return <ConfirmExport navigator={navigator} title="XUẤT HÀNG SANG ĐIỂM BÁN HÀNG" user={route.user} type="company"/>
         }
     }
 

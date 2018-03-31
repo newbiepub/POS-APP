@@ -1,4 +1,6 @@
 import {AsyncStorage} from "react-native";
+import emitter from "../../../event/emitter";
+import {EVENT_TYPE} from "../../../constant/eventType";
 
 const AUTH_TOKEN = "AUTH_TOKEN";
 let token = null;
@@ -35,7 +37,8 @@ export const setToken = async (newToken) => {
 export const removeToken = async () => {
     try {
         await AsyncStorage.removeItem(AUTH_TOKEN);
-        token = null;
+        token = null; // Remove Token
+        emitter.emit(EVENT_TYPE.USER_LOGOUT); // Notify user logout
     }
     catch (e) {
         console.warn("error - removeToken")

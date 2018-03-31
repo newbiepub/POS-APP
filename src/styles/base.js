@@ -5,6 +5,24 @@ const styleBase = EStyleSheet.create({
         alignItems: "center",
         justifyContent: "center"
     },
+    fullHeight: {
+        height: "100%"
+    },
+    height80: {
+        height: "80%"
+    },
+    width50: {
+        height: "50%"
+    },
+    height50: {
+        height: "50%"
+    },
+    width30: {
+        height: "30%"
+    },
+    height30: {
+        height: "30%"
+    },
     justifyCenter: {
         justifyContent: 'center'
     },
@@ -29,6 +47,13 @@ const styleBase = EStyleSheet.create({
     textWhite: {
         color: "#fff"
     },
+    imgLargeTile: {
+        height: "20%",
+        width: "20%"
+    },
+    fontBold: {
+        fontWeight: "600"
+    },
     shadowBox: {
         elevation: 2,
         shadowColor: "#e5e5e5",
@@ -52,6 +77,13 @@ const styleBase = EStyleSheet.create({
         paddingHorizontal: 20,
         borderBottomWidth: 1,
         borderBottomColor: "#e5e5e5"
+    },
+    card: {
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderColor: "#e5e5e5",
+        borderBottomWidth: 1,
+        borderTopWidth: 1
     },
     bgE5: {
         backgroundColor: "#e5e5e5"

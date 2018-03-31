@@ -1,6 +1,6 @@
 import React from "react";
-import {Platform, StyleSheet, InteractionManager, Dimensions} from "react-native";
-import {Button, Divider, Image, TextInput, Tile, View, Spinner, Text} from "@shoutem/ui";
+import {Dimensions, InteractionManager, Platform, StyleSheet} from "react-native";
+import {Button, Divider, Image, Spinner, Text, TextInput, Tile, View} from "@shoutem/ui";
 import KeyboardSpacer from "react-native-keyboard-spacer";
 import EStyleSheet from "react-native-extended-stylesheet";
 import styleBase from "../../../styles/base";
@@ -69,6 +69,8 @@ class Login extends React.Component {
                 alert("Sai email");
             } else if (e.message === "MISSING_EMAIL_AND_PASSWORD") {
                 alert("Email và mật khẩu không được để trống");
+            } else {
+                alert(e.message);
             }
         }
         this.setState({isLogin: false});

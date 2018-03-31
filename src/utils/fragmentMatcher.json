@@ -15,13 +15,25 @@
       },
       {
         "kind": "INTERFACE",
-        "name": "Inventory",
+        "name": "ProductInventory",
         "possibleTypes": [
           {
-            "name": "InventoryCompany"
+            "name": "ProductInventoryCompany"
           },
           {
-            "name": "InventoryEmployee"
+            "name": "ProductInventoryEmployee"
+          }
+        ]
+      },
+      {
+        "kind": "INTERFACE",
+        "name": "IngredientInventory",
+        "possibleTypes": [
+          {
+            "name": "IngredientInventoryCompany"
+          },
+          {
+            "name": "IngredientInventoryEmployee"
           }
         ]
       }

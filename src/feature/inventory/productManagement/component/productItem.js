@@ -2,12 +2,16 @@ import React from "react";
 import PropTypes from "prop-types";
 import {StyleSheet} from "react-native";
 import {View, TouchableOpacity, Subtitle, Text, Icon, Divider} from "@shoutem/ui";
-import styleBase from "../../../styles/base";
+import styleBase from "../../../../styles/base";
 import ProductItemCollapse from "./productItemCollapse";
+import isEqual from "lodash/isEqual";
 
 class ProductItem extends React.Component {
     constructor(props) {
         super(props);
+        this.collapse = false;
+
+        this.handleToogleCollapse = this.handleToogleCollapse.bind(this);
     }
 
     static propTypes = {
@@ -18,17 +22,31 @@ class ProductItem extends React.Component {
         item: {}
     };
 
+    shouldComponentUpdate(nextProps, nextState) {
+        return !isEqual(this.props.item !== nextProps.item)
+    }
+
+    handleToogleCollapse () {
+        if(this.collapse) {
+            this.collapse = false;
+            this.refs.productCollapse.closeCollapse();
+        } else {
+            this.collapse = true;
+            this.refs.productCollapse.showCollapse();
+        }
+    }
+
     render() {
         let {item} = this.props;
         try {
             return (
                 <View styleName="vertical">
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={this.handleToogleCollapse}>
                         <View styleName="horizontal space-between v-center"
                               style={StyleSheet.flatten([{height: 65}, styleBase.p_md_horizontal])}>
                             <View style={{flex: 0.33}}>
                                 <Subtitle numberOfLines={1}>
-                                    {item.productId.name || ""}
+                                    {item.product.name || ""}
                                 </Subtitle>
                             </View>
 
@@ -38,7 +56,7 @@ class ProductItem extends React.Component {
 
                             <View styleName="horizontal v-center h-center" style={{flex: 0.2}}>
                                 <Text numberOfLines={1}>
-                                    {item.productId.unit || ""}
+                                    {item.product.unit || ""}
                                 </Text>
                             </View>
 
@@ -47,7 +65,7 @@ class ProductItem extends React.Component {
                             </View>
                         </View>
                     </TouchableOpacity>
-                    <ProductItemCollapse ref="productCollapse" item={item}/>
+                    <ProductItemCollapse ref="productCollapse" item={item.product}/>
                     <Divider styleName="line"/>
                 </View>
             )

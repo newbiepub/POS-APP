@@ -3,9 +3,10 @@ import {DropDownMenu, NavigationBar, Screen, View, Icon, TouchableOpacity} from 
 import POS from "../../pos/container/pos";
 import {openPopup, renderContent} from "../../../component/popup/actions/popupAction";
 import POSCreator from "../../pos/component/posCreator";
-import CompanyInventory from "../../companyInventory/container/companyInventory";
+import CompanyInventory from "../../inventory/companyInventory/container/companyInventory";
 import {graphql} from "react-apollo";
 import {getCurrentUser} from "../../login/action/login";
+import CommingSoon from "../../../component/commingSoon/commingSoon";
 
 class Home extends React.Component {
     constructor(props) {
@@ -30,13 +31,13 @@ class Home extends React.Component {
         return this.state !== nextState;
     }
 
-    componentWillReceiveProps (nextProps) {
+    componentWillReceiveProps(nextProps) {
         try {
             let data = nextProps.data || {};
-            if(data.error) {
+            if (data.error) {
                 throw new Error(data.error.message);
             }
-        } catch(e) {
+        } catch (e) {
             console.log(e);
             console.warn("error - componentWillReceiveProps - Home");
         }
@@ -81,11 +82,15 @@ class Home extends React.Component {
                         rightComponent={this.renderRightComponent()}
                     />
                     {this.state.currentRoute.route === "pos" &&
-                         <POS navigator={this.props.navigator}/>
+                    <POS navigator={this.props.navigator}/>
                     }
                     {
                         this.state.currentRoute.route === "inventory" &&
                         <CompanyInventory {...this.props}/>
+                    }
+                    {
+                        (this.state.currentRoute.route === "setting" || this.state.currentRoute.route === "report") &&
+                        <CommingSoon/>
                     }
                 </Screen>
             )
