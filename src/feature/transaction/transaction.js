@@ -377,12 +377,14 @@ const style = EStyleSheet.create({
     },
     rightView: {
         flex: 0.7,
+        backgroundColor:constantStyle.color2
         // borderLeftWidth: 1,
         // borderColor: constantStyle.colorBorder,
     },
     listItem: {
         flexDirection: 'row',
-        paddingVertical: constantStyle.sm
+        paddingVertical: constantStyle.sm,
+        backgroundColor:constantStyle.color2
 
     },
     listItemSelected: {

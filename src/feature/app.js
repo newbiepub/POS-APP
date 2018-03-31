@@ -1,5 +1,5 @@
 import React, {PureComponent} from "react";
-import {Platform, StatusBar, Alert, View, AsyncStorage} from "react-native";
+import {Platform, StatusBar, Alert, View, AsyncStorage, Dimensions} from "react-native";
 import {Navigator} from "react-native-deprecated-custom-components";
 import Login from './login/login';
 import POS from './pos/pos';
@@ -14,9 +14,11 @@ import Menu from '../component/menu/menu';
 import Popup from '../component/popup/popup';
 import {QUERY} from '../constant/query';
 import {client} from '../root';
+import {constantStyle} from '../style/base';
 
 EStyleSheet.build(); // Build Extended StyleSheet
 import {ASYNC_STORAGE} from '../constant/constant'
+import Display from 'react-native-display';
 
 class App extends PureComponent {
     constructor(props) {
@@ -81,8 +83,27 @@ class App extends PureComponent {
 }
 
 class Home extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.enter = "fadeIn";
+        let {width, height} = Dimensions.get('window');
+        this.state = {
+            width,
+            height
+        };
+        this.exit = "None";
+    }
+    async componentDidMount() {
+        Dimensions.addEventListener("change", () => {
+            let {width, height} = Dimensions.get('window');
+            this.setState({
+                width,
+                height
+            })
+        });
+    }
     checkLoginExpire(data) {
-        try{
+        try {
             if (data.error && data.error.networkError.statusCode === 500) {
                 Alert.alert(
                     'Thông báo !',
@@ -98,8 +119,7 @@ class Home extends PureComponent {
                 AsyncStorage.removeItem(ASYNC_STORAGE.AUTH_TOKEN);
                 this.props.navigator.resetTo({id: "login"})
             }
-        }catch(e)
-        {
+        } catch (e) {
             console.warn(e)
         }
 
@@ -109,36 +129,75 @@ class Home extends PureComponent {
     render() {
         return (
             <View style={{flex: 1}}>
-                {
-                    this.props.router.currentItem.id === this.props.router.menuItems[0].id &&
+                <View
+                    style={[style.container, {width: this.state.width, height: this.state.height},
+                        this.props.router.currentItem.id === this.props.router.menuItems[0].id ?
+                            style.onShow :
+                            style.onHide]}>
                     <POS checkLoginExpire={(data) => this.checkLoginExpire(data)}/>
-                }
-                {
-                    this.props.router.currentItem.id === this.props.router.menuItems[1].id &&
+                </View>
+
+                <View
+                    style={[style.container, {width: this.state.width, height: this.state.height},
+                        this.props.router.currentItem.id === this.props.router.menuItems[1].id ?
+                            style.onShow :
+                            style.onHide]}>
                     <Report/>
-                }
-                {
-                    this.props.router.currentItem.id === this.props.router.menuItems[2].id &&
+                </View>
+
+                <View
+                    style={[style.container, {width: this.state.width, height: this.state.height},
+                        this.props.router.currentItem.id === this.props.router.menuItems[2].id ?
+                            style.onShow :
+                            style.onHide]}>
                     <Transaction/>
-                }
-                {
-                    this.props.router.currentItem.id === this.props.router.menuItems[3].id &&
+                </View>
+
+                <View
+                    style={[style.container, {width: this.state.width, height: this.state.height},
+                        this.props.router.currentItem.id === this.props.router.menuItems[3].id ?
+                            style.onShow : style.onHide]}>
                     <Invoice/>
-                }
-                {
-                    this.props.router.currentItem.id === this.props.router.menuItems[4].id &&
+                </View>
+                <View
+                    style={[style.container, {width: this.state.width, height: this.state.height},
+                        this.props.router.currentItem.id === this.props.router.menuItems[4].id ?
+                            style.onShow :
+                            style.onHide]}>
                     <Inventory/>
-                }
-                {
-                    this.props.router.currentItem.id === this.props.router.menuItems[5].id &&
+                </View>
+                <View
+                    style={[style.container,{width: this.state.width, height: this.state.height},
+                        this.props.router.currentItem.id === this.props.router.menuItems[5].id ?
+                            style.onShow :
+                            style.onHide]}>
                     <Setting navigator={this.props.navigator}/>
-                }
+                </View>
+
+
                 <Popup/>
                 <Menu/>
             </View>
         )
     }
 }
+
+const style = EStyleSheet.create({
+    container: {
+        backgroundColor: constantStyle.colorBackground,
+        position: 'absolute',
+    },
+    onShow: {
+        zIndex: 5,
+
+    },
+    onHide: {
+        zIndex: 1,
+    }
+    ,
+    '@media (min-width: 768) and (max-width: 1024)': {},
+    '@media (min-width: 1024)': {}
+});
 
 const mapStateToProps = (state) => {
     return {

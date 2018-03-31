@@ -5,6 +5,7 @@ import {constantStyle} from '../../style/base';
 import {connect} from 'react-redux';
 import {closePopup} from './popupAction';
 import LoadingOverlay from '../loadingOverlay';
+import * as Animatable from 'react-native-animatable';
 
 class Popup extends React.Component {
     constructor(props) {
@@ -39,17 +40,25 @@ class Popup extends React.Component {
             >
                 <View style={style.container}>
                     <TouchableWithoutFeedback onPress={() => this.props.closePopup()}>
-                        <View style={{position: 'absolute',backgroundColor:"rgba(0,0,0,0.2)", width: this.state.width, height: this.state.height}}/>
+                        <View style={{
+                            position: 'absolute',
+                            backgroundColor: "rgba(0,0,0,0.2)",
+                            width: this.state.width,
+                            height: this.state.height
+                        }}/>
                     </TouchableWithoutFeedback>
-                    <View style={{
+                    <Animatable.View style={{
                         width: this.state.width > this.state.height ? this.state.width * 80 / 100 : this.state.width,
                         height: this.state.height,
                         backgroundColor: constantStyle.color2
-                    }}>
+                    }}
+                        animation={"zoomIn"}
+                                     duration={200}
+                    >
                         {this.props.popup.children}
 
                         <LoadingOverlay loading={this.props.popup.children == null}/>
-                    </View>
+                    </Animatable.View>
                 </View>
             </Modal>
         )

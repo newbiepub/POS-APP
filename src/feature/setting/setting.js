@@ -1,11 +1,21 @@
 import React from "react";
-import {ActivityIndicator, Alert, AsyncStorage, View, TouchableWithoutFeedback, Dimensions, ScrollView} from "react-native";
+import {
+    ActivityIndicator,
+    Alert,
+    AsyncStorage,
+    View,
+    TouchableWithoutFeedback,
+    Dimensions,
+    ScrollView
+} from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
 import {constantStyle} from '../../style/base';
 import {TextNormal, TextSmall} from '../../component/text';
 import {numberwithThousandsSeparator} from '../../reuseable/function/function';
 import Header from '../../component/header';
+import {client} from '../../root';
 import {ASYNC_STORAGE} from '../../constant/constant';
+
 class Setting extends React.Component {
     constructor(props) {
         super(props);
@@ -26,7 +36,8 @@ class Setting extends React.Component {
                     {
                         text: 'OK', onPress: async () => {
                         await AsyncStorage.removeItem(ASYNC_STORAGE.AUTH_TOKEN);
-                        this.props.navigator.resetTo({id: "login"})
+                        this.props.navigator.resetTo({id: "login"});
+                        client.resetStore()
                     }
 
                     },
@@ -90,8 +101,8 @@ const style = EStyleSheet.create({
         width: '100%',
         height: constantStyle.headerHeight,
         padding: constantStyle.md,
-        borderBottomColor:constantStyle.colorBorder,
-        borderBottomWidth:1,
+        borderBottomColor: constantStyle.colorBorder,
+        borderBottomWidth: 1,
     },
     itemText: {}
     ,

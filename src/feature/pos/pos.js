@@ -1,5 +1,5 @@
 import React, {PureComponent} from "react";
-import {Platform, StatusBar, Text, View, Image, TouchableOpacity, Alert, TouchableWithoutFeedback} from "react-native";
+import {Platform, StatusBar, Text, View, Image, TouchableOpacity, Dimensions, TouchableWithoutFeedback} from "react-native";
 import {TextNormal, TextLarge, TextSmall} from '../../component/text';
 import Header from '../../component/header';
 import EStyleSheet from "react-native-extended-stylesheet";
@@ -15,11 +15,25 @@ import Cart from '../../component/cart/cart';
 class POS extends PureComponent {
     constructor(props) {
         super(props);
+        let {width, height} = Dimensions.get('window');
         this.state = {
             clearSalesVisible: false,
             currentView: "gridProduct",
-
+            leftWidth:width * 0.7,
+            leftHeight:height
         }
+    }
+    async componentDidMount() {
+        Dimensions.addEventListener("change", () => {
+            let {width, height} = Dimensions.get('window');
+            this.setState({
+                leftWidth:width* 0.7,
+                leftHeight:height
+            })
+        });
+
+
+
     }
     render() {
        // console.warn(JSON.stringify(this.props.paymentStatus))
@@ -61,19 +75,20 @@ class POS extends PureComponent {
                 <View style={{flex: 1, flexDirection: "row"}}>
                     {/*---------------Left Side------------------------*/}
                     <View style={{flex: 0.7}}>
-                        {
-                            this.state.currentView === 'gridProduct' &&
+                        <View
+                            style={[style.body, {
+                                width: this.state.leftWidth,
+                                height: this.state.leftHeight
+                            }, this.state.currentView === 'gridProduct' ? style.onShow : style.onHide]}>
                             <GridProduct checkLoginExpire={(data) => this.props.checkLoginExpire(data)}/>
-                        }
-                        {
-                            this.state.currentView === 'library' &&
-                            <Library/>
-                        }
-                        {
-                            this.state.currentView === 'customAmount' &&
+                        </View>
+                        <View
+                            style={[style.body, {
+                                width: this.state.leftWidth,
+                                height: this.state.leftHeight
+                            }, this.state.currentView === 'customAmount' ? style.onShow : style.onHide]}>
                             <CustomAmount/>
-                        }
-
+                        </View>
                     </View>
                     {/*---------------Right Side------------------------*/}
                     <View style={{flex: 0.3, borderLeftColor: constantStyle.colorBorder, borderLeftWidth: 1}}>
@@ -93,6 +108,16 @@ const style = EStyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: constantStyle.colorBackground
+    },
+    body: {
+        backgroundColor: constantStyle.colorBackground,
+        position: 'absolute',
+    },
+    onShow: {
+        zIndex: 5,
+    },
+    onHide: {
+        zIndex: 1,
     },
     tabView: {
         flex: 1,

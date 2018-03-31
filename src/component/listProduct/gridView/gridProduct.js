@@ -38,12 +38,12 @@ class GridProduct extends React.Component {
         };
         this.state.gridViewItemSize = ((width * this.gridWidthPercent) / 100 - 20 - constantStyle.headerHeight) / this.state.columnNumber;
         this.props.length = 0;
+
     }
 
     async componentDidMount() {
         Dimensions.addEventListener("change", () => {
             let {width, height} = Dimensions.get('window');
-
         });
         // for (let i = 0; i < _.get(this.props, "inventoryAmount.getAmountUserProductInventory.inventoryAmount", 100); i = i + 10) {
         //     await client.query({
@@ -166,13 +166,6 @@ class GridProduct extends React.Component {
         })
     }
 
-    getNumberColumn() {
-        if (this.state.gridViewWidth > 768) {
-            return 3
-        }
-        return 2
-    }
-
     render() {
         this.props.checkLoginExpire(this.props.inventoryProduct);
         let data = this.filterByCategory();
@@ -188,8 +181,8 @@ class GridProduct extends React.Component {
                         <FlatList
                             data={data}
                             extraData={this.props}
-                            numColumns={this.getNumberColumn()}
-                            initialNumToRender={4}
+                            numColumns={this.state.columnNumber}
+                            initialNumToRender={1}
                             keyExtractor={(item) => item.product._id}
                             contentContainerStyle={style.gridView}
                             ListEmptyComponent={this._listEmptyComponent}
