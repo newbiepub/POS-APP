@@ -7,7 +7,7 @@ const initialState = {
         {id: 'invoice', name: 'Hoá đơn'},
         {id: 'inventory', name: 'Kho'},
         {id: 'setting', name: 'Cài đặt'},],
-
+    isLoading: false,
     menuVisible: false
 };
 initialState.currentItem = initialState.menuItems[0];
@@ -17,14 +17,16 @@ export default function (state = initialState, action = {}) {
         case MENU_ACTION.CHANGE_ROUTE: {
             return {
                 ...state,
-                currentItem: action.payload
+                currentItem: action.payload,
+                isLoading:false
             }
         }
 
         case MENU_ACTION.SWITCH_MENU: {
             return {
                 ...state,
-                menuVisible: !state.menuVisible
+                menuVisible: !state.menuVisible,
+                isLoading: action.payload
             }
         }
         default:

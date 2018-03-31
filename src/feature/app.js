@@ -14,6 +14,8 @@ import Menu from '../component/menu/menu';
 import Popup from '../component/popup/popup';
 import {QUERY} from '../constant/query';
 import {client} from '../root';
+import * as Animatable from 'react-native-animatable';
+import LoadingOverlay from '../component/loadingOverlay';
 
 EStyleSheet.build(); // Build Extended StyleSheet
 import {ASYNC_STORAGE} from '../constant/constant'
@@ -122,6 +124,10 @@ class Home extends PureComponent {
                                         this.props.router.currentItem.id === this.props.router.menuItems[5].id &&
                                         <Setting navigator={this.props.navigator}/>
 
+                }
+                {
+                    this.props.router.isLoading &&
+                    <LoadingOverlay loading={true}/>
                 }
                 <Popup/>
                 <Menu/>

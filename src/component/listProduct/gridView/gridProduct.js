@@ -185,7 +185,10 @@ class GridProduct extends React.Component {
                             data={data}
                             extraData={this.props}
                             numColumns={this.state.columnNumber}
-                            initialNumToRender={1}
+                            initialNumToRender={3}
+                            getItemLayout={(data, index) => (
+                                {length: 6, offset: 30 * index, index}
+                            )}
                             keyExtractor={(item) => item.product._id}
                             contentContainerStyle={style.gridView}
                             ListEmptyComponent={this._listEmptyComponent}

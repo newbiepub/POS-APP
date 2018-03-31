@@ -4,7 +4,7 @@ import {
     FlatList,
     Text,
     View,
-    Image,
+    InteractionManager,
     TouchableOpacity,
     Dimensions,
     ScrollView
@@ -37,19 +37,27 @@ class Menu extends PureComponent {
     }
 
     changeRoute(item) {
-        this.props.switchMenu();
-        this.props.changeRoute(item)
+        this.props.switchMenu(true);
+        InteractionManager.runAfterInteractions(() => {
+            this.props.changeRoute(item)
+        });
+
     }
 
-    _MenuItem = ({item}) => (
-        <TouchableOpacity onPress={() => this.changeRoute(item)}>
-            <View
-                style={[style.menuItemWrapper, this.props.currentItem.id === item.id && {backgroundColor: constantStyle.color2}]}>
-                <TextLarge
-                    style={[style.menuItemText, this.props.currentItem.id === item.id && {color: constantStyle.color1}]}>{item.name}</TextLarge>
-            </View>
-        </TouchableOpacity>
-    )
+    _MenuItem = ({item}) => {
+        if (!item.disable) {
+            return (
+                <TouchableOpacity onPress={() => this.changeRoute(item)}>
+                    <View
+                        style={[style.menuItemWrapper, this.props.currentItem.id === item.id && {backgroundColor: constantStyle.color2}]}>
+                        <TextLarge
+                            style={[style.menuItemText, this.props.currentItem.id === item.id && {color: constantStyle.color1}]}>{item.name}</TextLarge>
+                    </View>
+                </TouchableOpacity>
+            )
+        }
+
+    }
 
 
     render() {

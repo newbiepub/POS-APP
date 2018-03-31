@@ -7,9 +7,10 @@ function changeRouteAction(payload) {
     }
 }
 
-function switchMenuAction() {
+function switchMenuAction(isLoading) {
     return {
         type: MENU_ACTION.SWITCH_MENU,
+        payload: isLoading
     }
 }
 
@@ -24,10 +25,10 @@ export function changeRoute(route) {
     }
 }
 
-export function switchMenu() {
+export function switchMenu(isLoading) {
     return async (dispatch, getState) => {
         try {
-            dispatch(switchMenuAction())
+            dispatch(switchMenuAction(isLoading))
 
         } catch (e) {
             console.warn(e);
