@@ -2,10 +2,10 @@ import {MENU_ACTION} from '../../constant/constant';
 
 const initialState = {
     menuItems: [{id: 'pos', name: 'Điểm bán hàng'},
-        {id: 'report', name: 'Thống kê'},
+        {id: 'report', name: 'Thống kê',disable:true},
         {id: 'transaction', name: 'Giao dịch'},
-        {id: 'invoice', name: 'Hoá đơn'},
-        {id: 'inventory', name: 'Kho'},
+        {id: 'invoice', name: 'Hoá đơn',disable:true},
+        {id: 'inventory', name: 'Kho',disable:true},
         {id: 'setting', name: 'Cài đặt'},],
     isLoading: false,
     menuVisible: false
