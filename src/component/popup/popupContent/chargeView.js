@@ -238,7 +238,7 @@ class ChargeView extends React.Component {
                             productItems = await normalizeProductItemsInput(this.state.transaction.productItems);
                         // console.warn(paymentStatus);
                         this.subtractInventoryLocal();
-                        await this.props.createTransaction({
+                         this.props.createTransaction({
                             variables: {
                                 productItems: productItems,
                                 type: "pay",
@@ -253,23 +253,23 @@ class ChargeView extends React.Component {
 
                             }
                         });
-                        this.addTransactionLocal({
-                            __typename: "Transaction",
-                            _id: Math.round(Math.random() * -1000000).toString(),
-                            createdAt: new Date(),
-                            productItems: productItems,
-                            type: "pay",
-                            paymentStatus: paymentStatus,
-                            paymentMethod: paymentMethod,
-                            dueDate: this.state.transaction.dueDate,
-                            totalQuantity: this.state.transaction.totalQuantity,
-                            totalPrice: this.state.transaction.totalPrice,
-                            issueRefund: false,
-                            issueRefundReason: "",
-                            paid: {date: new Date(), amount: this.state.transaction.paid},
-                            description: this.state.transaction.description,
-                            customer: this.state.transaction.customer,
-                        });
+                        // this.addTransactionLocal({
+                        //     __typename: "Transaction",
+                        //     _id: Math.round(Math.random() * -1000000).toString(),
+                        //     createdAt: new Date(),
+                        //     productItems: productItems,
+                        //     type: "pay",
+                        //     paymentStatus: paymentStatus,
+                        //     paymentMethod: paymentMethod,
+                        //     dueDate: this.state.transaction.dueDate,
+                        //     totalQuantity: this.state.transaction.totalQuantity,
+                        //     totalPrice: this.state.transaction.totalPrice,
+                        //     issueRefund: false,
+                        //     issueRefundReason: "",
+                        //     paid: {date: new Date(), amount: this.state.transaction.paid},
+                        //     description: this.state.transaction.description,
+                        //     customer: this.state.transaction.customer,
+                        // });
                         this.props.clearCart();
                         this.props.closePopup();
                     }

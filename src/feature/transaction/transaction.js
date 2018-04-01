@@ -2,7 +2,7 @@ import React from "react";
 import {
     ActivityIndicator,
     ScrollView,
-    FlatList,
+    RefreshControl,
     View,
     TouchableWithoutFeedback,
     Dimensions,
@@ -37,6 +37,7 @@ class Transaction extends React.Component {
         ];
         let {width, height} = Dimensions.get('window');
         this.state = {
+            refreshing: false,
             selectedTransaction: {},
             currentTransactionOption: this.transactionOptionItems[0],
             transactionOptionVisible: false,
@@ -165,6 +166,19 @@ class Transaction extends React.Component {
             this.props.openPopup(<UpdateTransaction transaction={this.state.selectedTransaction}/>)
     }
 
+    async _onRefresh() {
+        // console.warn('refreshing');
+        await this.setState({
+            refreshing: true
+        });
+        await this.props.transaction.refetch();
+        this.setState({
+            refreshing: false,
+            selectedTransaction:{}
+        })
+
+    }
+
     render() {
         let currentTransaction = this.state.selectedTransaction;
         let totalPaid = this.state.selectedTransaction._id ? this.getTotalPaid(this.state.selectedTransaction.paid) : 0;
@@ -208,12 +222,12 @@ class Transaction extends React.Component {
 
                     <View style={style.leftView}>
                         <SectionList
-                            // refreshControl={
-                            //     <RefreshControl
-                            //         refreshing={this.state.refreshing}
-                            //         onRefresh={this._onRefresh.bind(this)}
-                            //     />
-                            // }
+                            refreshControl={
+                                <RefreshControl
+                                    refreshing={this.state.refreshing}
+                                    onRefresh={this._onRefresh.bind(this)}
+                                />
+                            }
                             renderItem={this._renderListTransactionBody}
                             renderSectionHeader={this._renderListTransactionHeader}
                             keyExtractor={(item) => item._id}
@@ -271,14 +285,15 @@ class Transaction extends React.Component {
                                     }
                                     <View style={[style.spaceLine]}>
                                         <TextNormal style={{textAlign: 'justify'}}>
-                                           Lịch sử thanh toán:</TextNormal>
+                                            Tiền nhận:</TextNormal>
                                         {
-                                            this.state.selectedTransaction.paid.map((item,index)=>{
-                                                return(
+                                            this.state.selectedTransaction.paid.map((item, index) => {
+                                                return (
                                                     <View key={index} style={style.transactionPaidItem}>
                                                         <TextNormal style={style.transactionPaidDate}>
                                                             {moment(item.date).format(`DD/MM/YYYY: hh:mm a`)}</TextNormal>
-                                                        <TextNormal style={style.transactionPaidIAmount}>{numberwithThousandsSeparator(item.amount)} {_.get(this.props.currency, "currency[0].symbol", "")}</TextNormal>
+                                                        <TextNormal
+                                                            style={style.transactionPaidIAmount}>{numberwithThousandsSeparator(item.amount)} {_.get(this.props.currency, "currency[0].symbol", "")}</TextNormal>
                                                     </View>
                                                 )
                                             })
@@ -377,14 +392,14 @@ const style = EStyleSheet.create({
     },
     rightView: {
         flex: 0.7,
-        backgroundColor:constantStyle.color2
+        backgroundColor: constantStyle.color2
         // borderLeftWidth: 1,
         // borderColor: constantStyle.colorBorder,
     },
     listItem: {
         flexDirection: 'row',
         paddingVertical: constantStyle.sm,
-        backgroundColor:constantStyle.color2
+        backgroundColor: constantStyle.color2
 
     },
     listItemSelected: {
@@ -425,18 +440,16 @@ const style = EStyleSheet.create({
         paddingHorizontal: constantStyle.md
     },
     transactionCustomerDetailText: {
-        paddingLeft:constantStyle.lg
+        paddingLeft: constantStyle.lg
     },
-    transactionPaidItem:{
-        flexDirection:'row',
-        flex:1
+    transactionPaidItem: {
+        flexDirection: 'row',
+        flex: 1
     },
-    transactionPaidIAmount:{
-
-    },
-    transactionPaidDate:{
-        flex:1,
-        paddingLeft:constantStyle.lg
+    transactionPaidIAmount: {},
+    transactionPaidDate: {
+        flex: 1,
+        paddingLeft: constantStyle.lg
     },
     '@media (min-width: 768) and (max-width: 1024)': {},
     '@media (min-width: 1024)': {}

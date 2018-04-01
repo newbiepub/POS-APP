@@ -37,7 +37,7 @@ class ListProduct extends React.Component {
                 </View>
                 <View style={style.itemPrice}>
                     <TextNormal numberOfLines={1}
-                        style={style.itemPriceText}>{numberwithThousandsSeparator(item.totalPrice)} {_.get(item,"price.currency.symbol","")}</TextNormal>
+                        style={style.itemPriceText}>{numberwithThousandsSeparator(item.price.price)} {_.get(item,"price.currency.symbol","")}</TextNormal>
                 </View>
             </View>
 
@@ -47,12 +47,14 @@ class ListProduct extends React.Component {
         let totalPrice = 0;
         for(items of products)
         {
+
             totalPrice += items.totalPrice
         }
         return totalPrice
     }
     render() {
         let data = this.props.data;
+        console.warn(data)
         return (
             <View style={style.container}>
                 <FlatList
@@ -97,6 +99,7 @@ const style = EStyleSheet.create({
         paddingVertical: constantStyle.paddingVerticalSmall,
         paddingHorizontal: constantStyle.paddingHorizontal,
         flexDirection: 'row',
+        alignItems:'center',
         flex: 1,
     },
     itemNameText: {
@@ -108,7 +111,7 @@ const style = EStyleSheet.create({
         paddingVertical: constantStyle.paddingVerticalSmall,
         paddingHorizontal: constantStyle.paddingHorizontal,
         marginLeft: constantStyle.marginVerticalSmall,
-        justifyContent: 'flex-end',
+        justifyContent: 'center',
         // borderWidth: 1,
         // borderColor: constantStyle.colorBorder
     },

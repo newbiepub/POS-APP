@@ -7,7 +7,7 @@ import {
     TouchableWithoutFeedback,
     Dimensions,
     Easing,
-    Animated,
+    RefreshControl,
     Alert
 } from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
@@ -34,7 +34,8 @@ class GridProduct extends React.Component {
             height,
             columnNumber: 3,
             categoryFilter: 'all',
-            searchText: ''
+            searchText: '',
+            refreshing: false
         };
         this.state.gridViewItemSize = ((width * this.gridWidthPercent) / 100 - 20 - constantStyle.headerHeight) / this.state.columnNumber;
         this.props.length = 0;
@@ -77,12 +78,16 @@ class GridProduct extends React.Component {
                 if (this.props.inventoryProduct && this.props.inventoryProduct.getUserProductInventory) {
                     this.props.inventoryProduct.getUserProductInventory.forEach((item) => {
 
-                        if (item.product.categoryId._id === this.state.categoryFilter) {
-                            if (item.product.name.includes(this.state.searchText)) {
-                                data.push(item)
+                        if (item.product.categoryId) {
+                            if (item.product.categoryId._id === this.state.categoryFilter) {
+                                if (item.product.name.includes(this.state.searchText)) {
+                                    data.push(item)
+                                }
                             }
                         }
+
                         if (this.state.categoryFilter === 'all') {
+
                             if (item.product.name.includes(this.state.searchText)) {
                                 data.push(item)
                             }
@@ -94,7 +99,7 @@ class GridProduct extends React.Component {
 
             }
         } catch (e) {
-            console.warn(e);
+            console.warn("filter-category" + e);
             return []
         }
 
@@ -109,6 +114,17 @@ class GridProduct extends React.Component {
 
     onClickProduct(item) {
         this.props.openPopup(<ViewProduct item={item}/>)
+    }
+    async _onRefresh() {
+        // console.warn('refreshing');
+        await this.setState({
+            refreshing: true
+        });
+        await this.props.inventoryProduct.refetch();
+        this.setState({
+            refreshing: false
+        })
+
     }
 
     _renderItem = ({item}) => (
@@ -158,7 +174,7 @@ class GridProduct extends React.Component {
         }}/>
     );
     _renderFooter = () => (
-       <View style={{height:90}}/>
+        <View style={{height: 90}}/>
     );
 
     onLayout(event) {
@@ -172,8 +188,6 @@ class GridProduct extends React.Component {
     render() {
         this.props.checkLoginExpire(this.props.inventoryProduct);
         let data = this.filterByCategory();
-        // console.warn(this.props.inventoryProduct)
-        // console.warn(this.props.inventoryProduct)
         return (
             <View style={style.container} onLayout={(event) => this.onLayout(event)}>
                 {/*View category*/}
@@ -182,6 +196,12 @@ class GridProduct extends React.Component {
                 {
                     data !== [] ?
                         <FlatList
+                            refreshControl={
+                                <RefreshControl
+                                    refreshing={this.state.refreshing}
+                                    onRefresh={this._onRefresh.bind(this)}
+                                />
+                            }
                             data={data}
                             extraData={this.props}
                             numColumns={this.state.columnNumber}

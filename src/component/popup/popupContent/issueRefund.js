@@ -12,7 +12,7 @@ import {QUERY} from '../../../constant/query';
 import {MUTATION, FRAGMENT} from '../../../constant/mutation';
 import {Navigator} from "react-native-deprecated-custom-components";
 import Moment from '../../moment';
-import {normalizeProductItemsInput,} from '../../../reuseable/function/normalizeData';
+import {normalizeProductItemsIssueRefund,} from '../../../reuseable/function/normalizeData';
 import MyDatePicker from '../../datePicker/datePicker';
 import ListProduct from '../../listProduct/listProduct';
 import LoadingOverlay from '../../loadingOverlay';
@@ -70,7 +70,7 @@ class IssueRefund extends React.Component {
                                     _id: this.props.id,
                                     issueRefundReason: this.state.reason,
                                     refundDate: new Date(),
-                                    productItems: normalizeProductItemsInput(this.props.productItems)
+                                    productItems: normalizeProductItemsIssueRefund(this.props.productItems)
                                 }
                             }
                         );
@@ -91,7 +91,6 @@ class IssueRefund extends React.Component {
             <View style={style.container}>
                 <PopupHeader
                     title={"Xác nhận trả hàng"}
-
                     submitFunction={() => {
                         this.onIssueRefund()
                     }}

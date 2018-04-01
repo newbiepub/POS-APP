@@ -31,6 +31,36 @@ export function normalizeProductItemsInput(data) {
     }
     return result
 }
+export function normalizeProductItemsIssueRefund(data) {
+    let result = [];
+    for (items of data) {
+        let newItem;
+        if (items.hasOwnProperty("customAmount")) {
+            newItem = {
+                productName: items.name || items.productName,
+                quantity: items.quantity,
+                price: getPriceInput(items.price),
+                totalPrice: items.totalPrice,
+                unit: items.unit,
+                discount: items.discount || null
+            };
+        } else {
+            newItem = {
+                productId: items.productId,
+                productName: items.name || items.productName,
+                quantity: items.quantity,
+                price: getPriceInput(items.price),
+                totalPrice: items.totalPrice,
+                unit: items.unit,
+                discount: items.discount || null
+            };
+        }
+
+        newItem.price.currency = removeTypeName(newItem.price.currency);
+        result.push(newItem)
+    }
+    return result
+}
 
 function getPriceInput(price){
     const result =  Object.assign({}, removeTypeName(price));

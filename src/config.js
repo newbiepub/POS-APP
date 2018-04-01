@@ -1,3 +1,3 @@
 export default {
-    api: "https://posappapi.herokuapp.com"
+    api: "http://localhost:3000"
 }

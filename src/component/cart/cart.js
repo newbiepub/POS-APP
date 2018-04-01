@@ -149,10 +149,13 @@ class Cart extends PureComponent {
                                     <View style={style.cartItem}>
                                         <View style={style.cartItemTitle}>
                                             <TextNormal>{item.name}</TextNormal>
-                                            {
-                                                item.quantity > 1 &&
-                                                <TextSmall style={{color: 'gray'}}>x{item.quantity}</TextSmall>
-                                            }
+                                            <View style={{flexDirection:'row'}}>
+                                                {
+                                                    item.quantity > 1 &&
+                                                    <TextSmall style={{color: 'gray'}}>x{item.quantity} </TextSmall>
+                                                }
+                                                <TextSmall> {numberwithThousandsSeparator(item.price.price)}{item.price.currency.symbol}</TextSmall>
+                                            </View>
 
                                         </View>
                                         <TextSmall>{numberwithThousandsSeparator(item.totalPrice)}{item.price.currency.symbol}</TextSmall>
@@ -219,7 +222,7 @@ const style = EStyleSheet.create({
         alignItems: 'center'
     },
     cartItemTitle: {
-        flex: 1
+        flex: 1,
     },
     buttonChargeText: {
         color: constantStyle.color2

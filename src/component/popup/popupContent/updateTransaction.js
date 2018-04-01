@@ -32,10 +32,8 @@ class UpdateTransaction extends React.Component {
             currentView: "main",
             transaction: this.props.transaction,
             paid: 0
-
-
         }
-
+// console.warn(this.props.transaction)
     }
 
     componentDidMount() {
@@ -59,7 +57,8 @@ class UpdateTransaction extends React.Component {
         switch (route.id) {
             case "main":
                 return <Main navigator={navigator} transaction={this.state.transaction} instance={this}
-                             cart={this.props.cart}/>;
+                             cart={this.props.cart} totalPaid={this.getTotalPaid(this.state.transaction.paid)}
+                             currency={this.props.currency}/>;
 
             case "selectDueDate":
                 return <SelectDueDate navigator={navigator} instance={this}
@@ -76,7 +75,6 @@ class UpdateTransaction extends React.Component {
         for (itemsPaid of paid) {
             price = price + itemsPaid.amount;
         }
-
         return price
     }
 
@@ -85,18 +83,6 @@ class UpdateTransaction extends React.Component {
         return true;
     }
 
-    subtractInventoryLocal() {
-        this.state.transaction.productItems.forEach(item => {
-            client.writeFragment({
-                id: item._id,
-                fragment: FRAGMENT.INVETORY_PRODUCT,
-                data: {
-                    quantity: 100,
-                    __typename: "ProductInventoryEmployee"
-                },
-            });
-        });
-    }
 
     async onCharge() {
 
@@ -219,6 +205,7 @@ class Main extends React.Component {
                     <TextNormal style={[style.spaceLine]}>Hạn thanh
                         toán:{this.props.instance.state.transaction.dueDate && Moment(this.props.instance.state.transaction.dueDate).format("dddd [ngày] DD MMMM [năm] YYYY")}</TextNormal>
                 </TouchableWithoutFeedback>
+                <TextNormal style={[style.spaceLine]}>Tiền còn thiếu: {numberwithThousandsSeparator(this.props.transaction.totalPrice-this.props.totalPaid)} {_.get(this.props.currency, "currency[0].symbol", "")}</TextNormal>
                 <View style={style.spaceLine}>
                     <View style={[{flexDirection: 'row'}]}>
                         <TextNormal>Tiền nhận:</TextNormal>
