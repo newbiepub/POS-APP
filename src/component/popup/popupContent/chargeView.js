@@ -20,7 +20,7 @@ import {clearCart} from '../../cart/cartAction';
 import _ from 'lodash';
 import {client} from '../../../root';
 import gql from 'graphql-tag';
-
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 class ChargeView extends React.Component {
     constructor(props) {
         super(props);
@@ -318,6 +318,7 @@ class ChargeView extends React.Component {
                         configureScene={this.configureScene.bind(this)}
                         renderScene={this.renderScene.bind(this)}
                     />
+                    <KeyboardSpacer/>
                 </View>
                 <LoadingOverlay ref={ref => {
                     if (this.chargeProgressing === null) this.chargeProgressing = ref

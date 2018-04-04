@@ -19,7 +19,7 @@ import LoadingOverlay from '../component/loadingOverlay';
 
 EStyleSheet.build(); // Build Extended StyleSheet
 import {ASYNC_STORAGE} from '../constant/constant'
-
+import {getProfile } from './login/userAction';
 class App extends PureComponent {
     constructor(props) {
         super(props);
@@ -28,7 +28,6 @@ class App extends PureComponent {
             firstScene: 'login'
         }
     }
-
     configureScene(route, navigator) {
         if (route.id === "home") {
             return Navigator.SceneConfigs.FadeAndroid
@@ -49,7 +48,6 @@ class App extends PureComponent {
     async ensuringLogined() {
         let authToken = await AsyncStorage.getItem(ASYNC_STORAGE.AUTH_TOKEN);
         if (authToken != undefined) {
-            // console.warn(authToken);
             this.navigator.resetTo({id: "home"})
 
 
@@ -57,6 +55,7 @@ class App extends PureComponent {
     }
 
     async componentWillMount() {
+
         this.ensuringLogined()
     }
 
@@ -83,6 +82,7 @@ class App extends PureComponent {
 }
 
 class Home extends PureComponent {
+
     checkLoginExpire(data) {
         try {
             if (data.error && data.error.networkError.statusCode === 500) {
@@ -141,5 +141,8 @@ const mapStateToProps = (state) => {
         router: state.menuReducer
     }
 }
+const mapDispatchToProps ={
+    getProfile
+}
 
-export default connect(mapStateToProps, null)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

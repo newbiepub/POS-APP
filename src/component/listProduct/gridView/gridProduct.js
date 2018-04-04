@@ -42,6 +42,10 @@ class GridProduct extends React.Component {
 
     }
 
+    componentWillMount() {
+
+    }
+
     async componentDidMount() {
         Dimensions.addEventListener("change", () => {
             let {width, height} = Dimensions.get('window');
@@ -56,7 +60,7 @@ class GridProduct extends React.Component {
         //         },
         //     })
         // }
-
+        console.warn(this.props.userId)
 
     }
 
@@ -115,6 +119,7 @@ class GridProduct extends React.Component {
     onClickProduct(item) {
         this.props.openPopup(<ViewProduct item={item}/>)
     }
+
     async _onRefresh() {
         // console.warn('refreshing');
         await this.setState({
@@ -284,7 +289,12 @@ let GridProductApollo = compose(
         })
     })
 )(GridProduct);
+const mapStateToProps = (state) => {
+    return {
+        userId: state.userReducer
+    }
+};
 const mapDispatchToProps = {
     openPopup
 };
-export default connect(null, mapDispatchToProps)(GridProductApollo);
+export default connect(mapStateToProps, mapDispatchToProps)(GridProductApollo);

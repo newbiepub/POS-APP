@@ -30,7 +30,7 @@ class ListProduct extends React.Component {
         <View style={style.itemWrapper}>
             <View style={style.item}>
                 <View style={style.itemName}>
-                    <TextNormal numberOfLines={1}
+                    <TextNormal
                         style={[style.itemNameText,{flex:1}]}>{item.name|| item.productName}</TextNormal>
                     <TextNormal numberOfLines={1}
                                 style={style.itemNameText}>{item.quantity > 1 && ` x${item.quantity}`}</TextNormal>
@@ -54,7 +54,7 @@ class ListProduct extends React.Component {
     }
     render() {
         let data = this.props.data;
-        console.warn(data)
+        // console.warn(data)
         return (
             <View style={style.container}>
                 <FlatList

@@ -6,6 +6,9 @@ import config from '../../config';
 import {ASYNC_STORAGE} from '../../constant/constant';
 import {constantStyle} from '../../style/base';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
+import {connect} from 'react-redux';
+
+import{ getProfile} from "./userAction";
 
 class Login extends PureComponent {
     constructor(props) {
@@ -69,6 +72,7 @@ class Login extends PureComponent {
         } else {
             await AsyncStorage.setItem(ASYNC_STORAGE.AUTH_TOKEN, JSON.stringify(response));
             this.props.navigator.resetTo({id: "home"});
+            this.props.getProfile();
             console.warn(JSON.stringify(response))
         }
 
@@ -120,4 +124,7 @@ const style = EStyleSheet.create({
     '@media (min-width: 1024)': {}
 });
 
-export default Login;
+const mapDispatchToProps = {
+    getProfile
+}
+export default connect(null,mapDispatchToProps)(Login) ;

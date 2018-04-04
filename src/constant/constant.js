@@ -14,5 +14,7 @@ export const CART_ACTION = {
     ADD_TO_CART: "ADD_TO_CART",
     REMOVE_FROM_CART: 'REMOVE_FROM_CART',
     CLEAN_CART: "CLEAN_CART"
-
+};
+export const USER = {
+    GET_PROFILE_USER: "GET_PROFILE_USER"
 };

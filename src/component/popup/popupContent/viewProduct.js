@@ -11,7 +11,7 @@ import {numberwithThousandsSeparator} from "../../../reuseable/function/function
 import {graphql} from 'react-apollo';
 import {QUERY} from '../../../constant/query';
 import _ from 'lodash';
-
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 class ViewProduct extends React.Component {
     constructor(props) {
         super(props);
@@ -199,7 +199,7 @@ class ViewProduct extends React.Component {
                             </View>
                         </TouchableWithoutFeedback>
                     }
-
+                    <KeyboardSpacer/>
                 </ScrollView>
             </View>
         )
