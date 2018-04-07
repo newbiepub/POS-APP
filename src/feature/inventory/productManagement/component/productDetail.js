@@ -1,47 +1,40 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {StyleSheet, Animated} from "react-native";
-import {View, Text} from "@shoutem/ui";
+import {StyleSheet, InteractionManager, ScrollView} from "react-native";
+import {Text, View} from "@shoutem/ui";
 import styleBase from "../../../../styles/base";
-import isEquals from 'lodash/isEqual';
+import NavBar from "../../../../component/navbar/navbar";
+import {equals} from "../../../../utils/utils";
 
-class ProductItemCollapse extends React.Component {
+class ProductDetail extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             item: this.props.item,
-            height: new Animated.Value(0),
         };
 
         this.handleData = this.handleData.bind(this);
         this.renderProductInfo = this.renderProductInfo.bind(this);
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        let heightChanged = this.state.height !== nextState.height;
-        let itemChanged   = !isEquals(this.state.item, nextState.item);
+    componentDidMount() {
+        InteractionManager.runAfterInteractions(() => {
+            this.setState({
+                item: this.props.item.product
+            })
+        })
+    }
 
-        return heightChanged || itemChanged;
+    shouldComponentUpdate(nextProps, nextState) {
+        let itemChanged   = !equals(this.state.item, nextState.item);
+
+        return itemChanged;
     }
 
     componentWillReceiveProps (nextProps) {
         this.setState({
-            item: nextProps.item
+            item: nextProps.item.product
         })
-    }
-
-    showCollapse() {
-        Animated.spring(this.state.height, {
-            toValue: 150,
-            friction: 7
-        }).start();
-    }
-
-    closeCollapse() {
-        Animated.timing(this.state.height, {
-            toValue: 0,
-            duration: 200
-        }).start();
     }
 
     /**
@@ -76,11 +69,11 @@ class ProductItemCollapse extends React.Component {
             },
             {
                 label: "GIÁ NHẬP VÀO",
-                value: `${data.importPrice.toLocaleString('vi')} ${data.currency}`
+                value: `${data.importPrice.seperateNumber()} ${data.currency}`
             },
             {
                 label: "GIÁ BÁN RA",
-                value: `${data.salesPrice.toLocaleString('vi')} ${data.currency}`
+                value: `${data.salesPrice.seperateNumber()} ${data.currency}`
             },
             {
                 label: "LOẠI HÀNG",
@@ -94,23 +87,18 @@ class ProductItemCollapse extends React.Component {
         let info = this.renderProductInfo(data);
 
         return (
-            <Animated.View style={{
-                ...StyleSheet.flatten([{
-                    height: this.state.height,
-                    overflow: 'hidden'
-                }, styleBase.bgE5, styleBase.m_md_horizontal])
-            }}>
-                {info.length > 0 &&
+            <View style={StyleSheet.flatten([styleBase.container])}>
+                <NavBar navigator={this.props.navigator} title={this.props.title}/>
+                <ScrollView>
+                    {info.length > 0 &&
                     info.map((item, index) => {
                         return (
-                            <View key={index} style={{
-                                ...StyleSheet.flatten([
-                                    styleBase.container,
-                                    styleBase.row,
-                                    styleBase.p_md_horizontal,
-                                    styleBase.m_md_vertical
-                                ])
-                            }}>
+                            <View key={index} style={StyleSheet.flatten([
+                                styleBase.container,
+                                styleBase.row,
+                                styleBase.p_md_horizontal,
+                                styleBase.m_md_vertical
+                            ])}>
                                 <View style={{...StyleSheet.flatten([{flex: .5}, styleBase.center])}}>
                                     <Text style={{...StyleSheet.flatten([styleBase.fontBold])}}>
                                         {item.label}
@@ -124,14 +112,15 @@ class ProductItemCollapse extends React.Component {
                             </View>
                         )
                     })
-                }
-            </Animated.View>
+                    }
+                </ScrollView>
+            </View>
         )
     }
 }
 
-ProductItemCollapse.propTypes = {
+ProductDetail.propTypes = {
     item: PropTypes.object
 };
 
-export default ProductItemCollapse
+export default ProductDetail

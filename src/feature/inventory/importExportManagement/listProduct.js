@@ -1,13 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {StyleSheet} from "react-native";
-import { graphql } from "react-apollo";
 import {View, Spinner} from "@shoutem/ui";
 import styleBase from "../../../styles/base";
 import {getProductInventory} from "../productManagement/action/productManagementAction";
 import NoData from "../../../component/noData/noData";
 import Table from "../../../component/table/table";
 import {exportActionFields} from "../../../utils/tableFields";
+import { connect } from "react-redux";
 
 /**
  * List Component Item
@@ -69,15 +69,10 @@ ListExportProducts.propTypes = {};
 
 ListExportProducts.defaultProps = {};
 
-export default graphql(getProductInventory, {
-    options: (props) => {
-        return {
-            variables: {
-                type: props.type,
-                userId: props.user._id
-            },
-            fetchPolicy: "cache-and-network"
-        }
-    },
-    name: "listProduct"
-})(ListExportProducts);
+const mapStateToProps = (state) => {
+    return {
+
+    }
+};
+
+export default ListExportProducts

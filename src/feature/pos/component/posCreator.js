@@ -5,9 +5,8 @@ import styleBase from "../../../styles/base";
 import {closePopup} from "../../../component/popup/actions/popupAction";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import PropTypes from "prop-types";
-import * as _ from "lodash";
-import {graphql} from "react-apollo";
 import {createPOS, getAllPOS} from "../action/posAction";
+import {pick} from "../../../utils/utils";
 
 class POSCreator extends React.Component {
     constructor(props) {
@@ -179,15 +178,15 @@ class POSForm extends React.Component {
     };
 
     getMessageValidator() {
-        return _.pick(this.state, this.props.fields.map(item => `messageValidator${item.fieldName}`));
+        return pick(this.state, this.props.fields.map(item => `messageValidator${item.fieldName}`));
     }
 
     getFormValidation() {
-        return _.pick(this.state, this.props.fields.map(item => `validator${item.fieldName}`));
+        return pick(this.state, this.props.fields.map(item => `validator${item.fieldName}`));
     }
 
     getValue() {
-        return _.pick(this.state, this.props.fields.map(item => item.fieldName));
+        return pick(this.state, this.props.fields.map(item => item.fieldName));
     }
 
     render() {
@@ -232,4 +231,4 @@ class POSForm extends React.Component {
     }
 }
 
-export default graphql(createPOS, {name: "addNewPOS"})(POSCreator);
+export default POSCreator;

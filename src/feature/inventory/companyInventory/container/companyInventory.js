@@ -3,8 +3,7 @@ import PropTypes from "prop-types";
 import { StyleSheet, ScrollView } from "react-native";
 import { View, Screen, Title, Button, Text } from "@shoutem/ui";
 import styleBase from "../../../../styles/base";
-import {getCurrentUser} from "../../../login/action/login";
-import {graphql} from "react-apollo";
+import { connect } from "react-redux";
 
 class CompanyInventory extends React.Component {
     constructor(props) {
@@ -23,13 +22,13 @@ class CompanyInventory extends React.Component {
 
     navigateManagement(route, title) {
         try {
-            let data = this.props.data || {},
-                currentUser = data.currentUser || {};
+            let { user } = this.props;
 
             // Go to company_product|ingredient_management
-            this.props.navigator.push({id: `company_${route}_management`, title: title, user: currentUser});
+            this.props.navigator.push({id: `company_${route}_management`, title: title, user});
         }
         catch(e) {
+            console.warn(e.message);
             console.warn("error - navigateProductManagement");
             alert("Đã có lỗi xảy ra. Xin hãy kiểm tra lại kết nối mạng");
         }
@@ -69,4 +68,10 @@ class CompanyInventory extends React.Component {
     }
 }
 
-export default CompanyInventory
+const mapStateToProps = (state) => {
+    return {
+        user: state.auth.user
+    }
+}
+
+export default connect(mapStateToProps) (CompanyInventory)

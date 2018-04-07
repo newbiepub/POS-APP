@@ -48,7 +48,7 @@ class HistoryItem extends React.Component {
 
     getPrice (prices = [], type) {
         let {price = 0} = prices.find(item => item.name === type) || {};
-        return `${price.toLocaleString('vi')} VND`;
+        return `${price.seperateNumber()} VND`;
     }
 
     handleChangeText (text) {

@@ -1,13 +1,14 @@
 import React from "react";
+import PropTypes from "prop-types";
 import {StyleSheet, InteractionManager} from "react-native";
 import styleBase from "../../../../styles/base";
-import {Caption, ListView, Spinner, View, TouchableOpacity, Icon, TextInput} from "@shoutem/ui";
+import {Caption, Icon, Spinner, TextInput, View} from "@shoutem/ui";
 import NoData from "../../../../component/noData/noData";
 import ProductItem from "./productItem";
-import { graphql, compose } from "react-apollo";
-import {getProductInventory} from "../action/productManagementAction";
-import {isEqual} from "lodash";
 import List from "../../../../component/list/list";
+import {INVENTORY} from "../../action/index";
+import {connect} from "react-redux";
+import {equals} from "../../../../utils/utils";
 
 class ProductList extends React.Component {
     constructor(props) {
@@ -20,91 +21,117 @@ class ProductList extends React.Component {
                 title: "LOẠI HÀNG", route: "category"
             }
         ];
-        this.productItem = [];
+        this.delayed = (time) => new Promise((resolve) => setTimeout(resolve, time));
+        this.ITEM_HEIGHT = 65;
+        this.NUMBER_OF_ITEM = 5;
         this.state = {
-            employeeProductInventory: [],
+            products: [],
             searchText: "",
             loading: true
-        }
+        };
 
-        this.handleChangeText = this.handleChangeText.bind(this);
+        this.handleChangeText    = this.handleChangeText.bind(this);
+        this.onEndReach          = this.onEndReach.bind(this);
+        this.handleFetchProducts = this.handleFetchProducts.bind(this);
+        this.onRefresh           = this.onRefresh.bind(this);
     }
 
     static propTypes = {};
 
     static defaultProps = {};
 
+    /**
+     * Component life cycle
+     * */
+    componentDidMount() {
+        this.handleFetchProducts()
+        InteractionManager.runAfterInteractions(() => {
+            this.setState({
+                products: this.props.products.slice(0, this.NUMBER_OF_ITEM),
+                loading: false
+            })
+        })
+    }
+
     shouldComponentUpdate(nextProps, nextState) {
-        return !isEqual(this.state, nextState);
+        return !equals(this.state, nextState);
     }
 
     componentWillReceiveProps(nextProps) {
-        try {
-            let data = nextProps.data || {};
-
-            if(nextProps.data.error) {
-                throw new Error(nextProps.data.error.message)
-            }
-
-            InteractionManager.runAfterInteractions(() => {
-                try {
-                    if(!data.getUserProductInventory && !data.loading) {
-                        return this.setState({employeeProductInventory: "NoData", loading: false});
-                    }
-                    this.productItem = data.getUserProductInventory || [];
-                    return this.setState({employeeProductInventory: data.getUserProductInventory || [], loading: data.loading});
-                }
-                catch (e) {
-                    console.log(e);
-                    console.warn("error - componentWillReceiveProps")
-                }
+        InteractionManager.runAfterInteractions(() => {
+            this.setState({
+                products: nextProps.products.slice(0, this.NUMBER_OF_ITEM),
+                loading: false
             })
-        }
-        catch(e) {
-            console.log(e);
-            console.warn("error - componentWillReceiveProps - productManagement")
+        })
+    }
+
+    /**
+     * Handle
+     * */
+
+    async handleFetchProducts () {
+        try {
+            let { user = {}, type } = this.props;
+            await INVENTORY.FETCH_USER_PRODUCT(user._id, type)
+        } catch (e) {
+            console.warn(e.message);
         }
     }
 
     handleChangeText(searchText) {
-        // handle search text
-        this.setState(  (prevState) => {
-            if(searchText.length > 0) {
-                prevState.employeeProductInventory = this.productItem.filter(item => {
-                    return new RegExp(searchText, 'gi').test(item.product.name);
-                });
+        let { products = [] } = this.state;
 
-            } else {
-                prevState.employeeProductInventory = this.productItem;
+        if(searchText.length > 0) {
+            products = this.props.products.filter(item => {
+                return new RegExp(searchText, 'gi').test(item.product.name);
+            });
+        } else {
+            products = this.props.products.slice(0, this.NUMBER_OF_ITEM);
+        }
+
+        this.setState({
+            searchText,
+            products
+        })
+    }
+
+    async onEndReach() {
+        try {
+            let { products = [] } = this.state;
+
+            if(products.length <= this.props.products.length) {
+                products = products.concat( this.props.products.slice(this.state.products - 1, this.NUMBER_OF_ITEM))
+                this.setState({
+                    products
+                })
             }
-            return {
-                searchText: searchText,
-                employeeProductInventory: prevState.employeeProductInventory
-            }
-        });
+        } catch (e) {
+            console.warn(e.message);
+        }
     }
 
     async onRefresh() {
         try {
             this.setState({loading: true}); // Set refreshing indicator
-            await this.props.data.refetch(); // Refetch New data
+            await this.handleFetchProducts(); // Refetch New data
             return this.setState({loading: false});
         } catch(e) {
             console.warn("ERROR onRefresh() - productList.js");
         }
     }
 
+    /**
+     * Render
+     * */
+
     renderItem(rowData, sectionId, index, numberOfRows) {
-        if(!parseInt(index)) {
-            console.log(rowData);
-        }
-        return <ProductItem key={index} item={rowData}/>
+        return <ProductItem key={index} navigator={this.props.navigator} item={rowData}/>
     }
 
     render() {
         try {
-            let productItem = this.state.employeeProductInventory || [];
-
+            let productItem = this.state.products || [];
             return (
                 <View style={StyleSheet.flatten([styleBase.container])}>
                     <View styleName="horizontal v-center" style={StyleSheet.flatten([styleBase.p_md_right])}>
@@ -143,9 +170,15 @@ class ProductList extends React.Component {
                             <Spinner/>
                         }
                         {
-                            (productItem.length > 0 && this.state.employeeProductInventory !== "NoData") &&
+                            (productItem.length > 0 && this.state.products !== "NoData") &&
                             <List
                                 onRefresh={this.onRefresh.bind(this)}
+                                initialNumToRender={this.NUMBER_OF_ITEM}
+                                getItemLayout={(item, index) => ({
+                                    length: this.ITEM_HEIGHT, offset: this.ITEM_HEIGHT * index, index
+                                })}
+                                onEndReachedThreshold={400}
+                                onEndReach={this.onEndReach}
                                 dataSources={productItem}
                                 renderItem={this.renderItem.bind(this)}
                             />
@@ -168,14 +201,18 @@ class ProductList extends React.Component {
     }
 }
 
-export default compose(graphql(getProductInventory, {
-    options: (props) => {
-        return {
-            variables: {
-                type: props.type,
-                userId: props.user._id
-            },
-            fetchPolicy: "cache-and-network"
-        }
-    },
-}))(ProductList)
+ProductList.propTypes = {
+    products: PropTypes.array
+}
+
+ProductList.defaultProps = {
+    products: []
+}
+
+const mapStateToProps = (state) => {
+    return {
+        products: state.inventory.products
+    }
+}
+
+export default connect(mapStateToProps) (ProductList);

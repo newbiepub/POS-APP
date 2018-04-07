@@ -1,18 +1,17 @@
 import React from "react";
 import {ListView, Spinner, View, GridRow} from "@shoutem/ui";
 import NoData from "../../../component/noData/noData";
-import {graphql} from "react-apollo";
-import {getAllPOS} from "../action/posAction";
+import {POS_MANAGEMENT} from "../action/posAction";
 import POSItem from "../component/posItem";
 import {Dimensions, StyleSheet, InteractionManager} from "react-native";
 import styleBase from "../../../styles/base";
-import * as _ from "lodash";
+import {connect} from "react-redux";
 
-class POS extends React.Component {
+class POS extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            pos: [],
+            pos: this.props.pos,
             loading: false,
             listViewLoading: false
         }
@@ -22,34 +21,20 @@ class POS extends React.Component {
 
     static defaultProps = {};
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return this.state !== nextState;
+    async componentDidMount () {
+       try {
+           await POS_MANAGEMENT.FETCH_ALL_POS();
+       } catch (e) {
+           console.warn(e.message);
+       }
     }
 
     componentWillReceiveProps(nextProps) {
-        try {
-            if(nextProps.data.error) {
-                console.warn(nextProps.data.error.message);
-            }
-            InteractionManager.runAfterInteractions(() => {
-                try {
-                    let data = nextProps.data || {getAllPOS: []};
-                    if (!data.getAllPOS.length && !data.loading) {
-                        return this.setState({pos: "NoData", loading: false});
-                    }
-
-                    return this.setState({pos: data.getAllPOS, loading: data.loading});
-                }
-                catch (e) {
-                    console.log(e);
-                    console.warn("error - componentWillReceiveProps - POS")
-                }
-            });
-        }
-        catch(e) {
-            console.log(e);
-            console.warn("error - componentWillReceiveProps")
-        }
+        this.setState({
+            pos: nextProps.pos,
+            loading: false,
+            listViewLoading: false
+        })
     }
 
     renderRow(rowData, sectionId, index, numberOfRows) {
@@ -66,7 +51,7 @@ class POS extends React.Component {
     async onRefresh() {
         try {
             this.setState({listViewLoading: true});
-            await this.props.data.refetch();
+            await POS_MANAGEMENT.FETCH_ALL_POS();
             this.setState({listViewLoading: false});
         }
         catch (e) {
@@ -129,8 +114,11 @@ class POS extends React.Component {
     }
 }
 
-export default graphql(getAllPOS, {
-    options: {
-        fetchPolicy: "cache-and-network"
+const mapStateToProps = (state) => {
+    return {
+        user: state.auth.user,
+        pos: state.pos.all
     }
-})(POS)
+}
+
+export default connect(mapStateToProps)(POS)

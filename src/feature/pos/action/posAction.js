@@ -1,4 +1,6 @@
 import gql from "graphql-tag";
+import {client} from "../../../../App";
+import store from "../../../store/store";
 
 const getAllPOS = gql`
     query getAllPOS {
@@ -33,5 +35,47 @@ const createPOS = gql`
         }
     }
 `;
+
+export const POS_MANAGEMENT = {
+    FETCH_ALL_POS: async () => {
+        let { data } = await client.query({
+            query: getAllPOS,
+            fetchPolicy: 'network-only'
+        });
+        let pos = data.getAllPOS;
+        let payload = pos.map(item => {
+            let { profile = {} } = item;
+            return {
+                _id: item._id || '',
+                companyId: item.companyId || null,
+                profile: {
+                    address: profile.address || '',
+                    name: profile.name || '',
+                    phoneNumber: profile.phoneNumber || '',
+                },
+                username: item.username || ''
+            }
+        });
+        console.log("FETCH POS - ", data);
+        store.dispatch({
+            type: POS_MANAGEMENT.FETCH_ALL_POS,
+            payload
+        })
+    },
+    ADD_POS: async (username, password, name, address, phoneNumber) => {
+        let { data } = await client.query({
+            query: createPOS,
+            fetchPolicy: 'network-only',
+            variables: {
+                username,
+                password,
+                name,
+                address,
+                phoneNumber
+            }
+        });
+        console.log("FETCH DATA - ", data);
+    }
+};
 
 export {getAllPOS, createPOS};

@@ -1,17 +1,16 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {StyleSheet} from "react-native";
+import {StyleSheet, InteractionManager} from "react-native";
 import {View, TouchableOpacity, Subtitle, Text, Icon, Divider} from "@shoutem/ui";
 import styleBase from "../../../../styles/base";
-import ProductItemCollapse from "./productItemCollapse";
-import isEqual from "lodash/isEqual";
+import ProductItemCollapse from "./productDetail";
+import {equals} from "../../../../utils/utils";
 
 class ProductItem extends React.Component {
     constructor(props) {
         super(props);
-        this.collapse = false;
 
-        this.handleToogleCollapse = this.handleToogleCollapse.bind(this);
+        this.handleNavigateProductDetail = this.handleNavigateProductDetail.bind(this);
     }
 
     static propTypes = {
@@ -23,17 +22,17 @@ class ProductItem extends React.Component {
     };
 
     shouldComponentUpdate(nextProps, nextState) {
-        return !isEqual(this.props.item !== nextProps.item)
+        return !equals(this.props.item !== nextProps.item)
     }
 
-    handleToogleCollapse () {
-        if(this.collapse) {
-            this.collapse = false;
-            this.refs.productCollapse.closeCollapse();
-        } else {
-            this.collapse = true;
-            this.refs.productCollapse.showCollapse();
-        }
+    /**
+     * Handle
+     */
+
+    handleNavigateProductDetail() {
+        InteractionManager.runAfterInteractions( () => {
+            this.props.navigator.push({id: 'product_detail', product: this.props.item});
+        })
     }
 
     render() {
@@ -41,7 +40,7 @@ class ProductItem extends React.Component {
         try {
             return (
                 <View styleName="vertical">
-                    <TouchableOpacity onPress={this.handleToogleCollapse}>
+                    <TouchableOpacity onPress={this.handleNavigateProductDetail}>
                         <View styleName="horizontal space-between v-center"
                               style={StyleSheet.flatten([{height: 65}, styleBase.p_md_horizontal])}>
                             <View style={{flex: 0.33}}>
@@ -65,7 +64,6 @@ class ProductItem extends React.Component {
                             </View>
                         </View>
                     </TouchableOpacity>
-                    <ProductItemCollapse ref="productCollapse" item={item.product}/>
                     <Divider styleName="line"/>
                 </View>
             )

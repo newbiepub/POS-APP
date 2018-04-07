@@ -26,7 +26,7 @@ export const inventoryHistoryFields = [
         name: "Số lượng $type",
         field: 'totalQuantity',
         handle: (v) => {
-          return v.toLocaleString('vi')  + " đơn vị sp"
+          return v.seperateNumber()  + " đơn vị sp"
         },
         columnWidth: 0.15
     },
@@ -34,7 +34,7 @@ export const inventoryHistoryFields = [
         name: "Tổng giá $type",
         field: 'totalPrice',
         handle: (v) => {
-            return v.toLocaleString('vi') + " VND"
+            return v.seperateNumber() + " VND"
         },
         columnWidth: 0.15
     }

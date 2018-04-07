@@ -1,12 +1,8 @@
 import React, {PureComponent} from 'react';
-import {AsyncStorage} from "react-native";
 import {HttpLink} from "apollo-link-http";
 import {ApolloClient} from "apollo-client";
 import {InMemoryCache, IntrospectionFragmentMatcher} from "apollo-cache-inmemory";
-import {toIdValue} from "apollo-utilities";
 import introspectionQueryResultData from "./src/utils/fragmentMatcher.json";
-import {persistCache} from "apollo-cache-persist";
-import {ApolloProvider} from "react-apollo";
 import AppContainer from "./src/container/app";
 import {setContext} from "apollo-link-context";
 import {getToken, removeToken} from "./src/feature/login/utils/loginToken";
@@ -14,13 +10,14 @@ import {Provider} from "react-redux";
 import store from "./src/store/store";
 import {onError} from "apollo-link-error";
 import { Alert } from "react-native";
+import config from "./src/configs";
 
 const fragmentMatcher = new IntrospectionFragmentMatcher({
     introspectionQueryResultData
 }); // Fragment Matcher
 
 const httpLink = new HttpLink({
-    uri: "http://localhost:3000/api"
+    uri: config.api + '/api'
 });
 
 const authLink = setContext(async (req, {headers}) => {
@@ -60,40 +57,11 @@ const errorLink = onError(({graphQLErrors, networkError, response}) => {
             }
         });
 
-    if (networkError) console.warn(`[Network error]: ${networkError}`);
+    if (networkError) Alert.alert("Thông báo", "Lỗi kết nối vui lòng kiểm tra lại kết nối");
 });
-
-/**
- * Cache Resolvers
- * @type {InMemoryCache}
- */
-
-function dataIdFromObject(result) {
-    if (result.__typename) {
-        if (result._id !== undefined) {
-            return `${result.__typename}:${result.id}`;
-        }
-    }
-    return null;
-}
-
-function inventoryHistoryFromObject (result) {
-    console.warn(JSON.stringify(result, null, 4));
-    if (result.__typename) {
-        if (result._id !== undefined) {
-            return `${result.__typename}:${result._id}:${result.type}`;
-        }
-    }
-    return null;
-}
 
 const cache = new InMemoryCache({
     fragmentMatcher
-});
-
-persistCache({
-    cache,
-    storage: AsyncStorage,
 });
 
 const client = new ApolloClient({
@@ -112,11 +80,9 @@ export default class AppRoot extends PureComponent {
 
     render() {
         return (
-            <ApolloProvider client={client}>
-                <Provider store={store}>
-                    <AppContainer/>
-                </Provider>
-            </ApolloProvider>
+            <Provider store={store}>
+                <AppContainer/>
+            </Provider>
         )
     }
 }

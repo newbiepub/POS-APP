@@ -1,14 +1,13 @@
 import React from "react";
-import {DropDownMenu, NavigationBar, Screen, View, Icon, TouchableOpacity} from "@shoutem/ui";
-import POS from "../../pos/container/pos";
+import {DropDownMenu, Icon, NavigationBar, Screen, TouchableOpacity} from "@shoutem/ui";
 import {openPopup, renderContent} from "../../../component/popup/actions/popupAction";
 import POSCreator from "../../pos/component/posCreator";
 import CompanyInventory from "../../inventory/companyInventory/container/companyInventory";
-import {graphql} from "react-apollo";
-import {getCurrentUser} from "../../login/action/login";
 import CommingSoon from "../../../component/commingSoon/commingSoon";
+import POS from "../../pos/container/pos";
+import {AUTH} from "../../login/action/login";
 
-class Home extends React.Component {
+class Home extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
@@ -27,8 +26,12 @@ class Home extends React.Component {
 
     static defaultProps = {};
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return this.state !== nextState;
+    async componentDidMount() {
+        try {
+            await AUTH.CURRENT_USER();
+        } catch (e) {
+            console.warn("ERROR = ", e.message);
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -82,7 +85,7 @@ class Home extends React.Component {
                         rightComponent={this.renderRightComponent()}
                     />
                     {this.state.currentRoute.route === "pos" &&
-                    <POS navigator={this.props.navigator}/>
+                    <POS {...this.props}/>
                     }
                     {
                         this.state.currentRoute.route === "inventory" &&
@@ -102,9 +105,4 @@ class Home extends React.Component {
     }
 }
 
-export default graphql(getCurrentUser, {
-    options: {
-        fetchPolicy: "cache-and-network",
-        errorPolicy: "all"
-    }
-})(Home)
+export default Home

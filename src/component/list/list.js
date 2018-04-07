@@ -1,8 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {StyleSheet, Platform} from "react-native";
+import {StyleSheet, Platform, FlatList} from "react-native";
 import { View } from "@shoutem/ui";
-import {OptimizedFlatList} from "react-native-optimized-flatlist";
 import styleBase from "../../styles/base";
 
 class List extends React.Component {
@@ -11,24 +10,33 @@ class List extends React.Component {
         this._scrollRef = null;
         this._backTopTop = null;
         this.currentOffset = 0;
+        this.delayed = () => new Promise ((resolve, reject) => setTimeout(resolve, 1000));
         this.isReached = true;
         this.state = {
             refreshing: false
         };
 
-        this.onRefresh = this.onEndReach.bind(this);
+        this.onEndReach = this.onEndReach.bind(this);
         this.onRefresh = this.onRefresh.bind(this);
         this.onScroll  = this.onScroll.bind(this);
+        this.handleUpdateData = this.handleUpdateData.bind(this);
     }
 
     async onScroll () {
-        try {
-            if(this.isReached) {
-                this.isReached = false;
-            }
-        } catch (e) {
-            throw e;
-        }
+
+    }
+
+    handleUpdateData (dataSources, index) {
+        this.setState(prevState => {
+            let nextData, newData;
+
+            nextData = dataSources.slice(index - 1, index + this.props.initialNumToRender);
+            newData  = [...prevState.data, ...nextData];
+            return {
+                ...prevState,
+                data: newData
+            };
+        });
     }
 
     async onEndReach() {
@@ -39,7 +47,7 @@ class List extends React.Component {
                 this.isReached = true
             }
         } catch (e) {
-            throw e;
+            console.warn("ERROR - ", e.message)
         }
     }
 
@@ -49,28 +57,30 @@ class List extends React.Component {
             await this.props.onRefresh();
             this.setState({refreshing: false});
         } catch (e) {
-            throw e;
+            console.warn("ERROR - ", e.message)
         }
     }
 
     render() {
         return (
-            <OptimizedFlatList
+            <FlatList
                 ref={(ref) => {
                     if (this._scrollRef == undefined) {
                         this._scrollRef = ref;
                     }
                 }}
                 style={StyleSheet.flatten([...this.props.styles])}
-                data={[...this.props.dataSources]}
-                extraData={this.props.extraData}
+                data={this.props.dataSources}
+                extraData={this.state}
                 onEndReached={this.onEndReach}
-                removeClippedSubviews={Platform.OS === "android"}
+                initialNumToRender={this.props.initialNumToRender}
+                getItemLayout={this.props.getItemLayout}
+                removeClippedSubviews={this.props.removeClippedSubviews}
                 keyExtractor={this.props.keyExtractor}
                 disableVirtualization={this.props.disableVirtualization}
                 refreshing={this.state.refreshing}
                 onRefresh={this.onRefresh}
-                onScroll={this.onScroll}
+                onEndReachedThreshold={this.props.onEndReachedThreshold}
                 renderItem={({item, index}) => this.props.renderItem(item, index)}
                 numColumns={this.props.numColumns}
                 ListHeaderComponent={this.props.renderHeader}
@@ -92,22 +102,32 @@ List.propTypes = {
     numColumns: PropTypes.number,
     renderHeader: PropTypes.func,
     keyExtractor: PropTypes.func,
-    styles: PropTypes.array
+    styles: PropTypes.array,
+    initialNumToRender: PropTypes.number,
+    getItemLayout: PropTypes.func,
+    removeClippedSubviews: PropTypes.bool,
+    onEndReachedThreshold: PropTypes.number
 };
 
 List.defaultProps = {
     dataSources: [],
-    disableVirtualization: false,
-    onRefresh: () => {},
+    disableVirtualization: true,
+    removeClippedSubviews: true,
+    onEndReachedThreshold: 0.01,
     extraData: [],
+    initialNumToRender: 10,
+    styles: [],
+    numColumns: 1,
+    onRefresh: () => {},
     renderItem: () => {},
     onEndReach: () => {},
     renderHeader: () => null,
     keyExtractor: (item, index) => {
         return index;
     },
-    styles: [],
-    numColumns: 1
+    getItemLayout: (data, index) => (
+        {length: 100, offset: 100 * index, index}
+    )
 };
 
 export default List;

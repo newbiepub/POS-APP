@@ -1,7 +1,6 @@
 import React from "react";
 import {View, Title, TouchableOpacity} from "@shoutem/ui";
 import { Image, StyleSheet } from "react-native";
-import {graphql} from "react-apollo";
 import PropTypes from "prop-types";
 import {getAllPOS} from "../../pos/action/posAction";
 import styleBase from "../../../styles/base";
@@ -45,9 +44,4 @@ ExportAction.propTypes = {};
 
 ExportAction.defaultProps = {};
 
-export default graphql(getCurrentUser, {
-    options: {
-        fetchPolicy: "cache-and-network"
-    },
-    name: "user"
-}) (ExportAction);
+export default ExportAction;

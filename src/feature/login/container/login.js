@@ -4,9 +4,9 @@ import {Button, Divider, Image, Spinner, Text, TextInput, Tile, View} from "@sho
 import KeyboardSpacer from "react-native-keyboard-spacer";
 import EStyleSheet from "react-native-extended-stylesheet";
 import styleBase from "../../../styles/base";
-import * as _ from "lodash";
-import {companyLogin} from "../action/login";
+import {AUTH} from "../action/login";
 import {getToken, setToken} from "../utils/loginToken";
+import {equals} from "../../../utils/utils";
 
 class Login extends React.Component {
     constructor(props) {
@@ -23,7 +23,7 @@ class Login extends React.Component {
     static defaultProps = {};
 
     shouldComponentUpdate(nextProps, nextState) {
-        return !_.isEqual(this.state, nextState)
+        return !equals(this.state, nextState)
     }
 
     async componentWillMount() {
@@ -50,13 +50,16 @@ class Login extends React.Component {
 
     async onSubmitLogin() {
         try {
+            // Validation
             if (!this.state.email) return alert("Xin mời nhập email");
             if (!this.state.password) return alert("Xin mời nhập mật khẩu");
             if (!this.validateEmail()) return alert("Email không hợp lệ");
             if (!this.validatePassword()) return alert("Mật khẩu không hợp lệ");
+            // Login
             this.setState({isLogin: true});
-            let token = await companyLogin(this.state.email.toLowerCase().trim(), this.state.password);
+            let token = await AUTH.LOGIN(this.state.email.toLowerCase().trim(), this.state.password);
             await setToken(token);
+            await AUTH.CURRENT_USER()
             InteractionManager.runAfterInteractions(() => {
                 this.props.navigator.resetTo({id: "home"});
             });

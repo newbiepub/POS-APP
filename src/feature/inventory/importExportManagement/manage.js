@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import {View, Spinner, Text, TouchableOpacity} from "@shoutem/ui";
 import Table from "../../../component/table/table";
 import {inventoryHistoryFields} from "../../../utils/tableFields";
-import {graphql, compose} from "react-apollo";
 import {getInentoryHistory} from "./action";
 import {getCurrentUser} from "../../login/action/login";
 import NoData from "../../../component/noData/noData";
@@ -121,24 +120,4 @@ Management.defaultProps = {
     type: ""
 };
 
-export default compose(
-    graphql(getInentoryHistory, {
-        name: "inventoryHistory",
-        options: (props) => {
-            return {
-                variables: {
-                    type: props.type
-                },
-                fetchPolicy: "cache-and-network"
-            }
-        },
-    }),
-    graphql(getCurrentUser, {
-        name: "user",
-        options: (props) => {
-            return {
-                fetchPolicy: "cache-only"
-            }
-        }
-    })
-    )(Management);
+export default Management;
