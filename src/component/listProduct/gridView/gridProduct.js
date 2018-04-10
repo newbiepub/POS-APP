@@ -8,7 +8,8 @@ import {
     Dimensions,
     Easing,
     RefreshControl,
-    Alert
+    Alert,
+    InteractionManager
 } from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
 import {constantStyle} from '../../../style/base';
@@ -22,6 +23,7 @@ import NoData from '../../noData';
 import ListCategory from './listCategory';
 import {graphql, compose} from 'react-apollo';
 import _ from 'lodash';
+import {getProduct, getProductAmount} from '../productAction';
 import {client} from '../../../root';
 
 class GridProduct extends React.Component {
@@ -35,32 +37,27 @@ class GridProduct extends React.Component {
             columnNumber: 3,
             categoryFilter: 'all',
             searchText: '',
-            refreshing: false
+            refreshing: false,
+
         };
         this.state.gridViewItemSize = ((width * this.gridWidthPercent) / 100 - 20 - constantStyle.headerHeight) / this.state.columnNumber;
         this.props.length = 0;
 
     }
 
-    componentWillMount() {
-
+    async initProduct() {
+        let {_id} = this.props.user;
+        let amount = await this.props.getProductAmount(_id);
+        for (let i = 0; i <= amount; i += 10) {
+            await this.props.getProduct(_id, 10, i);
+        }
     }
 
     async componentDidMount() {
         Dimensions.addEventListener("change", () => {
             let {width, height} = Dimensions.get('window');
         });
-        // for (let i = 0; i < _.get(this.props, "inventoryAmount.getAmountUserProductInventory.inventoryAmount", 100); i = i + 10) {
-        //     await client.query({
-        //         query: QUERY.INVENTORY_PRODUCT,
-        //         variables: {
-        //             userId: _.get(this.props, "currentUser.currentUser._id", ""),
-        //             limit: i + 10,
-        //             skip: i
-        //         },
-        //     })
-        // }
-        console.warn(this.props.userId)
+        this.initProduct()
 
     }
 
@@ -72,48 +69,47 @@ class GridProduct extends React.Component {
         )
     }
 
-    filterByCategory() {
-        try {
-            if (this.state.categoryFilter === 'all' && this.state.searchText === "") {
-                return this.props.inventoryProduct.getUserProductInventory
-
-            } else {
-                let data = [];
-                if (this.props.inventoryProduct && this.props.inventoryProduct.getUserProductInventory) {
-                    this.props.inventoryProduct.getUserProductInventory.forEach((item) => {
-
-                        if (item.product.categoryId) {
-                            if (item.product.categoryId._id === this.state.categoryFilter) {
-                                if (item.product.name.includes(this.state.searchText)) {
-                                    data.push(item)
-                                }
-                            }
-                        }
-
-                        if (this.state.categoryFilter === 'all') {
-
-                            if (item.product.name.includes(this.state.searchText)) {
-                                data.push(item)
-                            }
-                        }
-                    });
-                }
-
-                return data;
-
-            }
-        } catch (e) {
-            console.warn("filter-category" + e);
-            return []
-        }
-
-    }
+    // filterByCategory() {
+    //     try {
+    //         if (this.state.categoryFilter === 'all' && this.state.searchText === "") {
+    //             return this.props.inventoryProduct.getUserProductInventory
+    //
+    //         } else {
+    //             let data = [];
+    //             if (this.props.inventoryProduct && this.props.inventoryProduct.getUserProductInventory) {
+    //                 this.props.inventoryProduct.getUserProductInventory.forEach((item) => {
+    //
+    //                     if (item.product.categoryId) {
+    //                         if (item.product.categoryId._id === this.state.categoryFilter) {
+    //                             if (item.product.name.includes(this.state.searchText)) {
+    //                                 data.push(item)
+    //                             }
+    //                         }
+    //                     }
+    //
+    //                     if (this.state.categoryFilter === 'all') {
+    //
+    //                         if (item.product.name.includes(this.state.searchText)) {
+    //                             data.push(item)
+    //                         }
+    //                     }
+    //                 });
+    //             }
+    //
+    //             return data;
+    //
+    //         }
+    //     } catch (e) {
+    //         console.warn("filter-category" + e);
+    //         return []
+    //     }
+    //
+    // }
 
     shouldComponentUpdate(nextProps, nextState) {
-        const productChanged = this.props.inventoryProduct !== nextProps.inventoryProduct;
-        const changedLoading = this.props.loading !== nextProps.loading;
+        const productChanged = this.props.products !== nextProps.products;
         const onRotate = this.state.gridViewWidth !== nextState.gridItemWidth;
-        return productChanged || changedLoading || onRotate;
+        return productChanged || onRotate;
     }
 
     onClickProduct(item) {
@@ -125,7 +121,7 @@ class GridProduct extends React.Component {
         await this.setState({
             refreshing: true
         });
-        await this.props.inventoryProduct.refetch();
+        await this.initProduct();
         this.setState({
             refreshing: false
         })
@@ -135,8 +131,8 @@ class GridProduct extends React.Component {
     _renderItem = ({item}) => (
 
         <View style={[{
-            width: (this.state.gridViewItemSize ),
-            height: (this.state.gridViewItemSize ),
+            width: (this.state.gridViewItemSize),
+            height: (this.state.gridViewItemSize),
             padding: 10
         }]}>
             <TouchableWithoutFeedback onPress={() => this.onClickProduct(item)}>
@@ -144,13 +140,13 @@ class GridProduct extends React.Component {
                     <View style={style.gridItem}>
                         <TextSmall>Giá:{numberwithThousandsSeparator(_.get(item, "product.price[0].price", 0))}{_.get(item, "product.price[0].currency.symbol", "")}/{item.product.unit || ""}</TextSmall>
                         <TextSmall>Số lượng: {item.quantity} {item.product.unit}</TextSmall>
-                        <TextSmall>Mã sản phẩm: {item.product.productCode}</TextSmall>
+                        {/*<TextSmall>Mã sản phẩm: {item.product.productCode}</TextSmall>*/}
                         <TextSmall>Loại hàng:{_.get(item, "product.categoryId.name", "")}</TextSmall>
 
                     </View>
 
                     <View style={style.gridItemName}>
-                        <TextSmall numberOfLines={1}
+                        <TextSmall numberOfLines={3}
                                    style={{color: constantStyle.color2}}>{item.product.name}</TextSmall>
                     </View>
 
@@ -163,7 +159,7 @@ class GridProduct extends React.Component {
 
     _listHeaderComponent = (data) => (
         <View>
-            {((data && data.length > 0) || this.state.searchText !== "" ) &&
+            {((data && data.length > 0) || this.state.searchText !== "") &&
             <View style={style.search}>
                 <SearchInput value={this.state.searchText} onChangeText={(text) => this.setState({searchText: text})}
                              clean={() => this.setState({searchText: ''})}/>
@@ -186,20 +182,21 @@ class GridProduct extends React.Component {
         const {width} = event.nativeEvent.layout;
         this.setState({
             gridViewWidth: width,
-            gridViewItemSize: (width - 20 - constantStyle.headerHeight ) / this.state.columnNumber
+            gridViewItemSize: (width - 20 - constantStyle.headerHeight) / this.state.columnNumber
         })
     }
 
     render() {
-        this.props.checkLoginExpire(this.props.inventoryProduct);
-        let data = this.filterByCategory();
+        // this.props.checkLoginExpire(this.props.inventoryProduct);
+        // let data = this.filterByCategory();
+        // console.warn(this.props.products.length)
         return (
             <View style={style.container} onLayout={(event) => this.onLayout(event)}>
                 {/*View category*/}
                 <ListCategory onChangeCategoryFilter={(id) => this.onChangeCategoryFilter(id)}
                               categoryFilter={this.state.categoryFilter}/>
                 {
-                    data !== [] ?
+                    this.props.products !== [] ?
                         <FlatList
                             refreshControl={
                                 <RefreshControl
@@ -207,7 +204,7 @@ class GridProduct extends React.Component {
                                     onRefresh={this._onRefresh.bind(this)}
                                 />
                             }
-                            data={data}
+                            data={this.props.products}
                             extraData={this.props}
                             numColumns={this.state.columnNumber}
                             initialNumToRender={3}
@@ -217,7 +214,7 @@ class GridProduct extends React.Component {
                             keyExtractor={(item) => item.product._id}
                             contentContainerStyle={style.gridView}
                             ListEmptyComponent={this._listEmptyComponent}
-                            ListHeaderComponent={this._listHeaderComponent(data)}
+                            ListHeaderComponent={this._listHeaderComponent(this.props.products)}
                             ListFooterComponent={this._renderFooter}
                             renderItem={this._renderItem}
                         /> :
@@ -242,14 +239,14 @@ const style = EStyleSheet.create({
         borderWidth: 1,
         borderColor: constantStyle.colorBorder,
         borderTopRightRadius: 10,
-        flex: 0.8,
+        flex: 0.6,
         zIndex: 5,
         padding: constantStyle.paddingGridItem,
         backgroundColor: constantStyle.color2
     },
     gridItemName: {
         padding: constantStyle.paddingGridItem,
-        flex: 0.2,
+        flex: 0.4,
         justifyContent: 'center',
         backgroundColor: constantStyle.color1
     },
@@ -265,36 +262,16 @@ const style = EStyleSheet.create({
     '@media (min-width: 1024)': {}
 });
 
-let GridProductApollo = compose(
-    graphql(QUERY.CURRENT_USER, {
-        name: 'currentUser', options: {
-            fetchPolicy: "cache-and-network"
-        }
-    }),
-    graphql(QUERY.GET_AMOUNT_INVENTORY_PRODUCT, {
-        name: 'inventoryAmount', options: (props) => ({
-            variables: {
-                userId: _.get(props, "currentUser.currentUser._id", ""),
-            },
-            fetchPolicy: "cache-and-network"
-        }),
-
-    }),
-    graphql(QUERY.INVENTORY_PRODUCT, {
-        name: 'inventoryProduct', options: (props) => ({
-            variables: {
-                userId: _.get(props, "currentUser.currentUser._id", ""),
-            },
-            fetchPolicy: "cache-and-network"
-        })
-    })
-)(GridProduct);
 const mapStateToProps = (state) => {
     return {
-        userId: state.userReducer
+        user: state.userReducer,
+        products: state.productReducer.product,
+        productAmount: state.productReducer.productAmount
     }
 };
 const mapDispatchToProps = {
-    openPopup
+    openPopup,
+    getProduct,
+    getProductAmount
 };
-export default connect(mapStateToProps, mapDispatchToProps)(GridProductApollo);
+export default connect(mapStateToProps, mapDispatchToProps)(GridProduct);

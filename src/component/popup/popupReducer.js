@@ -8,6 +8,7 @@ const initialState = {
 export default function (state = initialState, action = {}) {
     switch (action.type) {
         case POPUP_ACTION.OPEN_POPUP: {
+            // console.warn(action.payload)
             return {
                 ...state,
                 isVisible: true,
@@ -22,6 +23,9 @@ export default function (state = initialState, action = {}) {
             }
         }
         default:
-            return state;
+            return {
+                ...state,
+                children: null
+            };
     }
 }

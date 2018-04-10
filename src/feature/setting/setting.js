@@ -15,6 +15,8 @@ import {numberwithThousandsSeparator} from '../../reuseable/function/function';
 import Header from '../../component/header';
 import {client} from '../../root';
 import {ASYNC_STORAGE} from '../../constant/constant';
+import {logout} from '../../feature/login/userAction';
+import {connect} from 'react-redux';
 
 class Setting extends React.Component {
     constructor(props) {
@@ -35,10 +37,11 @@ class Setting extends React.Component {
                     {text: 'Không', style: 'cancel'},
                     {
                         text: 'OK', onPress: async () => {
-                        await AsyncStorage.removeItem(ASYNC_STORAGE.AUTH_TOKEN);
-                        this.props.navigator.resetTo({id: "login"});
-                        client.resetStore()
-                    }
+                            await AsyncStorage.clear();
+                            this.props.navigator.resetTo({id: "login"});
+                            this.props.logout()
+                            // client.resetStore()
+                        }
 
                     },
                 ],
@@ -110,4 +113,8 @@ const style = EStyleSheet.create({
     '@media (min-width: 1024)': {}
 });
 
-export default Setting;
+const mapDispatchToProps = {
+    logout
+};
+
+export default connect(null, mapDispatchToProps)(Setting);

@@ -1,9 +1,11 @@
 import {USER} from '../../constant/constant';
-import { REHYDRATE } from 'redux-persist';
+import {REHYDRATE} from 'redux-persist';
+
 const initialState = {
     token: {},
     profile: {},
-    _id: ""
+    _id: "",
+    currency: {}
 };
 
 export default function (state = initialState, action = {}) {
@@ -12,19 +14,30 @@ export default function (state = initialState, action = {}) {
             return {
                 ...state,
                 _id: action.payload._id,
-                profile:action.payload.profile
+                profile: action.payload.profile
             }
         }
-        case REHYDRATE:
-        {
-            console.warn(action.payload.userReducer);
-
+        case USER.GET_CURRENCY:{
             return {
                 ...state,
-                token: action.payload.userReducer.token,
-                profile: action.payload.userReducer.profile,
-                _id: action.payload.userReducer._id,
-            };
+                currency: action.payload
+            }
+        }
+        case REHYDRATE: {
+            if (action.payload && action.payload.userReducer) {
+                return {
+                    ...state,
+                    token: action.payload.userReducer.token,
+                    profile: action.payload.userReducer.profile,
+                    _id: action.payload.userReducer._id,
+                };
+
+            }else{
+                return{
+                    ...state
+                }
+            }
+
         }
 
 

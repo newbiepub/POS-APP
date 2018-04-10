@@ -1,5 +1,5 @@
 import {CART_ACTION} from '../../constant/constant';
-
+import {REHYDRATE} from 'redux-persist';
 const initialState = {
     cart: []
 };
@@ -48,7 +48,21 @@ export default function (state = initialState, action = {}) {
                 cart: []
             }
         }
-
+        // case REHYDRATE: {
+        //     if (action.payload && action.payload.cartReducer) {
+        //
+        //         return {
+        //             ...state,
+        //             cart: action.payload.transactionReducer.cart
+        //         };
+        //
+        //     } else {
+        //         return {
+        //             ...state
+        //         }
+        //     }
+        //
+        // }
         default:
             return {
                 ...state

@@ -6,7 +6,8 @@ import {
     View,
     TouchableWithoutFeedback,
     Dimensions,
-    SectionList
+    SectionList,
+    InteractionManager
 } from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
 import {constantStyle} from '../../style/base';
@@ -25,6 +26,7 @@ import ListProduct from '../../component/listProduct/listProduct';
 import IssueRefund from '../../component/popup/popupContent/issueRefund';
 import {openPopup} from '../../component/popup/popupAction';
 import UpdateTransaction from '../../component/popup/popupContent/updateTransaction';
+import {getTransactionAmount, getTransaction} from './transactionAction';
 
 class Transaction extends React.Component {
     constructor(props) {
@@ -37,6 +39,7 @@ class Transaction extends React.Component {
         ];
         let {width, height} = Dimensions.get('window');
         this.state = {
+            skip: 0,
             refreshing: false,
             selectedTransaction: {},
             currentTransactionOption: this.transactionOptionItems[0],
@@ -66,22 +69,30 @@ class Transaction extends React.Component {
         return item.name
     }
 
-    //
-    // componentWillReceiveProps(nextProps) {
-    //     if (nextProps.hasOwnProperty("transaction")) {
-    //         if (nextProps.transaction.getTransactionEmployee.length > 0) {
-    //             this.setState({
-    //                 listTransaction: normalizeTransactionSectionList(this.filterTransaction(nextProps.transaction.getTransactionEmployee))
-    //             });
-    //             if (!this.state.selectedTransaction._id) {
-    //                 this.setState({
-    //                     selectedTransaction: nextProps.transaction.getTransactionEmployee[0]
-    //                 })
-    //             }
-    //         }
-    //
-    //     }
-    // }
+    async componentDidMount() {
+        await this.props.getTransactionAmount();
+        this.initData()
+
+    }
+
+    initData() {
+        InteractionManager.runAfterInteractions(async () => {
+            for (let i = 0; i <= this.props.transactionAmount; i += 10) {
+                await this.props.getTransaction(10,i);
+            }
+
+        });
+    }
+
+    async loadMore() {
+        if (this.props.transaction.length < this.props.transactionAmount) {
+            await this.setState({
+                skip: this.state.skip + 10
+            });
+            await this.props.getTransaction(10, this.state.skip);
+        }
+
+    }
 
     _renderListTransactionHeader = ({section}) => (
         <View style={style.listHeader}
@@ -101,7 +112,7 @@ class Transaction extends React.Component {
                           style={[style.listIconCash, this.state.selectedTransaction._id === item._id && style.listTextSelected]}/>
                 <View style={style.listContent}>
                     <TextNormal
-                        style={[{flex: 1}, this.state.selectedTransaction._id === item._id && style.listTextSelected]}>{numberwithThousandsSeparator(item.totalPrice)}{_.get(this.props.currency, "currency[0].symbol", "")}</TextNormal>
+                        style={[{flex: 1}, this.state.selectedTransaction._id === item._id && style.listTextSelected]}>{numberwithThousandsSeparator(item.totalPrice)}{_.get(this.props.currency, "symbol", "")}</TextNormal>
                     <TextSmall
                         style={this.state.selectedTransaction._id === item._id && style.listTextSelected}>{this.getTime(item.createdAt)}</TextSmall>
                 </View>
@@ -171,10 +182,10 @@ class Transaction extends React.Component {
         await this.setState({
             refreshing: true
         });
-        await this.props.transaction.refetch();
+        await this.initData();
         this.setState({
             refreshing: false,
-            selectedTransaction:{}
+            selectedTransaction: {}
         })
 
     }
@@ -231,11 +242,11 @@ class Transaction extends React.Component {
                             renderItem={this._renderListTransactionBody}
                             renderSectionHeader={this._renderListTransactionHeader}
                             keyExtractor={(item) => item._id}
-                            // onEndReached={() => {
-                            //     this.transactionLoadmore()
-                            // }}
+                            onEndReached={async () => {
+                                await this.loadMore()
+                            }}
                             onEndReachedThreshold={0.1}
-                            sections={normalizeTransactionSectionList(this.filterTransaction(this.props.transaction.getTransactionEmployee))}
+                            sections={normalizeTransactionSectionList(this.filterTransaction(this.props.transaction))}
                             ListEmptyComponent={() => <NoData/>}
                         />
                         {/*menu option */}
@@ -293,7 +304,7 @@ class Transaction extends React.Component {
                                                         <TextNormal style={style.transactionPaidDate}>
                                                             {moment(item.date).format(`DD/MM/YYYY: hh:mm a`)}</TextNormal>
                                                         <TextNormal
-                                                            style={style.transactionPaidIAmount}>{numberwithThousandsSeparator(item.amount)} {_.get(this.props.currency, "currency[0].symbol", "")}</TextNormal>
+                                                            style={style.transactionPaidIAmount}>{numberwithThousandsSeparator(item.amount)} {_.get(this.props.currency, "symbol", "")}</TextNormal>
                                                     </View>
                                                 )
                                             })
@@ -454,12 +465,16 @@ const style = EStyleSheet.create({
     '@media (min-width: 768) and (max-width: 1024)': {},
     '@media (min-width: 1024)': {}
 });
+const mapStateToProps = (state) => {
+    return {
+        transactionAmount: state.transactionReducer.transactionAmount,
+        currency: state.userReducer.currency,
+        transaction: state.transactionReducer.transaction
+    }
+}
 const mapDispatchToProps = {
-    openPopup
+    openPopup,
+    getTransactionAmount,
+    getTransaction
 };
-let TransactionApollo = compose(
-    graphql(QUERY.GET_TRANSACTION_AMOUNT, {name: 'transactionAmount', options: {fetchPolicy: "cache-and-network"}}),
-    graphql(QUERY.TRANSACTION, {name: 'transaction', options: {fetchPolicy: "cache-and-network"}}),
-    graphql(QUERY.CURRENCY, {name: 'currency', options: {fetchPolicy: "cache-and-network"}}),
-)(Transaction);
-export default connect(null, mapDispatchToProps)(TransactionApollo);
+export default connect(mapStateToProps, mapDispatchToProps)(Transaction);

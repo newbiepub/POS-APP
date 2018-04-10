@@ -71,9 +71,9 @@ class Login extends PureComponent {
             )
         } else {
             await AsyncStorage.setItem(ASYNC_STORAGE.AUTH_TOKEN, JSON.stringify(response));
+            await this.props.getProfile();
             this.props.navigator.resetTo({id: "home"});
-            this.props.getProfile();
-            console.warn(JSON.stringify(response))
+
         }
 
     }

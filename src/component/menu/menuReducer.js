@@ -1,4 +1,4 @@
-import {MENU_ACTION} from '../../constant/constant';
+import {MENU_ACTION, USER} from '../../constant/constant';
 
 const initialState = {
     menuItems: [{id: 'pos', name: 'Điểm bán hàng'},
@@ -27,6 +27,19 @@ export default function (state = initialState, action = {}) {
                 ...state,
                 menuVisible: !state.menuVisible,
                 isLoading: action.payload
+            }
+        }
+        case USER.LOG_OUT :{
+            return {
+                menuItems: [{id: 'pos', name: 'Điểm bán hàng'},
+                    {id: 'report', name: 'Thống kê',disable:true},
+                    {id: 'transaction', name: 'Giao dịch'},
+                    {id: 'invoice', name: 'Hoá đơn',disable:true},
+                    {id: 'inventory', name: 'Kho',disable:true},
+                    {id: 'setting', name: 'Cài đặt'},],
+                isLoading: false,
+                menuVisible: false,
+                currentItem: {id: 'pos', name: 'Điểm bán hàng'}
             }
         }
         default:

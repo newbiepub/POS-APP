@@ -17,7 +17,6 @@ class Popup extends React.Component {
         }
 
     }
-
     componentDidMount() {
         Dimensions.addEventListener("change", () => {
             let {width, height} = Dimensions.get('window');
@@ -27,14 +26,20 @@ class Popup extends React.Component {
             })
         })
     }
-
+    shouldComponentUpdate(nextProps,nextState){
+        const visibleChanged = this.props.popup.isVisible !== nextProps.popup.isVisible;
+        // console.warn(nextProps.popup.isVisible)
+        return visibleChanged;
+    }
     render() {
+        // console.warn('render');
         return (
             <Modal
                 visible={this.props.popup.isVisible}
                 transparent={true}
                 animationType={'none'}
                 onRequestClose={() => {
+
                     this.props.closePopup()
                 }}
             >

@@ -8,7 +8,6 @@ import {constantStyle} from '../../style/base';
 import {graphql} from 'react-apollo';
 import {QUERY} from '../../constant/query';
 import GridProduct from '../../component/listProduct/gridView/gridProduct';
-import Library from './library';
 import CustomAmount from './customAmount';
 import Cart from '../../component/cart/cart';
 
@@ -20,7 +19,7 @@ class POS extends PureComponent {
             clearSalesVisible: false,
             currentView: "gridProduct",
             leftWidth:width * 0.7,
-            leftHeight:height
+            leftHeight:height-constantStyle.headerHeight
         }
     }
     async componentDidMount() {
@@ -28,7 +27,7 @@ class POS extends PureComponent {
             let {width, height} = Dimensions.get('window');
             this.setState({
                 leftWidth:width* 0.7,
-                leftHeight:height
+                leftHeight:height -constantStyle.headerHeight
             })
         });
 
@@ -80,7 +79,7 @@ class POS extends PureComponent {
                                 width: this.state.leftWidth,
                                 height: this.state.leftHeight
                             }, this.state.currentView === 'gridProduct' ? style.onShow : style.onHide]}>
-                            <GridProduct checkLoginExpire={(data) => this.props.checkLoginExpire(data)}/>
+                            <GridProduct/>
                         </View>
                         <View
                             style={[style.body, {

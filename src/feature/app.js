@@ -16,10 +16,13 @@ import {QUERY} from '../constant/query';
 import {client} from '../root';
 import * as Animatable from 'react-native-animatable';
 import LoadingOverlay from '../component/loadingOverlay';
-
-EStyleSheet.build(); // Build Extended StyleSheet
+import {getProductAmount, getPaymentMethod, getPaymentStatus,getProduct} from '../component/listProduct/productAction';
 import {ASYNC_STORAGE} from '../constant/constant'
-import {getProfile } from './login/userAction';
+import {getProfile, getCurrency} from './login/userAction';
+import config from '../config';
+EStyleSheet.build(); // Build Extended StyleSheet
+
+
 class App extends PureComponent {
     constructor(props) {
         super(props);
@@ -28,6 +31,7 @@ class App extends PureComponent {
             firstScene: 'login'
         }
     }
+
     configureScene(route, navigator) {
         if (route.id === "home") {
             return Navigator.SceneConfigs.FadeAndroid
@@ -46,17 +50,64 @@ class App extends PureComponent {
     }
 
     async ensuringLogined() {
-        let authToken = await AsyncStorage.getItem(ASYNC_STORAGE.AUTH_TOKEN);
-        if (authToken != undefined) {
-            this.navigator.resetTo({id: "home"})
+        let {api} = config, authToken = await AsyncStorage.getItem(ASYNC_STORAGE.AUTH_TOKEN);
 
+        if (authToken != undefined) {
+            authToken = JSON.parse(authToken);
+            let {access_token, refresh_token} = authToken;
+            try {
+                let response = await fetch(`${api}/account/token/exchanges`, {
+                    method: "POST",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({access_token, refresh_token})
+                });
+                response = await response.json();
+                if (response.errors) {
+                    Alert.alert(
+                        'Thông báo !',
+                        'Phiên làm việc của bạn đã hết hạn !',
+                        [
+                            {
+                                text: 'OK', onPress: () => {
+                                }
+                            },
+                        ],
+                        {cancelable: false}
+                    );
+                    AsyncStorage.removeItem(ASYNC_STORAGE.AUTH_TOKEN);
+                    this.props.navigator.resetTo({id: "login"});
+                    return false;
+                } else {
+                    await AsyncStorage.setItem(ASYNC_STORAGE.AUTH_TOKEN, JSON.stringify(response));
+                    this.navigator.resetTo({id: "home"})
+                }
+            } catch (e) {
+                console.warn("app.js-ensuringLogined-" + e);
+                this.navigator.resetTo({id: "home"})
+            }
 
         }
     }
 
     async componentWillMount() {
 
-        this.ensuringLogined()
+        this.ensuringLogined();
+        let {_id} = this.props.user;
+        this.initData();
+    }
+
+    async initData() {
+        await this.props.getPaymentMethod();
+        await this.props.getPaymentStatus();
+        await this.props.getCurrency();
+        // let {_id} = this.props.user;
+        // let amount = await this.props.getProductAmount(_id);
+        // for (let i = 0; i <= amount; i += 10) {
+        //     await this.props.getProduct(_id, 10, i);
+        // }
     }
 
     render() {
@@ -81,7 +132,7 @@ class App extends PureComponent {
     }
 }
 
-class Home extends PureComponent {
+class Home extends React.Component {
 
     checkLoginExpire(data) {
         try {
@@ -92,7 +143,7 @@ class Home extends PureComponent {
                     [
                         {
                             text: 'OK', onPress: () => {
-                        }
+                            }
                         },
                     ],
                     {cancelable: false}
@@ -106,13 +157,17 @@ class Home extends PureComponent {
 
 
     };
-
+    shouldComponentUpdate(nextProps,nextState)
+    {
+        const changeRoute = this.props.router.currentItem.id !== nextProps.router.currentItem.id;
+        return changeRoute;
+    }
     render() {
         return (
             <View style={{flex: 1}}>
                 {
                     this.props.router.currentItem.id === this.props.router.menuItems[0].id ?
-                        <POS checkLoginExpire={(data) => this.checkLoginExpire(data)}/> :
+                        <POS/> :
                         this.props.router.currentItem.id === this.props.router.menuItems[1].id ?
                             <Report/> :
                             this.props.router.currentItem.id === this.props.router.menuItems[2].id ?
@@ -138,11 +193,17 @@ class Home extends PureComponent {
 
 const mapStateToProps = (state) => {
     return {
-        router: state.menuReducer
+        router: state.menuReducer,
+        user: state.userReducer
     }
 }
-const mapDispatchToProps ={
-    getProfile
+const mapDispatchToProps = {
+    getProfile,
+    getProductAmount,
+    getPaymentMethod,
+    getPaymentStatus,
+    getCurrency,
+    getProduct
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

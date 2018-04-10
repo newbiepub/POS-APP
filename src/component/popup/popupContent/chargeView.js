@@ -19,8 +19,10 @@ import LoadingOverlay from '../../loadingOverlay';
 import {clearCart} from '../../cart/cartAction';
 import _ from 'lodash';
 import {client} from '../../../root';
-import gql from 'graphql-tag';
+import {subtractInventoryLocal} from '../../listProduct/productAction';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
+import {createTransaction} from '../.././../feature/transaction/transactionAction';
+
 class ChargeView extends React.Component {
     constructor(props) {
         super(props);
@@ -34,8 +36,8 @@ class ChargeView extends React.Component {
                 productItems: this.props.cart,
                 totalPrice: this.getTotalPrice(),
                 totalQuantity: this.getTotalQuantity(),
-                paymentStatus: null,
-                paymentMethod: null,
+                paymentStatus: this.props.paymentStatus[0],
+                paymentMethod: this.props.paymentMethod[0],
                 paid: 0,
                 dueDate: null,
                 description: "",
@@ -51,26 +53,6 @@ class ChargeView extends React.Component {
 
         }
 
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.hasOwnProperty("paymentStatus") && !this.state.transaction.paymentStatus) {
-            this.setState({
-                transaction: {
-                    ...this.state.transaction,
-                    paymentStatus: _.get(nextProps, "paymentStatus.paymentStatus[0]", null)
-                }
-            });
-        }
-        if (nextProps.hasOwnProperty("paymentMethod") && !this.state.transaction.paymentMethod) {
-            this.setState({
-                transaction: {
-                    ...this.state.transaction,
-                    paymentMethod: _.get(nextProps, "paymentMethod.paymentMethod[0]", null)
-                }
-
-            });
-        }
     }
 
     getTotalQuantity() {
@@ -116,7 +98,7 @@ class ChargeView extends React.Component {
             case "paymentMethod":
                 return <PaymentMethod navigator={navigator} instance={this}
                                       currentPaymentMethod={this.state.transaction.paymentMethod}
-                                      paymentMethodList={this.props.paymentMethod.paymentMethod}/>;
+                                      paymentMethodList={this.props.paymentMethod}/>;
             case "selectDueDate":
                 return <SelectDueDate navigator={navigator} instance={this}
                                       dueDate={this.state.dueDate}/>;
@@ -128,8 +110,9 @@ class ChargeView extends React.Component {
     }
 
     getPaymentStatus() {
-        let status = this.props.paymentStatus.paymentStatus;
+        let status = this.props.paymentStatus;
 
+        // console.warn(status)
         function findPaymentStatus(type) {
 
             for (item of status) {
@@ -161,36 +144,8 @@ class ChargeView extends React.Component {
         return false;
     }
 
-    async subtractInventoryLocal() {
-        let query = await QUERY.INVENTORY_PRODUCT;
-        const data = await client.readQuery({
-            query, variables: {
-                userId: _.get(this.props, "currentUser.currentUser._id", "")
-            }
-        });
-        for (items of this.state.transaction.productItems) {
-
-            for (itemsData of data.getUserProductInventory) {
-                if (items._id === itemsData.product._id) {
-                    itemsData.quantity = itemsData.quantity - items.quantity;
-                    break;
-                }
-            }
-        }
-
-        client.writeQuery({
-            query,
-            data: {
-                getUserProductInventory: data.getUserProductInventory,
-            },
-            variables: {
-                userId: _.get(this.props, "currentUser.currentUser._id", "")
-            }
-        });
-    }
-
     async addTransactionLocal(transaction) {
-        let item = Object.assign({}, transaction)
+        let item = Object.assign({}, transaction);
         for (itemsProduct of item.productItems) {
             itemsProduct._id = Math.round(Math.random() * -1000000).toString();
             itemsProduct.price.__typename = "TransactionProductPrice";
@@ -216,7 +171,6 @@ class ChargeView extends React.Component {
 
     async onCharge() {
 
-
         let condition = await this.checkCondition();
 
         if (condition) {
@@ -227,52 +181,22 @@ class ChargeView extends React.Component {
                     {text: 'Không', style: 'cancel'},
                     {
                         text: 'Có', onPress: async () => {
-                        await this.setState({
-                            transaction: {
-                                ...this.state.transaction,
-                                paymentStatus: this.getPaymentStatus()
-                            }
-                        });
-                        let paymentStatus = await removeTypeName(this.getPaymentStatus()),
-                            paymentMethod = await removeTypeName(this.state.transaction.paymentMethod),
-                            productItems = await normalizeProductItemsInput(this.state.transaction.productItems);
-                        // console.warn(paymentStatus);
-                        this.subtractInventoryLocal();
-                         this.props.createTransaction({
-                            variables: {
-                                productItems: productItems,
-                                type: "pay",
-                                paymentStatus: paymentStatus,
-                                paymentMethod: paymentMethod,
-                                dueDate: this.state.transaction.dueDate,
-                                totalQuantity: this.state.transaction.totalQuantity,
-                                totalPrice: this.state.transaction.totalPrice,
-                                paid: {date: new Date(), amount: this.state.transaction.paid},
-                                description: this.state.transaction.description,
-                                customer: this.state.transaction.customer,
-
-                            }
-                        });
-                        // this.addTransactionLocal({
-                        //     __typename: "Transaction",
-                        //     _id: Math.round(Math.random() * -1000000).toString(),
-                        //     createdAt: new Date(),
-                        //     productItems: productItems,
-                        //     type: "pay",
-                        //     paymentStatus: paymentStatus,
-                        //     paymentMethod: paymentMethod,
-                        //     dueDate: this.state.transaction.dueDate,
-                        //     totalQuantity: this.state.transaction.totalQuantity,
-                        //     totalPrice: this.state.transaction.totalPrice,
-                        //     issueRefund: false,
-                        //     issueRefundReason: "",
-                        //     paid: {date: new Date(), amount: this.state.transaction.paid},
-                        //     description: this.state.transaction.description,
-                        //     customer: this.state.transaction.customer,
-                        // });
-                        this.props.clearCart();
-                        this.props.closePopup();
-                    }
+                            await this.setState({
+                                transaction: {
+                                    ...this.state.transaction,
+                                    paymentStatus: this.getPaymentStatus()
+                                }
+                            });
+                            let paymentStatus = await removeTypeName(this.getPaymentStatus()),
+                                paymentMethod = await removeTypeName(this.state.transaction.paymentMethod),
+                                productItems = await normalizeProductItemsInput(this.state.transaction.productItems);
+                            //Subtract inventory
+                            this.props.subtractInventoryLocal(productItems);
+                            //Mutate Transaction
+                            this.props.createTransaction(productItems, paymentStatus, paymentMethod, this.state.transaction.dueDate, this.state.transaction.totalQuantity, this.state.transaction.totalPrice, this.state.transaction.paid, this.state.transaction.description, this.state.transaction.customer);
+                            this.props.clearCart();
+                            this.props.closePopup();
+                        }
                     },
                 ],
                 {cancelable: false}
@@ -285,7 +209,7 @@ class ChargeView extends React.Component {
                 [
                     {
                         text: 'OK', onPress: () => {
-                    }
+                        }
                     },
                 ],
                 {cancelable: false})
@@ -299,7 +223,7 @@ class ChargeView extends React.Component {
         return (
             <View style={style.container}>
                 <PopupHeader
-                    title={`Tổng tiền: ${numberwithThousandsSeparator(this.getTotalPrice())}${_.get(this.props.currency, "currency[0].symbol", "")}`}
+                    title={`Tổng tiền: ${numberwithThousandsSeparator(this.getTotalPrice())}${_.get(this.props.currency, "symbol", "")}`}
                     isBack={this.state.currentView !== 'main'}
                     submitFunction={() => this.onCharge()}
                     backFunction={() => {
@@ -661,23 +585,16 @@ const style = EStyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         popup: state.popupReducer,
-        cart: state.cartReducer.cart
+        cart: state.cartReducer.cart,
+        paymentMethod: state.productReducer.paymentMethod,
+        paymentStatus: state.productReducer.paymentStatus,
+        currency: state.userReducer.currency
     }
 };
 const mapDispatchToProps = {
     closePopup,
-    clearCart
+    clearCart,
+    subtractInventoryLocal,
+    createTransaction
 };
-
-let ChargeViewApollo = compose(
-    graphql(QUERY.CURRENT_USER, {
-        name: 'currentUser', options: {
-            fetchPolicy: "cache-and-network"
-        }
-    }),
-    graphql(QUERY.CURRENCY, {name: 'currency', options: {fetchPolicy: "cache-and-network"}}),
-    graphql(QUERY.PAYMENT_STATUS, {name: 'paymentStatus', options: {fetchPolicy: "cache-and-network"}}),
-    graphql(QUERY.PAYMENT_METHOD, {name: 'paymentMethod', options: {fetchPolicy: "cache-and-network"}}),
-    graphql(MUTATION.CREATE_TRANSACTION, {name: 'createTransaction'})
-)(ChargeView);
-export default connect(mapStateToProps, mapDispatchToProps)(ChargeViewApollo);
+export default connect(mapStateToProps, mapDispatchToProps)(ChargeView);

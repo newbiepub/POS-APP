@@ -73,7 +73,7 @@ export const QUERY = {
             }
 
         }`,
-    GET_AMOUNT_INVENTORY_PRODUCT:gql`
+    GET_AMOUNT_INVENTORY_PRODUCT: gql`
         query getAmountUserProductInventory($userId: String!){
             getAmountUserProductInventory(type: "employee", userId: $userId) {
                 inventoryAmount
@@ -105,8 +105,8 @@ export const QUERY = {
             }
         }`,
     TRANSACTION: gql`
-        query {
-            getTransactionEmployee{
+    query getTransactionEmployee($limit:Int, $skip: Int){
+            getTransactionEmployee(limit:$limit, skip: $skip){
                 _id
                 createdAt
                 productItems{
