@@ -78,7 +78,7 @@ class Transaction extends React.Component {
     initData() {
         InteractionManager.runAfterInteractions(async () => {
             for (let i = 0; i <= this.props.transactionAmount; i += 10) {
-                await this.props.getTransaction(10,i);
+                await this.props.getTransaction(10, i);
             }
 
         });
@@ -132,34 +132,46 @@ class Transaction extends React.Component {
 
     filterTransaction(data) {
         //console.warn(data)
-        let result = [];
-        if (this.state.currentTransactionOption.id === this.transactionOptionItems[0].id) {
-            result = data;
-        }
-        if (this.state.currentTransactionOption.id === this.transactionOptionItems[1].id) {
-            for (items of data) {
+        try {
+            let result = [];
+            if (this.state.currentTransactionOption.id === this.transactionOptionItems[0].id) {
+                result = data;
+            }
+            if (this.state.currentTransactionOption.id === this.transactionOptionItems[1].id) {
+                for (items of data) {
+                    if (items && items.paid)
+                        if (this.getTotalPaid(items.paid) < items.totalPrice && items.issueRefund == 'false') {
+                            result.push(items);
+                        }
+                }
+            }
+            if (this.state.currentTransactionOption.id === this.transactionOptionItems[2].id) {
+                for (items of data) {
 
-                if (this.getTotalPaid(items.paid) < items.totalPrice && items.issueRefund == 'false') {
-                    result.push(items);
+                    if (items && items.paid)
+                    {
+                        if (this.getTotalPaid(items.paid) > items.totalPrice && items.issueRefund === false) {
+                            result.push(items);
+                        }
+                    }
                 }
             }
-        }
-        if (this.state.currentTransactionOption.id === this.transactionOptionItems[2].id) {
-            for (items of data) {
-                if (this.getTotalPaid(items.paid) > items.totalPrice && items.issueRefund == 'false') {
-                    result.push(items);
+            if (this.state.currentTransactionOption.id === this.transactionOptionItems[3].id) {
+                for (items of data) {
+                    if (items && items.issueRefund)
+                        if (items.issueRefund == 'true') {
+                            result.push(items);
+                        }
                 }
             }
-        }
-        if (this.state.currentTransactionOption.id === this.transactionOptionItems[3].id) {
-            for (items of data) {
-                if (items.issueRefund == 'true') {
-                    result.push(items);
-                }
-            }
+
+            return result;
+
+        } catch (e) {
+            console.warn("transaction.js-filterTransaction-" + e)
+            return []
         }
 
-        return result;
 
     }
 
@@ -246,7 +258,7 @@ class Transaction extends React.Component {
                                 await this.loadMore()
                             }}
                             onEndReachedThreshold={0.1}
-                            sections={normalizeTransactionSectionList(this.filterTransaction(this.props.transaction))}
+                            sections={normalizeTransactionSectionList(this.filterTransaction([...this.props.asyncTransaction, ...this.props.transaction]))}
                             ListEmptyComponent={() => <NoData/>}
                         />
                         {/*menu option */}
@@ -469,7 +481,8 @@ const mapStateToProps = (state) => {
     return {
         transactionAmount: state.transactionReducer.transactionAmount,
         currency: state.userReducer.currency,
-        transaction: state.transactionReducer.transaction
+        transaction: state.transactionReducer.transaction,
+        asyncTransaction: state.transactionReducer.asyncTransaction
     }
 }
 const mapDispatchToProps = {

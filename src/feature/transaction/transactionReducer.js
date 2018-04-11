@@ -3,7 +3,8 @@ import {REHYDRATE} from 'redux-persist';
 
 const initialState = {
     transactionAmount: 0,
-    transaction: []
+    transaction: [],
+    asyncTransaction: [],
 };
 
 function updateTransaction(state, transaction) {
@@ -29,9 +30,19 @@ function updateTransaction(state, transaction) {
     return state
 
 }
-function createTransaction(state, transaction){
-    state.splice(0, 0,transaction);
 
+function createTransaction(state, transaction) {
+    state.splice(0, 0, transaction);
+
+    return state
+}
+function removeTransactionAsyncLocal(state,transaction){
+    for(let i = 0; i< state.length; i ++){
+        if(state[i]._id === transaction._id)
+        {
+            state.splice(i, 1);
+        }
+    }
     return state
 }
 
@@ -50,11 +61,24 @@ export default function (state = initialState, action = {}) {
                 transactionAmount: action.payload
             }
         }
-        case TRANSACTION.CREATE_TRANSACTION:{
+        case TRANSACTION.CREATE_TRANSACTION: {
             let newTransaction = createTransaction(state.transaction, action.payload);
             return {
                 ...state,
                 transaction: [...newTransaction]
+            }
+        }
+        case TRANSACTION.ASYNC_CREATE_TRANSACTION: {
+            return {
+                ...state,
+                asyncTransaction: [action.payload, ...state.asyncTransaction]
+            }
+        }
+        case TRANSACTION.REMOVE_TRANSACTION_ASYNC_LOCAL: {
+            let newTransactionAsync = removeTransactionAsyncLocal(state.asyncTransaction, action.payload);
+            return {
+                ...state,
+                asyncTransaction: [...newTransactionAsync]
             }
         }
         case REHYDRATE: {
@@ -63,7 +87,8 @@ export default function (state = initialState, action = {}) {
                 return {
                     ...state,
                     transactionAmount: action.payload.transactionReducer.transactionAmount,
-                    transaction: action.payload.transactionReducer.transaction
+                    transaction: action.payload.transactionReducer.transaction,
+                    asyncTransaction: action.payload.transactionReducer.asyncTransaction,
                 };
 
             } else {
@@ -72,6 +97,13 @@ export default function (state = initialState, action = {}) {
                 }
             }
 
+        }
+        case USER.LOG_OUT: {
+            return {
+                transactionAmount: 0,
+                transaction: [],
+                asyncTransaction: [],
+            }
         }
         default:
             return {

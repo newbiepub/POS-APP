@@ -24,6 +24,19 @@ function createTransactionAction(payload) {
     }
 }
 
+function asyncTransactionAction(payload) {
+    return {
+        type: TRANSACTION.ASYNC_CREATE_TRANSACTION,
+        payload
+    }
+}
+
+function removeTransactionAsyncLocalAction(payload) {
+    return {
+        type: TRANSACTION.REMOVE_TRANSACTION_ASYNC_LOCAL,
+        payload
+    }
+}
 export function getTransaction(limit, skip) {
     return async (dispatch, getState) => {
         try {
@@ -84,7 +97,56 @@ export function createTransaction(productItems, paymentStatus, paymentMethod, du
             // console.warn(transactionCreated)
 
         } catch (e) {
+            let asyncTransaction = {
+                _id: Math.round(Math.random() * -1000000).toString(),
+                productItems: productItems,
+                type: "pay",
+                paymentStatus: paymentStatus,
+                paymentMethod: paymentMethod,
+                dueDate: dueDate,
+                totalQuantity: totalQuantity,
+                totalPrice: totalPrice,
+                paid: [{date: new Date(), amount: paid}],
+                description: description,
+                customer: customer,
+                createdAt: new Date(),
+                issueRefund: false,
+                issueRefundReason: '',
+                async: true,
+            };
+            dispatch(asyncTransactionAction(asyncTransaction));
+
             console.warn("transactionAction.js-createTransaction-" + e)
+        }
+
+    }
+}
+
+export function createTransactionAsync(productAsync) {
+    return async (dispatch, getState) => {
+        try {
+            for (item of productAsync) {
+                const transactionCreated = await client.mutate({
+                    mutation: MUTATION.CREATE_TRANSACTION,
+                    variables: {
+                        productItems: item.productItems,
+                        type: "pay",
+                        paymentStatus: item.paymentStatus,
+                        paymentMethod: item.paymentMethod,
+                        dueDate: item.dueDate,
+                        totalQuantity: item.totalQuantity,
+                        totalPrice: item.totalPrice,
+                        paid: item.paid[0],
+                        description: item.description,
+                        customer: item.customer,
+                        createdAt: item.createdAt
+                    }
+                });
+                dispatch(removeTransactionAsyncLocalAction(item));
+                dispatch(createTransactionAction(transactionCreated.data.createTransaction));
+            }
+        } catch (e) {
+            console.warn("transactionAction.js-createTransactionAsync-" + e)
         }
 
     }

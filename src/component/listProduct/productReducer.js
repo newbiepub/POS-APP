@@ -97,7 +97,9 @@ export default function async(state = initialState, action = {}) {
                 return {
                     ...state,
                     product: action.payload.productReducer.product,
-                    productAmount: action.payload.productReducer.productAmount
+                    productAmount: action.payload.productReducer.productAmount,
+                    paymentStatus: action.payload.productReducer.paymentStatus,
+                    paymentMethod: action.payload.productReducer.paymentMethod,
                 };
 
             } else {

@@ -1,5 +1,14 @@
 import React, {PureComponent} from "react";
-import {Platform, StatusBar, Text, View, Image, TouchableOpacity, Dimensions, TouchableWithoutFeedback} from "react-native";
+import {
+    Platform,
+    StatusBar,
+    Text,
+    View,
+    Image,
+    TouchableOpacity,
+    Dimensions,
+    TouchableWithoutFeedback
+} from "react-native";
 import {TextNormal, TextLarge, TextSmall} from '../../component/text';
 import Header from '../../component/header';
 import EStyleSheet from "react-native-extended-stylesheet";
@@ -10,6 +19,8 @@ import {QUERY} from '../../constant/query';
 import GridProduct from '../../component/listProduct/gridView/gridProduct';
 import CustomAmount from './customAmount';
 import Cart from '../../component/cart/cart';
+import {connect} from 'react-redux';
+import {createTransactionAsync} from '../transaction/transactionAction';
 
 class POS extends PureComponent {
     constructor(props) {
@@ -18,24 +29,32 @@ class POS extends PureComponent {
         this.state = {
             clearSalesVisible: false,
             currentView: "gridProduct",
-            leftWidth:width * 0.7,
-            leftHeight:height-constantStyle.headerHeight
+            leftWidth: width * 0.7,
+            leftHeight: height - constantStyle.headerHeight
         }
     }
+
+    componentWillMount() {
+        if(this.props.asyncTransaction.length> 0 )
+        {
+            this.props.createTransactionAsync(this.props.asyncTransaction)
+        }
+    }
+
     async componentDidMount() {
         Dimensions.addEventListener("change", () => {
             let {width, height} = Dimensions.get('window');
             this.setState({
-                leftWidth:width* 0.7,
-                leftHeight:height -constantStyle.headerHeight
+                leftWidth: width * 0.7,
+                leftHeight: height - constantStyle.headerHeight
             })
         });
 
 
-
     }
+
     render() {
-       // console.warn(JSON.stringify(this.props.paymentStatus))
+        // console.warn(JSON.stringify(this.props.paymentStatus))
         return (
             <View style={style.container}>
                 {/*---------------Header------------------------*/}
@@ -52,13 +71,13 @@ class POS extends PureComponent {
                             </View>
                         </TouchableOpacity>
                         {/*<TouchableOpacity onPress={() => {*/}
-                            {/*this.setState({currentView: 'library'})*/}
+                        {/*this.setState({currentView: 'library'})*/}
                         {/*}}*/}
-                                          {/*style={[style.tabItem, this.state.currentView === 'library' && style.tabItemSelected]}>*/}
-                            {/*<View>*/}
-                                {/*<Entypo name="list"*/}
-                                        {/*style={[style.tabIcon, this.state.currentView === 'library' && style.tabIconSelected]}/>*/}
-                            {/*</View>*/}
+                        {/*style={[style.tabItem, this.state.currentView === 'library' && style.tabItemSelected]}>*/}
+                        {/*<View>*/}
+                        {/*<Entypo name="list"*/}
+                        {/*style={[style.tabIcon, this.state.currentView === 'library' && style.tabIconSelected]}/>*/}
+                        {/*</View>*/}
                         {/*</TouchableOpacity>*/}
                         <TouchableOpacity onPress={() => {
                             this.setState({currentView: 'customAmount'})
@@ -140,5 +159,12 @@ const style = EStyleSheet.create({
     '@media (min-width: 768) and (max-width: 1024)': {},
     '@media (min-width: 1024)': {}
 });
-
-export default POS;
+const mapStateToProps = (state) => {
+    return {
+        asyncTransaction: state.transactionReducer.asyncTransaction
+    }
+};
+const mapDispatchToProps = {
+    createTransactionAsync
+};
+export default connect(mapStateToProps, mapDispatchToProps)(POS);
