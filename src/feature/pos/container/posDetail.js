@@ -1,13 +1,24 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {StyleSheet, ScrollView} from "react-native";
-import {Screen, NavigationBar, Title, TouchableOpacity, Icon, DropDownMenu, Tile, Button, Text, View} from "@shoutem/ui";
+import {
+    StyleSheet,
+    ScrollView,
+    TouchableOpacity,
+    View,
+    Text,
+    SafeAreaView,
+    InteractionManager
+} from "react-native";
 import styleBase from "../../../styles/base";
+import NavBar from "../../../component/navbar/navbar";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import {openPopup, renderContent} from "../../../component/popup/actions/popupAction";
+import DropDown from "../../../component/dropDown/index";
 
 class POSDetail extends React.Component {
     constructor(props) {
         super(props);
-        this.routes =[
+        this.routes = [
             {title: 'KHO', route: 'inventory'},
             {title: 'THỐNG KÊ', route: 'report'},
             {title: "CÀI ĐẶT", route: 'setting'}
@@ -15,6 +26,9 @@ class POSDetail extends React.Component {
         this.state = {
             currentRoute: this.routes[0]
         }
+
+        this.renderLeftComponent = this.renderLeftComponent.bind(this);
+        this.renderRightContent = this.renderRightContent.bind(this);
     }
 
     static propTypes = {
@@ -26,63 +40,124 @@ class POSDetail extends React.Component {
         title: ""
     };
 
+    /**
+     * Handler
+     */
+
+    handleClickItemDropDown (route) {
+        this.setState({currentRoute: route})
+    }
+
+    handleClickDropDown() {
+        InteractionManager.runAfterInteractions(() => {
+            openPopup();
+            renderContent(<DropDown items={this.routes}
+                                    onPressItem={route => this.handleClickItemDropDown(route)}
+                                    label="title"/>)
+        })
+    }
+
+    /**
+     * Renderer
+     * @returns {XML}
+     */
+
     renderCenterComponent() {
         return (
-            <Title>
-                {this.props.title}
-            </Title>
+            <View>
+                <Text style={[styleBase.title, styleBase.fontRubik]}>
+                    {this.props.title}
+                </Text>
+            </View>
         )
     }
 
-    renderLeftComponent () {
+    renderLeftComponent() {
         return (
             <TouchableOpacity onPress={() => this.props.navigator.pop()}>
-                <Icon name="close"/>
+                <Ionicons name="ios-close" style={{fontSize: 40}}/>
             </TouchableOpacity>
         )
     }
 
     renderRightContent() {
         return (
-            <DropDownMenu
-                options={this.routes}
-                selectedOption={this.state.currentRoute}
-                onOptionSelected={(route) => this.setState({currentRoute: route})}
-                titleProperty="title"
-                valueProperty="route"
-            />
-        )
+            <TouchableOpacity
+                onPress={() => this.handleClickDropDown()}
+                style={[styleBase.row, styleBase.center]}>
+                <Text style={[
+                    styleBase.title, styleBase.m_sm_right,
+                    styleBase.fontRubik, styleBase.text4]}>
+                    {this.state.currentRoute.title}
+                </Text>
+                <Ionicons name={'ios-arrow-down'} style={[styleBase.title]}/>
+            </TouchableOpacity>
+        );
     }
 
     render() {
         return (
-            <Screen styleName="paper">
-                <NavigationBar
-                    styleName="inline"
-                    style={{container: {paddingHorizontal: 15}}}
-                    centerComponent={this.renderCenterComponent()}
-                    leftComponent={this.renderLeftComponent()}
-                    rightComponent={this.renderRightContent()}
-                />
-                <ScrollView>
-                    <View styleName="lg-gutter-top">
-                        <Tile styleName="text-centric" style={{backgroundColor: "#e5e5e5"}}>
-                            <Title styleName="md-gutter-bottom">QUẢN LÝ SẢN PHẨM</Title>
-                            <Button
-                                onPress={() => this.props.navigator.push({id: "pos_product_management",
-                                    user: this.props.user,
-                                    title: `QUẢN LÝ SẢN PHẨM - ${this.props.title}`})}
-                                styleName="dark confirmation"><Text>ĐI ĐẾN</Text></Button>
-                        </Tile>
-                    </View>
-                    <View styleName="lg-gutter-top">
-                        <Tile styleName="text-centric" style={{backgroundColor: "#e5e5e5"}}>
-                            <Title styleName="md-gutter-bottom">QUẢN LÝ NGUYÊN LIỆU</Title>
-                            <Button styleName="dark confirmation"><Text>ĐI ĐẾN</Text></Button>
-                        </Tile>
-                    </View>
-                </ScrollView>
-            </Screen>
+            <SafeAreaView style={[styleBase.container, styleBase.bgWhite]}>
+                <View style={[styleBase.container]}>
+                    <NavBar
+                        title={this.props.title}
+                        renderLeftComponent={this.renderLeftComponent}
+                        renderRightComponent={this.renderRightContent}
+                    />
+                    <ScrollView>
+                        <View style={[styleBase.m_lg_top]}>
+                            <View style={[
+                                styleBase.p_lg_vertical,
+                                styleBase.p_lg_horizontal,
+                                styleBase.bgE5,
+                                styleBase.center]}>
+                                <Text style={[
+                                    styleBase.p_md_bottom,
+                                    styleBase.title,
+                                    styleBase.text4,
+                                    styleBase.fontRubik,]}>
+                                    QUẢN LÝ SẢN PHẨM
+                                </Text>
+                                <TouchableOpacity
+                                    onPress={() => this.props.navigator.push({
+                                        id: "pos_product_management",
+                                        user: this.props.user,
+                                        title: `QUẢN LÝ SẢN PHẨM - ${this.props.title}`
+                                    })}
+                                    style={[styleBase.center,
+                                        styleBase.p_md_horizontal,
+                                        styleBase.bgBlack, styleBase.p_md_vertical]}>
+                                    <Text style={[styleBase.textWhite, styleBase.fontBold]}>
+                                        ĐI ĐẾN
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        <View style={[styleBase.m_lg_top]}>
+                            <View style={[
+                                styleBase.p_lg_vertical,
+                                styleBase.p_lg_horizontal,
+                                styleBase.bgE5,
+                                styleBase.center
+                            ]}>
+                                <Text style={[
+                                    styleBase.p_md_bottom, styleBase.text4,
+                                    styleBase.fontRubik, styleBase.title
+                                ]}>
+                                    QUẢN LÝ NGUYÊN LIỆU
+                                </Text>
+                                <TouchableOpacity style={[styleBase.center,
+                                    styleBase.p_md_horizontal,
+                                    styleBase.bgBlack, styleBase.p_md_vertical]}>
+                                    <Text style={[styleBase.textWhite, styleBase.fontBold]}>
+                                        ĐI ĐẾN
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </ScrollView>
+                </View>
+            </SafeAreaView>
         )
     }
 }

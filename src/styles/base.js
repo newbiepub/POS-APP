@@ -35,8 +35,35 @@ const styleBase = EStyleSheet.create({
     row: {
         flexDirection: "row"
     },
+    divider: {
+        height: 1,
+        borderColor: "#e5e5e5",
+        borderWidth: 1,
+    },
     column: {
         flexDirection: "column"
+    },
+    nav: {
+        height: 60,
+        backgroundColor: "#fff"
+    },
+    fillParent: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0
+    },
+    overlay: {
+        position: 'absolute',
+        backgroundColor: 'rgba(0,0,0,.5)'
+    },
+    textInput: {
+        height: 40
+    },
+    fontRubik: {
+        fontFamily: 'Rubik',
+        color: "#444"
     },
     grow: {
         flexGrow: 1
@@ -46,6 +73,9 @@ const styleBase = EStyleSheet.create({
     },
     textWhite: {
         color: "#fff"
+    },
+    text4: {
+        color: "#444"
     },
     imgLargeTile: {
         height: "20%",
@@ -85,17 +115,29 @@ const styleBase = EStyleSheet.create({
         borderBottomWidth: 1,
         borderTopWidth: 1
     },
+    title: {
+        fontSize: '1.1rem'
+    },
+    normalText: {
+        fontSize: '1rem'
+    },
     bgE5: {
         backgroundColor: "#e5e5e5"
     },
     bgWhite: {
         backgroundColor: "#fff"
     },
+    bgWhiteTransparent: {
+        backgroundColor: 'rgba(255,255,255,0.9)'
+    },
     bgBlack: {
         backgroundColor: "#000"
     },
     noBg: {
         backgroundColor: "transparent"
+    },
+    spaceBetween: {
+        justifyContent: 'space-between'
     },
     /* Gutters */
     p_sm_top: {
@@ -174,6 +216,12 @@ const styleBase = EStyleSheet.create({
     },
 
     // Gutter LG
+    m_lg_top: {
+        marginTop: 30
+    },
+    p_lg_top: {
+        paddingTop: 30
+    },
     p_lg_right: {
         paddingRight: 30
     },
@@ -194,11 +242,23 @@ const styleBase = EStyleSheet.create({
     },
 
     //Gutter XL
+    m_xl_top: {
+        marginTop: 45
+    },
+    m_xl_bottom: {
+        marginBottom: 45
+    },
     m_xl_horizontal: {
         marginHorizontal: 45
     },
     m_xl_vertical: {
         marginVertical: 45
+    },
+    p_xl_top: {
+        paddingTop: 45
+    },
+    p_xl_bottom: {
+        paddingBottom: 45
     },
     p_xl_horizontal: {
         paddingHorizontal: 45

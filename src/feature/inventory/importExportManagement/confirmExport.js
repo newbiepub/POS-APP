@@ -1,6 +1,5 @@
 import React from "react";
-import {StyleSheet} from "react-native";
-import { View } from "@shoutem/ui";
+import {StyleSheet, View} from "react-native";
 import PropTypes from "prop-types";
 import styleBase from "../../../styles/base";
 import NavBar from "../../../component/navbar/navbar";

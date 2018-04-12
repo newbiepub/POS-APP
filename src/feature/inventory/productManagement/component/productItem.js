@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {StyleSheet, InteractionManager} from "react-native";
-import {View, TouchableOpacity, Subtitle, Text, Icon, Divider} from "@shoutem/ui";
 import styleBase from "../../../../styles/base";
 import ProductItemCollapse from "./productDetail";
 import {equals} from "../../../../utils/utils";

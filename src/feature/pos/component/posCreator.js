@@ -1,6 +1,5 @@
 import React from "react";
-import {Button, Icon, Title, TouchableOpacity, View, FormGroup, Divider, TextInput} from "@shoutem/ui";
-import {StyleSheet, Dimensions, SafeAreaView} from "react-native";
+import {StyleSheet, Dimensions, SafeAreaView, TextInput, TouchableOpacity} from "react-native";
 import styleBase from "../../../styles/base";
 import {closePopup} from "../../../component/popup/actions/popupAction";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";

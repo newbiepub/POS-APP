@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {View, Spinner, Text, TouchableOpacity} from "@shoutem/ui";
 import Table from "../../../component/table/table";
 import {inventoryHistoryFields} from "../../../utils/tableFields";
 import {getInentoryHistory} from "./action";

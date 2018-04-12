@@ -83,6 +83,7 @@ export default class AppRoot extends PureComponent {
             <Provider store={store}>
                 <AppContainer/>
             </Provider>
+
         )
     }
 }

@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {Modal, TouchableWithoutFeedback} from "react-native";
-import {View, Overlay} from "@shoutem/ui";
+import {Modal, TouchableWithoutFeedback, View} from "react-native";
 import {connect} from "react-redux";
 import {closePopup} from "./actions/popupAction";
+import styleBase from "../../styles/base";
 
 class Popup extends React.Component {
     constructor(props) {
@@ -27,7 +27,7 @@ class Popup extends React.Component {
                 onRequestClose={() => closePopup()}
             >
                 <TouchableWithoutFeedback onPress={() => closePopup()}>
-                    <Overlay styleName="fill-parent"/>
+                    <View style={styleBase.overlay}/>
                 </TouchableWithoutFeedback>
                 {this.props.children}
             </Modal>

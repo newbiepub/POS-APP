@@ -1,6 +1,5 @@
 import React from "react";
-import {View, TextInput, Icon, Caption} from "@shoutem/ui";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View, TextInput } from "react-native";
 import PropTypes from "prop-types";
 import styleBase from "../../styles/base";
 

@@ -1,5 +1,5 @@
 import React from "react";
-import {View, Screen, NavigationBar, DropDownMenu} from "@shoutem/ui";
+import {View} from "react-native";
 import PropTypes from "prop-types";
 import NavBar from "../../../component/navbar/navbar";
 import Management from "./manage";

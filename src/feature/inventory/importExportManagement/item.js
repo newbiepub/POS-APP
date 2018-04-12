@@ -1,5 +1,4 @@
 import React from "react";
-import { View, Title, Card, Subtitle, Caption, TextInput, Icon, TouchableOpacity } from "@shoutem/ui";
 import {StyleSheet, InteractionManager, Dimensions} from "react-native";
 import {  } from 'react-native';
 import PropTypes from "prop-types";

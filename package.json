@@ -7,9 +7,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@shoutem/animation": "latest",
-    "@shoutem/theme": "latest",
-    "@shoutem/ui": "^0.23.4",
     "apollo-cache-inmemory": "^1.1.12",
     "apollo-client": "^2.2.0",
     "apollo-link-context": "^1.0.3",

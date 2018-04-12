@@ -1,5 +1,6 @@
 import React from "react";
-import {Tile, Title, Image, View} from "@shoutem/ui";
+import {View, Image, Text} from "react-native";
+import styleBase from "../../styles/base";
 
 class NoData extends React.Component {
     constructor(props) {
@@ -12,16 +13,13 @@ class NoData extends React.Component {
 
     render() {
         return (
-           <View styleName="xl-gutter-top">
-               <Tile styleName="text-centric">
-                   <Image
-                       styleName="medium-square"
-                       style={{width: 142, height: 142}}
-                       source={require("../../assets/img/open-box.png")}
-                   />
-                   <Title styleName="md-gutter-top">KHÔNG CÓ DỮ LIỆU</Title>
-               </Tile>
-           </View>
+            <View style={[styleBase.m_xl_top, styleBase.center]}>
+                <Image
+                    style={{width: 142, height: 142}}
+                    source={require("../../assets/img/open-box.png")}
+                />
+                <Text style={[styleBase.m_md_top, styleBase.fontRubik]}>KHÔNG CÓ DỮ LIỆU</Text>
+            </View>
         )
     }
 }

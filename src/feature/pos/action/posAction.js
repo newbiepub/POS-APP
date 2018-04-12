@@ -56,7 +56,6 @@ export const POS_MANAGEMENT = {
                 username: item.username || ''
             }
         });
-        console.log("FETCH POS - ", data);
         store.dispatch({
             type: POS_MANAGEMENT.FETCH_ALL_POS,
             payload

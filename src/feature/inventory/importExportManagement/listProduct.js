@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {StyleSheet} from "react-native";
-import {View, Spinner} from "@shoutem/ui";
+import {StyleSheet, View, ActivityIndicator} from "react-native";
 import styleBase from "../../../styles/base";
 import {getProductInventory} from "../productManagement/action/productManagementAction";
 import NoData from "../../../component/noData/noData";

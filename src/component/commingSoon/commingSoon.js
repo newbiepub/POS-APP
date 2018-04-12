@@ -1,6 +1,5 @@
 import React from "react";
-import { View, Title } from "@shoutem/ui";
-import {Image} from "react-native";
+import {Image, View, Text} from "react-native";
 import PropTypes from "prop-types";
 import styleBase from "../../styles/base";
 
@@ -11,13 +10,13 @@ class CommingSoon extends React.Component {
 
     render() {
         return (
-            <View pointerEvents="none" styleName="fill-parent center vertical h-center v-center">
+            <View pointerEvents="none" style={[styleBase.fillParent, styleBase.center]}>
                 <Image
                     style={[{width: 150, height: 150}, styleBase.m_lg_vertical]}
                     source={require('../../assets/img/toolbox.png')}/>
-                <Title>
+                <Text style={[styleBase.title, styleBase.fontRubik]}>
                     TÍNH NĂNG ĐANG ĐƯỢC THỰC HIỆN
-                </Title>
+                </Text>
             </View>
         )
     }

@@ -1,8 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {StyleSheet, InteractionManager} from "react-native";
+import {StyleSheet, InteractionManager, ActivityIndicator, TextInput, View} from "react-native";
 import styleBase from "../../../../styles/base";
-import {Caption, Icon, Spinner, TextInput, View} from "@shoutem/ui";
 import NoData from "../../../../component/noData/noData";
 import ProductItem from "./productItem";
 import List from "../../../../component/list/list";

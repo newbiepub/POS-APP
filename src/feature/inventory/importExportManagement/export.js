@@ -1,5 +1,4 @@
 import React from "react";
-import {View, Title, TouchableOpacity} from "@shoutem/ui";
 import { Image, StyleSheet } from "react-native";
 import PropTypes from "prop-types";
 import {getAllPOS} from "../../pos/action/posAction";

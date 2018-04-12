@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { StyleSheet, ScrollView } from "react-native";
-import { View, Screen, Title, Button, Text } from "@shoutem/ui";
 import styleBase from "../../../../styles/base";
 import { connect } from "react-redux";
 

@@ -1,6 +1,16 @@
 import React from "react";
-import {Dimensions, InteractionManager, Platform, StyleSheet} from "react-native";
-import {Button, Divider, Image, Spinner, Text, TextInput, Tile, View} from "@shoutem/ui";
+import {
+    Dimensions,
+    InteractionManager,
+    Platform,
+    StyleSheet,
+    Image,
+    TouchableOpacity,
+    ActivityIndicator,
+    View,
+    TextInput,
+    Text
+} from "react-native";
 import KeyboardSpacer from "react-native-keyboard-spacer";
 import EStyleSheet from "react-native-extended-stylesheet";
 import styleBase from "../../../styles/base";
@@ -87,43 +97,55 @@ class Login extends React.Component {
 
     render() {
         return (
-            <View styleName="vertical h-center v-center fill-parent" style={StyleSheet.flatten([styleBase.bgE5])}>
-                <View styleName="vertical xl-gutter-bottom">
-                    <Tile style={StyleSheet.flatten([styleBase.noBg, styleBase.center])}>
-                        <Image
-                            styleName="small"
-                            source={require("../../../assets/img/laptop.png")}
-                        />
-                    </Tile>
+            <View style={[styleBase.container, styleBase.center, styleBase.bgE5]}>
+                <View style={[styleBase.column, styleBase.m_xl_bottom]}>
+                    <Image
+                        style={{height: 200, width: 200}}
+                        source={require("../../../assets/img/laptop.png")}
+                    />
                 </View>
-                <View styleName="vertical h-center v-center"
-                      style={StyleSheet.flatten([this.getFormWidth(), styleBase.shadowBox])}>
-                    <View styleName="vertical md-gutter-bottom" style={StyleSheet.flatten([styles.width100])}>
+                <View style={[styleBase.justifyCenter, this.getFormWidth(), styleBase.shadowBox]}>
+                    <View style={[styleBase.column, styleBase.m_md_bottom, styles.width100]}>
                         <TextInput
+                            style={[
+                                styleBase.textInput, styles.width100,
+                                styleBase.fontRubik, styleBase.normalText,
+                                styleBase.m_md_vertical, styleBase.p_md_horizontal]}
                             onChangeText={(email) => this.setState({email})}
                             placeholder={'Email'}
                         />
-                        <Divider styleName="line"/>
+                        <View style={[styleBase.divider]}/>
                         <TextInput
+                            style={[
+                                styleBase.textInput, styles.width100,
+                                styleBase.fontRubik, styleBase.normalText,
+                                styleBase.m_md_vertical, styleBase.p_md_horizontal]}
                             onSubmitEditing={this.onSubmitLogin.bind(this)}
                             onChangeText={(password) => this.setState({password})}
                             placeholder={'Mật Khẩu'}
                             secureTextEntry
                         />
-                        <Divider styleName="line"/>
+                        <View style={[styleBase.divider]}/>
                     </View>
                     <View styleName="horizontal md-gutter-bottom">
-                        <Button
+                        <TouchableOpacity
                             disabled={this.state.isLogin}
                             onPress={this.onSubmitLogin.bind(this)}
-                            styleName="confirmation" style={StyleSheet.flatten([styleBase.bgBlack])}>
+                            style={[
+                                styleBase.bgBlack, styleBase.center,
+                                styleBase.p_md_vertical
+                            ]}>
                             {
                                 this.state.isLogin ?
-                                    <Spinner style={{color: "#fff", size: "large"}}/>
+                                    <ActivityIndicator size='large'/>
                                     :
-                                    <Text style={{color: "#fff"}}>ĐĂNG NHẬP</Text>
+                                    <Text style={[
+                                        styleBase.fontRubik, styleBase.title,
+                                        styleBase.textWhite, styleBase.fontBold]}>
+                                        ĐĂNG NHẬP
+                                    </Text>
                             }
-                        </Button>
+                        </TouchableOpacity>
                     </View>
                 </View>
                 {Platform.OS === "ios" && <KeyboardSpacer/>}

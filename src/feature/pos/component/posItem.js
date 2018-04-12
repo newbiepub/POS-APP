@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {Text, View, TouchableOpacity} from "@shoutem/ui";
-import {StyleSheet, Image} from "react-native";
+import {StyleSheet, Image, Text, View, TouchableOpacity} from "react-native";
 import styleBase from "../../../styles/base";
 
 class POSItem extends React.Component {
@@ -26,39 +25,45 @@ class POSItem extends React.Component {
         return (
             <TouchableOpacity
                 onPress={() => this.navigatePOSDetail()}
-                style={StyleSheet.flatten([styleBase.shadowBox, styleBase.p_md_vertical, styleBase.p_md_horizontal])}>
-                <View styleName="vertical v-center h-center">
+                style={[
+                    styleBase.m_md_vertical,
+                    styleBase.m_md_horizontal,
+                    styleBase.shadowBox,
+                    styleBase.p_md_vertical,
+                    styleBase.p_md_horizontal
+                ]}>
+                <View style={[styleBase.center]}>
                     <Image
                         source={require("../../../assets/img/online-shop.png")}
                         style={{width: 125, height: 125}}
                     />
                 </View>
 
-                <View styleName="md-gutter-top">
-                    <View styleName="sm-gutter-bottom horizontal">
-                        <Text>
+                <View style={[styleBase.m_md_top]}>
+                    <View style={[styleBase.row, styleBase.m_sm_bottom]}>
+                        <Text style={[styleBase.fontRubik, styleBase.normalText]}>
                             {"Tên: "}
                             {item.profile.name}
                         </Text>
                     </View>
-                    <View styleName="sm-gutter-bottom horizontal">
-                        <Text>
+                    <View style={[styleBase.row, styleBase.m_sm_bottom]}>
+                        <Text style={[styleBase.fontRubik, styleBase.normalText]}>
                             {"Địa chỉ: "}
                             {item.profile.address}
                         </Text>
                     </View>
 
-                    <View styleName="sm-gutter-bottom horizontal">
-                        <Text>
+                    <View style={[styleBase.row, styleBase.m_sm_bottom]}>
+                        <Text style={[styleBase.fontRubik, styleBase.normalText]}>
                             {"SĐT: "}
                             {item.profile.phoneNumber}
                         </Text>
                     </View>
 
-                    <View styleName="sm-gutter-bottom horizontal">
-                        <Text>
+                    <View style={[styleBase.row, styleBase.m_sm_bottom]}>
+                        <Text style={[styleBase.fontRubik, styleBase.normalText]}>
                             {"Trạng thái: "}
-                            <Text style={StyleSheet.flatten([styleBase.colorInput])}>
+                            <Text style={[styleBase.colorInput]}>
                                 Đang Hoạt Động
                             </Text>
                         </Text>

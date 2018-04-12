@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {StyleSheet, Platform, FlatList} from "react-native";
-import { View } from "@shoutem/ui";
+import {StyleSheet, Platform, FlatList, View} from "react-native";
 import styleBase from "../../styles/base";
 
 class List extends React.Component {

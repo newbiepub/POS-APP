@@ -1,20 +1,23 @@
 import React from "react";
-import {ListView, Spinner, View, GridRow} from "@shoutem/ui";
 import NoData from "../../../component/noData/noData";
 import {POS_MANAGEMENT} from "../action/posAction";
 import POSItem from "../component/posItem";
-import {Dimensions, StyleSheet, InteractionManager} from "react-native";
+import {Dimensions, StyleSheet, InteractionManager, View, ActivityIndicator} from "react-native";
 import styleBase from "../../../styles/base";
 import {connect} from "react-redux";
+import List from "../../../component/list/list";
 
 class POS extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
             pos: this.props.pos,
-            loading: false,
+            loading: true,
             listViewLoading: false
         }
+
+        this.renderRow = this.renderRow.bind(this);
+        this.onRefresh = this.onRefresh.bind(this);
     }
 
     static propTypes = {};
@@ -30,22 +33,17 @@ class POS extends React.PureComponent {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({
-            pos: nextProps.pos,
-            loading: false,
-            listViewLoading: false
+        InteractionManager.runAfterInteractions(() => {
+            this.setState({
+                pos: nextProps.pos,
+                loading: false,
+                listViewLoading: false
+            })
         })
     }
 
-    renderRow(rowData, sectionId, index, numberOfRows) {
-
-        const cellViews = rowData.map((item, i) => {
-            return <POSItem key={i} {...this.props} item={item}/>
-        });
-        return <GridRow key={index} columns={numberOfRows}>
-            {cellViews}
-        </GridRow>
-
+    renderRow(item, index) {
+        return <POSItem key={index} {...this.props} item={item}/>
     }
 
     async onRefresh() {
@@ -59,10 +57,6 @@ class POS extends React.PureComponent {
         }
     }
 
-    getColumnSpan() {
-        return 1;
-    }
-
     getNumberOfCols() {
         let screenWidth = Dimensions.get("window").width;
         if (screenWidth < 1024 && screenWidth >= 768) return 3;
@@ -72,33 +66,25 @@ class POS extends React.PureComponent {
 
     render() {
         try {
-            let getCol = 4,
-                numberOfCols = this.getNumberOfCols(),
-                groupData = [];
-
-            if (this.state.pos && this.state.pos.length) {
-                groupData = GridRow.groupByRows(this.state.pos, numberOfCols, this.getColumnSpan);
-            }
-
             return (
-                <View styleName="lg-gutter-vertical md-gutter-horizontal flexible">
+                <View style={[styleBase.container]}>
                     {
                         (this.state.loading && (this.state.pos == undefined || !this.state.pos.length)) &&
-                        <Spinner
-                            style={{color: "#000", size: "large"}}
-                        />
+                        <View style={[styleBase.container, styleBase.center]}>
+                            <ActivityIndicator size="large"/>
+                        </View>
                     }
                     {
                         (this.state.pos.length > 0 && this.state.pos !== "NoData") &&
-                        <ListView
-                            style={{
-                                listContent: StyleSheet.flatten([styleBase.bgWhite])
-                            }}
-                            onRefresh={this.onRefresh.bind(this)}
-                            loading={this.state.listViewLoading}
-                            data={groupData}
-                            renderRow={(rowData, sectionId, index) => this.renderRow(rowData, sectionId, index, numberOfCols)}
-                        />
+                        <View style={[styleBase.m_md_horizontal]}>
+                            <List
+                                dataSources={this.state.pos}
+                                renderItem={this.renderRow}
+                                onrefresh={this.onRefresh}
+                                onEndReachedThreshold={400}
+                                numColumns={this.getNumberOfCols()}
+                            />
+                        </View>
                     }
                     {
                         (!this.state.loading && this.state.pos === "NoData") &&
@@ -109,7 +95,9 @@ class POS extends React.PureComponent {
         }
         catch (e) {
             console.warn("error - render POS");
-            return <NoData/>
+            return <View style={[styleBase.container, styleBase.m_lg_vertical]}>
+                <NoData/>
+            </View>
         }
     }
 }

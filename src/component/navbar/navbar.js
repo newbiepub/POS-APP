@@ -1,6 +1,8 @@
 import React from "react";
-import {NavigationBar, Icon, Title, TouchableOpacity, DropDownMenu} from "@shoutem/ui";
+import {View, TouchableOpacity, Text} from "react-native";
 import PropTypes from "prop-types";
+import styleBase from "../../styles/base";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 class NavBar extends React.Component {
     constructor(props) {
@@ -8,21 +10,31 @@ class NavBar extends React.Component {
     }
 
     renderCenterComponent() {
-        return (
-            <Title>
+        let centerComponent = (
+            <Text style={[styleBase.title]}>
                 {this.props.title}
-            </Title>
+            </Text>
         )
+
+        if(this.props.renderCenterComponent) {
+            centerComponent = this.props.renderCenterComponent();
+        }
+
+        return centerComponent;
     }
 
     renderLeftComponent() {
-        return (
+        let leftComponent = (
             <TouchableOpacity
                 onPress={() => this.props.navigator.pop()}
             >
-                <Icon name="back"/>
+                <Ionicons name="ios-arrow-round-back" style={{fontSize: 40}}/>
             </TouchableOpacity>
         )
+        if(this.props.renderLeftComponent) {
+            leftComponent = this.props.renderLeftComponent();
+        }
+        return leftComponent;
     }
 
     renderRightComponent() {
@@ -31,13 +43,24 @@ class NavBar extends React.Component {
 
     render() {
         return (
-            <NavigationBar
-                style={{container: {paddingHorizontal: 15}}}
-                styleName="inline"
-                centerComponent={this.renderCenterComponent()}
-                leftComponent={this.renderLeftComponent()}
-                rightComponent={this.renderRightComponent()}
-            />
+            <View style={[
+                styleBase.row,
+                styleBase.nav,
+                styleBase.p_md_horizontal,
+                styleBase.spaceBetween,
+                styleBase.alignCenter,
+                styleBase.panelHeader
+            ]}>
+                <View>
+                    {this.renderLeftComponent()}
+                </View>
+                <View>
+                    {this.renderCenterComponent()}
+                </View>
+                <View>
+                    {this.renderRightComponent()}
+                </View>
+            </View>
         )
     }
 }
@@ -45,13 +68,17 @@ class NavBar extends React.Component {
 NavBar.propTypes = {
     title: PropTypes.string,
     navigator: PropTypes.object,
-    renderRightComponent: PropTypes.func
+    renderRightComponent: PropTypes.func,
+    renderLeftComponent: PropTypes.func,
+    renderCenterComponent: PropTypes.func,
 };
 
 NavBar.defaultProps = {
     title: "",
     navigator: null,
-    renderRightComponent: () => {}
+    renderRightComponent: () => {},
+    renderLeftComponent: null,
+    renderCenterComponent: null
 };
 
 export default NavBar;
