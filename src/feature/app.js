@@ -16,10 +16,11 @@ import {QUERY} from '../constant/query';
 import {client} from '../root';
 import * as Animatable from 'react-native-animatable';
 import LoadingOverlay from '../component/loadingOverlay';
-import {getProductAmount, getPaymentMethod, getPaymentStatus,getProduct} from '../component/listProduct/productAction';
+import {getProductAmount, getPaymentMethod, getPaymentStatus, getProduct} from '../component/listProduct/productAction';
 import {ASYNC_STORAGE} from '../constant/constant'
 import {getProfile, getCurrency} from './login/userAction';
 import config from '../config';
+
 EStyleSheet.build(); // Build Extended StyleSheet
 
 
@@ -99,6 +100,7 @@ class App extends PureComponent {
         this.initData();
     }
 
+
     async initData() {
         await this.props.getPaymentMethod();
         await this.props.getPaymentStatus();
@@ -157,11 +159,12 @@ class Home extends React.Component {
 
 
     };
-    shouldComponentUpdate(nextProps,nextState)
-    {
+
+    shouldComponentUpdate(nextProps, nextState) {
         const changeRoute = this.props.router.currentItem.id !== nextProps.router.currentItem.id;
         return changeRoute;
     }
+
     render() {
         return (
             <View style={{flex: 1}}>

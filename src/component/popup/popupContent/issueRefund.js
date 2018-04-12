@@ -1,31 +1,18 @@
 import React from "react";
-import {ScrollView, View, TouchableWithoutFeedback, Dimensions, FlatList, Alert} from "react-native";
+import {View, Dimensions, Alert} from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
-import {TextLarge, TextNormal, TextSmall, TextInputNumber, TextInputPriceMask, TextInputNormal} from '../../text';
+import {TextInputNormal,TextNormal} from '../../text';
 import {constantStyle} from '../../../style/base';
 import {connect} from 'react-redux';
 import PopupHeader from './_popupHeader';
 import {closePopup} from '../../popup/popupAction';
-import {numberwithThousandsSeparator, removeTypeName} from "../../../reuseable/function/function";
-import {graphql, compose} from 'react-apollo';
-import {QUERY} from '../../../constant/query';
-import {MUTATION, FRAGMENT} from '../../../constant/mutation';
-import {Navigator} from "react-native-deprecated-custom-components";
-import Moment from '../../moment';
+import {issueRefund} from '../../../feature/transaction/transactionAction';
 import {normalizeProductItemsIssueRefund,} from '../../../reuseable/function/normalizeData';
-import MyDatePicker from '../../datePicker/datePicker';
-import ListProduct from '../../listProduct/listProduct';
-import LoadingOverlay from '../../loadingOverlay';
-import {clearCart} from '../../cart/cartAction';
-import _ from 'lodash';
-import {client} from '../../../root';
-import gql from 'graphql-tag';
 
 class IssueRefund extends React.Component {
     constructor(props) {
         super(props);
         let {width, height} = Dimensions.get('window');
-        this.chargeProgressing = null;
         this.state = {
             width,
             height,
@@ -52,7 +39,7 @@ class IssueRefund extends React.Component {
                 [
                     {
                         text: 'OK', onPress: () => {
-                    }
+                        }
                     },
                 ],
                 {cancelable: false})
@@ -64,18 +51,9 @@ class IssueRefund extends React.Component {
                     {text: 'Không', style: 'cancel'},
                     {
                         text: 'Có', onPress: () => {
-                        this.props.issueRefund(
-                            {
-                                variables: {
-                                    _id: this.props.id,
-                                    issueRefundReason: this.state.reason,
-                                    refundDate: new Date(),
-                                    productItems: normalizeProductItemsIssueRefund(this.props.productItems)
-                                }
-                            }
-                        );
-                        this.props.closePopup()
-                    }
+                            this.props.issueRefund(this.props.transaction, this.state.reason,normalizeProductItemsIssueRefund(this.props.transaction.productItems));
+                            this.props.closePopup()
+                        }
                     },
                 ],
                 {cancelable: false}
@@ -86,7 +64,7 @@ class IssueRefund extends React.Component {
     }
 
     render() {
-      //  console.warn(normalizeProductItemsInput(this.props.productItems));
+        //  console.warn(normalizeProductItemsInput(this.props.productItems));
         return (
             <View style={style.container}>
                 <PopupHeader
@@ -148,9 +126,7 @@ const style = EStyleSheet.create({
     '@media (min-width: 1024)': {}
 });
 const mapDispatchToProps = {
-    closePopup
+    closePopup,
+    issueRefund
 }
-const IssueRefundApollo = compose(
-    graphql(MUTATION.ISSUE_REFUND, {name: 'issueRefund'})
-)(IssueRefund);
-export default connect(null, mapDispatchToProps)(IssueRefundApollo);
+export default connect(null, mapDispatchToProps)(IssueRefund);

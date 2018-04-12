@@ -7,7 +7,7 @@ import {
     Image,
     TouchableOpacity,
     Dimensions,
-    TouchableWithoutFeedback
+    InteractionManager
 } from "react-native";
 import {TextNormal, TextLarge, TextSmall} from '../../component/text';
 import Header from '../../component/header';
@@ -20,7 +20,7 @@ import GridProduct from '../../component/listProduct/gridView/gridProduct';
 import CustomAmount from './customAmount';
 import Cart from '../../component/cart/cart';
 import {connect} from 'react-redux';
-import {createTransactionAsync} from '../transaction/transactionAction';
+import {createTransactionAsync, issueRefundAsync} from '../transaction/transactionAction';
 
 class POS extends PureComponent {
     constructor(props) {
@@ -35,10 +35,15 @@ class POS extends PureComponent {
     }
 
     componentWillMount() {
-        if(this.props.asyncTransaction.length> 0 )
-        {
-            this.props.createTransactionAsync(this.props.asyncTransaction)
-        }
+        InteractionManager.runAfterInteractions(() => {
+            if (this.props.asyncTransaction.length > 0) {
+                this.props.createTransactionAsync(this.props.asyncTransaction)
+            }
+            if (this.props.asyncIssueRefund.length > 0) {
+                this.props.issueRefundAsync(this.props.asyncIssueRefund)
+            }
+        });
+
     }
 
     async componentDidMount() {
@@ -161,10 +166,12 @@ const style = EStyleSheet.create({
 });
 const mapStateToProps = (state) => {
     return {
-        asyncTransaction: state.transactionReducer.asyncTransaction
+        asyncTransaction: state.transactionReducer.asyncTransaction,
+        asyncIssueRefund: state.transactionReducer.asyncIssueRefund
     }
 };
 const mapDispatchToProps = {
-    createTransactionAsync
+    createTransactionAsync,
+    issueRefundAsync
 };
 export default connect(mapStateToProps, mapDispatchToProps)(POS);

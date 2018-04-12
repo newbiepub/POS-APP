@@ -16,8 +16,8 @@ import {TextNormal, TextSmall} from '../../text';
 import {QUERY} from '../../../constant/query';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {graphql} from 'react-apollo';
-import {Var}from '../../../constant/variable';
+import { switchCategoryView} from '../productAction';
+import {connect} from'react-redux';
 class CategoryView extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -25,8 +25,8 @@ class CategoryView extends React.PureComponent {
         this.categoryWidthOpen = 200;
         this.categoryWidthClose = constantStyle.headerHeight;
         this.state = {
-            isCategoryViewOpen: new Animated.Value(Var.categoryVisible ? 1: 0),
-            categoryWidth: new Animated.Value(Var.categoryVisible? this.categoryWidthOpen: this.categoryWidthClose),
+            isCategoryViewOpen: new Animated.Value(this.props.isCategoryViewOpen ? 1: 0),
+            categoryWidth: new Animated.Value(this.props.isCategoryViewOpen? this.categoryWidthOpen: this.categoryWidthClose),
         };
     }
 
@@ -49,7 +49,7 @@ class CategoryView extends React.PureComponent {
                 useNativeDriver: true
             }
         ).start();
-        Var.categoryVisible = true
+        this.props.switchCategoryView()
     }
 
     closeCategoryView() {
@@ -69,11 +69,11 @@ class CategoryView extends React.PureComponent {
                 useNativeDriver: true
             }
         ).start();
-        Var.categoryVisible = false
+        this.props.switchCategoryView()
     }
 
     switchCategoryView() {
-        if (Var.categoryVisible) {
+        if (this.props.isCategoryViewOpen) {
             this.closeCategoryView()
         } else {
             this.openCategoryView()
@@ -148,7 +148,7 @@ class CategoryView extends React.PureComponent {
                         </View>
                     </TouchableWithoutFeedback>
                     <FlatList
-                        data={this.props.category.categories}
+                        data={this.props.category}
                         extraData={this.props}
                         initialNumToRender={5}
                         keyExtractor={(item) => item._id}
@@ -205,9 +205,19 @@ const style = EStyleSheet.create({
     '@media (min-width: 768) and (max-width: 1024)': {},
     '@media (min-width: 1024)': {}
 });
-let CategoryViewApollo = graphql(QUERY.CATEGORIES, {
-    name: 'category', options: {
-        fetchPolicy: "cache-and-network"
+// let CategoryViewApollo = graphql(QUERY.CATEGORIES, {
+//     name: 'category', options: {
+//         fetchPolicy: "cache-and-network"
+//     }
+// })(CategoryView);
+
+const mapStateToProps = (state)=>{
+    return{
+        isCategoryViewOpen: state.productReducer.isCategoryViewOpen,
+        category: state.productReducer.category,
     }
-})(CategoryView);
-export default CategoryViewApollo;
+};
+const mapDispatchToProps={
+    switchCategoryView
+}
+export default connect(mapStateToProps,mapDispatchToProps)(CategoryView);

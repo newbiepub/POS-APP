@@ -8,6 +8,7 @@ const initialState = {
     productAmount: 0,
     product: [],
     category: [],
+    isCategoryViewOpen:true,
 };
 
 function updateProduct(state, product) {
@@ -92,6 +93,12 @@ export default function async(state = initialState, action = {}) {
                 paymentMethod: action.payload
             }
         }
+        case PRODUCT.SWITCH_CATEGORY_VIEW:{
+            return {
+                ...state,
+                isCategoryViewOpen: !state.isCategoryViewOpen
+            }
+        }
         case REHYDRATE: {
             if (action.payload && action.payload.productReducer) {
                 return {
@@ -100,6 +107,8 @@ export default function async(state = initialState, action = {}) {
                     productAmount: action.payload.productReducer.productAmount,
                     paymentStatus: action.payload.productReducer.paymentStatus,
                     paymentMethod: action.payload.productReducer.paymentMethod,
+                    category: action.payload.productReducer.category,
+                    isCategoryViewOpen: action.payload.productReducer.isCategoryViewOpen
                 };
 
             } else {
@@ -111,9 +120,12 @@ export default function async(state = initialState, action = {}) {
         }
         case USER.LOG_OUT: {
             return {
+                paymentMethod: [],
+                paymentStatus: [],
                 productAmount: 0,
                 product: [],
                 category: [],
+                isCategoryViewOpen:false,
             };
         }
         default:

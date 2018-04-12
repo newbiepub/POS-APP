@@ -26,7 +26,7 @@ import ListProduct from '../../component/listProduct/listProduct';
 import IssueRefund from '../../component/popup/popupContent/issueRefund';
 import {openPopup} from '../../component/popup/popupAction';
 import UpdateTransaction from '../../component/popup/popupContent/updateTransaction';
-import {getTransactionAmount, getTransaction} from './transactionAction';
+import {getTransactionAmount, getTransaction, selectTransaction} from './transactionAction';
 
 class Transaction extends React.Component {
     constructor(props) {
@@ -71,8 +71,8 @@ class Transaction extends React.Component {
 
     async componentDidMount() {
         await this.props.getTransactionAmount();
-        this.initData()
-
+        // this.initData()
+        await this.props.getTransaction(10, this.state.skip);
     }
 
     initData() {
@@ -101,20 +101,20 @@ class Transaction extends React.Component {
         </View>
     );
     _renderListTransactionBody = ({item, index}) => (
-        <TouchableWithoutFeedback onPress={() => this.setState({
-            selectedTransaction: item
-        })}>
+        <TouchableWithoutFeedback key={item._id} onPress={() => {
+            this.props.selectTransaction(item)
+        }}>
             <View
-                style={[style.listItem, this.state.selectedTransaction._id === item._id && style.listItemSelected]}
+                style={[style.listItem, this.props.currentTransaction._id === item._id && style.listItemSelected]}
             >
 
                 <Ionicons name={"ios-cash-outline"}
-                          style={[style.listIconCash, this.state.selectedTransaction._id === item._id && style.listTextSelected]}/>
+                          style={[style.listIconCash, this.props.currentTransaction._id === item._id && style.listTextSelected]}/>
                 <View style={style.listContent}>
                     <TextNormal
-                        style={[{flex: 1}, this.state.selectedTransaction._id === item._id && style.listTextSelected]}>{numberwithThousandsSeparator(item.totalPrice)}{_.get(this.props.currency, "symbol", "")}</TextNormal>
+                        style={[{flex: 1}, this.props.currentTransaction._id === item._id && style.listTextSelected]}>{numberwithThousandsSeparator(item.totalPrice)}{_.get(this.props.currency, "symbol", "")}</TextNormal>
                     <TextSmall
-                        style={this.state.selectedTransaction._id === item._id && style.listTextSelected}>{this.getTime(item.createdAt)}</TextSmall>
+                        style={this.props.currentTransaction._id === item._id && style.listTextSelected}>{this.getTime(item.createdAt)}</TextSmall>
                 </View>
 
             </View>
@@ -140,7 +140,7 @@ class Transaction extends React.Component {
             if (this.state.currentTransactionOption.id === this.transactionOptionItems[1].id) {
                 for (items of data) {
                     if (items && items.paid)
-                        if (this.getTotalPaid(items.paid) < items.totalPrice && items.issueRefund == 'false') {
+                        if (this.getTotalPaid(items.paid) < items.totalPrice && items.issueRefund === false) {
                             result.push(items);
                         }
                 }
@@ -148,8 +148,7 @@ class Transaction extends React.Component {
             if (this.state.currentTransactionOption.id === this.transactionOptionItems[2].id) {
                 for (items of data) {
 
-                    if (items && items.paid)
-                    {
+                    if (items && items.paid) {
                         if (this.getTotalPaid(items.paid) > items.totalPrice && items.issueRefund === false) {
                             result.push(items);
                         }
@@ -159,7 +158,7 @@ class Transaction extends React.Component {
             if (this.state.currentTransactionOption.id === this.transactionOptionItems[3].id) {
                 for (items of data) {
                     if (items && items.issueRefund)
-                        if (items.issueRefund == 'true') {
+                        if (items.issueRefund === true) {
                             result.push(items);
                         }
                 }
@@ -168,7 +167,7 @@ class Transaction extends React.Component {
             return result;
 
         } catch (e) {
-            console.warn("transaction.js-filterTransaction-" + e)
+            console.warn("transaction.js-filterTransaction-" + e);
             return []
         }
 
@@ -192,19 +191,20 @@ class Transaction extends React.Component {
     async _onRefresh() {
         // console.warn('refreshing');
         await this.setState({
-            refreshing: true
+            refreshing: true,
+            skip: 0
         });
-        await this.initData();
+        // await this.initData();
+        await this.props.getTransaction(10, this.state.skip);
         this.setState({
             refreshing: false,
-            selectedTransaction: {}
         })
 
     }
 
     render() {
-        let currentTransaction = this.state.selectedTransaction;
-        let totalPaid = this.state.selectedTransaction._id ? this.getTotalPaid(this.state.selectedTransaction.paid) : 0;
+        let currentTransaction = this.props.currentTransaction;
+        let totalPaid = currentTransaction._id ? this.getTotalPaid(currentTransaction.paid) : 0;
         return (
             <View style={style.container}>
                 <Header type={"custom-right"} titleLeft={this.state.currentTransactionOption.name}
@@ -215,13 +215,13 @@ class Transaction extends React.Component {
                         currentTransaction._id &&
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
                             {
-                                this.state.selectedTransaction._id && totalPaid >= this.state.selectedTransaction.totalPrice &&
+                                currentTransaction._id && totalPaid >= currentTransaction.totalPrice &&
                                 <TouchableWithoutFeedback>
                                     <TextNormal style={style.functionButton}>In hoá đơn</TextNormal>
                                 </TouchableWithoutFeedback>
                             }
                             {
-                                this.state.selectedTransaction._id && totalPaid < this.state.selectedTransaction.totalPrice &&
+                                currentTransaction._id && totalPaid < currentTransaction.totalPrice &&
                                 <TouchableWithoutFeedback onPress={() => this.onUpdateTransaction()}>
                                     <TextNormal style={style.functionButton}>Tiếp tục thanh toán</TextNormal>
                                 </TouchableWithoutFeedback>
@@ -229,10 +229,9 @@ class Transaction extends React.Component {
 
                             <View style={{flex: 1}}/>
                             {
-                                currentTransaction.issueRefund == "false" &&
+                                currentTransaction.issueRefund === false &&
                                 <TouchableWithoutFeedback onPress={() => this.props.openPopup(<IssueRefund
-                                    id={this.state.selectedTransaction._id}
-                                    productItems={this.state.selectedTransaction.productItems}/>)}>
+                                    transaction={currentTransaction}/>)}>
                                     <TextNormal style={style.functionButton}>Trả hàng</TextNormal>
                                 </TouchableWithoutFeedback>
                             }
@@ -300,17 +299,23 @@ class Transaction extends React.Component {
                                             trạng: {this.getPaymentStatus(currentTransaction.paymentStatus)}</TextNormal>
                                     </View>
                                     {
-                                        this.state.selectedTransaction.issueRefund == "true" &&
-                                        <View style={[style.spaceLine]}>
-                                            <TextNormal>Ngày hoàn
-                                                trả: {this.getTitleDate(currentTransaction.refundDate)}</TextNormal>
+                                        currentTransaction.issueRefund === true &&
+                                        <View>
+                                            <View style={[style.spaceLine]}>
+                                                <TextNormal>Ngày hoàn
+                                                    trả: {this.getTitleDate(currentTransaction.refundDate)}</TextNormal>
+                                            </View>
+                                            <View style={[style.spaceLine]}>
+                                                <TextNormal>Lý do
+                                                    trả: {currentTransaction.issueRefundReason}</TextNormal>
+                                            </View>
                                         </View>
                                     }
                                     <View style={[style.spaceLine]}>
                                         <TextNormal style={{textAlign: 'justify'}}>
                                             Tiền nhận:</TextNormal>
                                         {
-                                            this.state.selectedTransaction.paid.map((item, index) => {
+                                            currentTransaction.paid.map((item, index) => {
                                                 return (
                                                     <View key={index} style={style.transactionPaidItem}>
                                                         <TextNormal style={style.transactionPaidDate}>
@@ -482,12 +487,14 @@ const mapStateToProps = (state) => {
         transactionAmount: state.transactionReducer.transactionAmount,
         currency: state.userReducer.currency,
         transaction: state.transactionReducer.transaction,
-        asyncTransaction: state.transactionReducer.asyncTransaction
+        asyncTransaction: state.transactionReducer.asyncTransaction,
+        currentTransaction: state.transactionReducer.currentTransaction
     }
 }
 const mapDispatchToProps = {
     openPopup,
     getTransactionAmount,
-    getTransaction
+    getTransaction,
+    selectTransaction
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Transaction);

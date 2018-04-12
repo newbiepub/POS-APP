@@ -48,9 +48,12 @@ class GridProduct extends React.Component {
     async initProduct() {
         let {_id} = this.props.user;
         let amount = await this.props.getProductAmount(_id);
-        for (let i = 0; i <= amount; i += 10) {
-            await this.props.getProduct(_id, 10, i);
-        }
+        InteractionManager.runAfterInteractions(async () => {
+            for (let i = 0; i <= amount; i += 10) {
+                await this.props.getProduct(_id, 10, i);
+            }
+        });
+
     }
 
     async componentDidMount() {

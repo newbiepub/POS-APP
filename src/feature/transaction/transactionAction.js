@@ -31,12 +31,47 @@ function asyncTransactionAction(payload) {
     }
 }
 
+function asyncIssueRefundAction(payload) {
+    return {
+        type: TRANSACTION.ASYNC_ISSUE_REFUND,
+        payload
+    }
+}
+
 function removeTransactionAsyncLocalAction(payload) {
     return {
         type: TRANSACTION.REMOVE_TRANSACTION_ASYNC_LOCAL,
         payload
     }
 }
+
+function removeIssueRefundAsyncLocalAction(payload) {
+    return {
+        type: TRANSACTION.REMOVE_ISSUE_REFUND_ASYNC_LOCAL,
+        payload
+    }
+}
+
+function adjustTransactionAction(payload) {
+    return {
+        type: TRANSACTION.ADJUST_TRANSACTION,
+        payload
+    }
+}
+
+function adjustTransactionNotCreatedAction(payload) {
+    return {
+        type: TRANSACTION.ADJUST_TRANSACTION_NOT_CREATED,
+        payload
+    }
+}
+function selectTransactionAction(payload) {
+    return {
+        type: TRANSACTION.SELECT_TRANSACTION,
+        payload
+    }
+}
+
 export function getTransaction(limit, skip) {
     return async (dispatch, getState) => {
         try {
@@ -86,7 +121,7 @@ export function createTransaction(productItems, paymentStatus, paymentMethod, du
                     dueDate: dueDate,
                     totalQuantity: totalQuantity,
                     totalPrice: totalPrice,
-                    paid: {date: new Date(), amount: paid},
+                    paid: [{date: new Date(), amount: paid}],
                     description: description,
                     customer: customer,
                     createdAt: new Date()
@@ -136,7 +171,7 @@ export function createTransactionAsync(productAsync) {
                         dueDate: item.dueDate,
                         totalQuantity: item.totalQuantity,
                         totalPrice: item.totalPrice,
-                        paid: item.paid[0],
+                        paid: item.paid,
                         description: item.description,
                         customer: item.customer,
                         createdAt: item.createdAt
@@ -149,5 +184,77 @@ export function createTransactionAsync(productAsync) {
             console.warn("transactionAction.js-createTransactionAsync-" + e)
         }
 
+    }
+}
+
+export function issueRefund(transaction, reason, productItems) {
+    return async (dispatch, getState) => {
+        try {
+
+            if (transaction.async) {
+                let newLocalTransaction = Object.assign({},transaction);
+                newLocalTransaction.issueRefundReason = reason;
+                newLocalTransaction.refundDate = new Date();
+                newLocalTransaction.issueRefund = true;
+                dispatch(adjustTransactionNotCreatedAction(newLocalTransaction));
+                dispatch(selectTransaction(newLocalTransaction))
+            } else {
+                const issueRefund = await client.mutate({
+                    mutation: MUTATION.ISSUE_REFUND,
+                    variables: {
+                        _id: transaction._id,
+                        issueRefundReason: reason,
+                        refundDate: new Date(),
+                        productItems: productItems
+                    }
+                });
+                dispatch(adjustTransactionAction(issueRefund.data.issueRefundTransaction));
+                dispatch(selectTransaction(issueRefund.data.issueRefundTransaction))
+            }
+
+
+        } catch (e) {
+            dispatch(asyncIssueRefundAction({
+                _id: id,
+                issueRefundReason: reason,
+                refundDate: new Date(),
+                productItems: productItems
+            }));
+            console.warn("transactionAction.js-issueRefund-" + e)
+        }
+    }
+}
+
+export function issueRefundAsync(issueRefundAsync) {
+    return async (dispatch, getState) => {
+        try {
+            for (item of issueRefundAsync) {
+                const issueRefund = await client.mutate({
+                    mutation: MUTATION.ISSUE_REFUND,
+                    variables: {
+                        _id: item._id,
+                        issueRefundReason: item.issueRefundReason,
+                        refundDate: item.refundDate,
+                        productItems: item.productItems
+                    }
+                });
+                dispatch(removeIssueRefundAsyncLocalAction(item));
+                dispatch(adjustTransactionAction(issueRefund.data.issueRefundTransaction))
+            }
+        } catch (e) {
+            console.warn("transactionAction.js-issueRefundAsync-" + e)
+        }
+
+    }
+}
+
+export function selectTransaction(item) {
+    return async (dispatch, getState) => {
+        try {
+            dispatch(selectTransactionAction(item))
+
+        } catch (e) {
+            console.warn("transactionAction.js-selectTransaction-" + e)
+        }
     }
 }

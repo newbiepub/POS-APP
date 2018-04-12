@@ -30,6 +30,7 @@ export default function (state = initialState, action = {}) {
                     token: action.payload.userReducer.token,
                     profile: action.payload.userReducer.profile,
                     _id: action.payload.userReducer._id,
+                    currency:action.payload.userReducer.currency
                 };
 
             }else{

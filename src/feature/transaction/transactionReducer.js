@@ -5,6 +5,9 @@ const initialState = {
     transactionAmount: 0,
     transaction: [],
     asyncTransaction: [],
+    asyncIssueRefund: [],
+    asyncUpdateTransaction: [],
+    currentTransaction: {},
 };
 
 function updateTransaction(state, transaction) {
@@ -33,13 +36,39 @@ function updateTransaction(state, transaction) {
 
 function createTransaction(state, transaction) {
     state.splice(0, 0, transaction);
-
     return state
 }
-function removeTransactionAsyncLocal(state,transaction){
-    for(let i = 0; i< state.length; i ++){
-        if(state[i]._id === transaction._id)
-        {
+
+function adjustTransaction(state, transaction) {
+    for (let j = 0; j < state.length; j++) {
+        if (transaction._id === state[j]._id) {
+            state.splice(j, 1);
+            state.splice(j, 0, transaction);
+            break;
+        }
+    }
+    return state
+}
+
+function issueRefundTransactionLocal(state, transaction) {
+    for (let j = 0; j < state.length; j++) {
+        if (transaction._id === state[j]._id) {
+            let newTransaction = Object.assign({}, state[j]);
+            newTransaction.issueRefundReason = transaction.issueRefundReason;
+            newTransaction.refundDate = transaction.refundDate;
+            newTransaction.issueRefund = true;
+
+            state.splice(j, 1);
+            state.splice(j, 0, newTransaction);
+            break;
+        }
+    }
+    return state
+}
+
+function removeTransactionAsyncLocal(state, transaction) {
+    for (let i = 0; i < state.length; i++) {
+        if (state[i]._id === transaction._id) {
             state.splice(i, 1);
         }
     }
@@ -74,11 +103,52 @@ export default function (state = initialState, action = {}) {
                 asyncTransaction: [action.payload, ...state.asyncTransaction]
             }
         }
+        case TRANSACTION.ASYNC_ISSUE_REFUND: {
+            let newTransaction = issueRefundTransactionLocal(state.transaction, action.payload);
+            return {
+                ...state,
+                transaction: [...newTransaction],
+                asyncIssueRefund: [action.payload, ...state.asyncIssueRefund],
+                currentTransaction: {
+                    ...state.currentTransaction,
+                    issueRefund: true,
+                    refundDate: action.payload.refundDate,
+                    issueRefundReason: action.payload.issueRefundReason
+                }
+            }
+        }
         case TRANSACTION.REMOVE_TRANSACTION_ASYNC_LOCAL: {
             let newTransactionAsync = removeTransactionAsyncLocal(state.asyncTransaction, action.payload);
             return {
                 ...state,
                 asyncTransaction: [...newTransactionAsync]
+            }
+        }
+        case TRANSACTION.REMOVE_ISSUE_REFUND_ASYNC_LOCAL: {
+            let newTransactionAsync = removeTransactionAsyncLocal(state.asyncIssueRefund, action.payload);
+            return {
+                ...state,
+                asyncIssueRefund: [...newTransactionAsync]
+            }
+        }
+        case TRANSACTION.ADJUST_TRANSACTION: {
+            let newTransaction = adjustTransaction(state.transaction, action.payload);
+            return {
+                ...state,
+                transaction: [...newTransaction]
+            }
+        }
+        case TRANSACTION.ADJUST_TRANSACTION_NOT_CREATED: {
+            let newTransaction = adjustTransaction(state.asyncTransaction, action.payload);
+            return {
+                ...state,
+                asyncTransaction: [...newTransaction]
+            }
+        }
+        case TRANSACTION.SELECT_TRANSACTION: {
+            return {
+                ...state,
+                currentTransaction: action.payload,
             }
         }
         case REHYDRATE: {
@@ -89,6 +159,10 @@ export default function (state = initialState, action = {}) {
                     transactionAmount: action.payload.transactionReducer.transactionAmount,
                     transaction: action.payload.transactionReducer.transaction,
                     asyncTransaction: action.payload.transactionReducer.asyncTransaction,
+                    asyncIssueRefund: action.payload.transactionReducer.asyncIssueRefund,
+                    asyncUpdateTransaction: action.payload.transactionReducer.asyncUpdateTransaction,
+                    currentTransaction: action.payload.transactionReducer.currentTransaction,
+
                 };
 
             } else {
@@ -103,6 +177,9 @@ export default function (state = initialState, action = {}) {
                 transactionAmount: 0,
                 transaction: [],
                 asyncTransaction: [],
+                asyncIssueRefund: [],
+                asyncUpdateTransaction: [],
+                currentTransaction: {},
             }
         }
         default:

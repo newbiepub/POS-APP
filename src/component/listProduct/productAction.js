@@ -36,6 +36,11 @@ function subtractInventoryLocalAction(payload) {
         payload
     }
 }
+function switchCategoryViewAction(){
+    return {
+        type: PRODUCT.SWITCH_CATEGORY_VIEW
+    }
+}
 export function getProduct(userId, limit, skip) {
     return async (dispatch, getState) => {
         try {
@@ -116,6 +121,16 @@ export function subtractInventoryLocal(productItems) {
             dispatch(subtractInventoryLocalAction(productItems))
         } catch (e) {
             console.warn("productAction.js-subtractInventoryLocal-"+e);
+        }
+    }
+}
+export function switchCategoryView(){
+    return async (dispatch, getState) => {
+
+        try {
+            dispatch(switchCategoryViewAction())
+        } catch (e) {
+            console.warn("productAction.js-switchCategoryView-"+e);
         }
     }
 }
