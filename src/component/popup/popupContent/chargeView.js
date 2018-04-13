@@ -138,35 +138,10 @@ class ChargeView extends React.Component {
         if (this.state.transaction.paymentMethod.type === 'prepaid' && this.state.transaction.totalPrice <= this.state.transaction.paid) {
             return true;
         }
-        if ((this.state.transaction.paymentMethod.type === 'postpaid' || this.state.transaction.paymentMethod.type === "indebtedness") && this.state.transaction.dueDate !== null) {
+        if ((this.state.transaction.paymentMethod.type === 'postpaid' || this.state.transaction.paymentMethod.type === "underpayment") && this.state.transaction.dueDate !== null) {
             return true
         }
         return false;
-    }
-
-    async addTransactionLocal(transaction) {
-        let item = Object.assign({}, transaction);
-        for (itemsProduct of item.productItems) {
-            itemsProduct._id = Math.round(Math.random() * -1000000).toString();
-            itemsProduct.price.__typename = "TransactionProductPrice";
-            itemsProduct.price.currency.__typename = "TransactionCurrency";
-            itemsProduct.__typename = "TransactionProductItems"
-        }
-        item.paymentMethod.__typename = "PaymentMethod";
-        item.paymentStatus.__typename = "PaymentStatus";
-        item.paid.__typename = "TransactionPaid";
-        item.customer.__typename = "TransactionCustomer";
-        let query = await QUERY.TRANSACTION;
-        const transactionData = await client.readQuery({
-            query
-        });
-        // console.warn(item);
-        client.writeQuery({
-            query,
-            data: {
-                getTransactionEmployee: [...transactionData.getTransactionEmployee, item],
-            }
-        });
     }
 
     async onCharge() {
@@ -216,7 +191,6 @@ class ChargeView extends React.Component {
         }
 
 
-        //this.chargeProgressing.setLoading()
     }
 
     render() {
@@ -314,7 +288,7 @@ class Main extends React.Component {
                         this.props.transaction.paid > 0 &&
                         <View>
                             <TextSmall
-                                style={[style.priceHint]}>{this.props.transaction.paid < this.props.transaction.totalPrice ? "Thiếu" : "Thừa"} {numberwithThousandsSeparator(Math.abs(this.props.transaction.totalPrice - this.props.transaction.paid))} {_.get(this.props.instance.props.currency, "currency[0].symbol", "")}</TextSmall>
+                                style={[style.priceHint]}>{this.props.transaction.paid < this.props.transaction.totalPrice ? "Thiếu" : "Thừa"} {numberwithThousandsSeparator(Math.abs(this.props.transaction.totalPrice - this.props.transaction.paid))} {_.get(this.props.instance.props.currency, "symbol", "")}</TextSmall>
                         </View>
                     }
                 </View>

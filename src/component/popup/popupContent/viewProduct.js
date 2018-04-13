@@ -151,7 +151,7 @@ class ViewProduct extends React.Component {
                         keyExtractor={(item) => item.name}
                         renderItem={this._renderPrice}
                     />
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <View style={{flexDirection: 'row', alignItems: 'center',marginTop:constantStyle.md}}>
                         <TextNormal>Nhập giá: </TextNormal>
                         <TextInputPriceMask value={this.state.product.price.price} style={{flex: 1}}
                                             onChangeText={async (num) => {
@@ -219,11 +219,11 @@ const style = EStyleSheet.create({
     pricePicker: {
         borderWidth: 1,
         flex: 1,
-        margin: 10,
+        margin: constantStyle.sm,
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: constantStyle.paddingHorizontal,
-        paddingVertical: 10,
+        paddingVertical: constantStyle.sm,
         borderColor: constantStyle.colorBorder
     },
     boxQuantity: {

@@ -66,6 +66,21 @@ function issueRefundTransactionLocal(state, transaction) {
     return state
 }
 
+function updateTransactionLocal(state, transaction) {
+    for (let j = 0; j < state.length; j++) {
+        if (transaction._id === state[j]._id) {
+            let newTransaction = Object.assign({}, state[j]);
+            newTransaction.dueDate = transaction.dueDate;
+            newTransaction.paid.push(transaction.paid);
+            newTransaction.description = transaction.description;
+            state.splice(j, 1);
+            state.splice(j, 0, newTransaction);
+            break;
+        }
+    }
+    return state
+}
+
 function removeTransactionAsyncLocal(state, transaction) {
     for (let i = 0; i < state.length; i++) {
         if (state[i]._id === transaction._id) {
@@ -108,12 +123,26 @@ export default function (state = initialState, action = {}) {
             return {
                 ...state,
                 transaction: [...newTransaction],
-                asyncIssueRefund: [action.payload, ...state.asyncIssueRefund],
+                asyncIssueRefund: [...state.asyncIssueRefund,action.payload],
                 currentTransaction: {
                     ...state.currentTransaction,
                     issueRefund: true,
                     refundDate: action.payload.refundDate,
                     issueRefundReason: action.payload.issueRefundReason
+                }
+            }
+        }
+        case TRANSACTION.ASYNC_UPDATE_TRANSACTION: {
+            let newTransaction = updateTransactionLocal(state.transaction, action.payload);
+            return {
+                ...state,
+                transaction: [...newTransaction],
+                asyncUpdateTransaction: [...state.asyncIssueRefund, action.payload],
+                currentTransaction: {
+                    ...state.currentTransaction,
+                    dueDate:  action.payload.dueDate,
+                    paid: [...state.currentTransaction.paid,action.payload.paid],
+                    description: action.payload.description,
                 }
             }
         }
@@ -129,6 +158,13 @@ export default function (state = initialState, action = {}) {
             return {
                 ...state,
                 asyncIssueRefund: [...newTransactionAsync]
+            }
+        }
+        case TRANSACTION.REMOVE_UPDATE_TRANSACTION_ASYNC_LOCAL: {
+            let newTransactionAsync = removeTransactionAsyncLocal(state.asyncUpdateTransaction, action.payload);
+            return {
+                ...state,
+                asyncUpdateTransaction: [...newTransactionAsync]
             }
         }
         case TRANSACTION.ADJUST_TRANSACTION: {

@@ -1,5 +1,5 @@
 import React, {PureComponent} from "react";
-import {Platform, StatusBar, Alert, View, AsyncStorage} from "react-native";
+import {Platform, StatusBar, Alert, View, AsyncStorage, InteractionManager} from "react-native";
 import {Navigator} from "react-native-deprecated-custom-components";
 import Login from './login/login';
 import POS from './pos/pos';
@@ -20,10 +20,10 @@ import {getProductAmount, getPaymentMethod, getPaymentStatus, getProduct} from '
 import {ASYNC_STORAGE} from '../constant/constant'
 import {getProfile, getCurrency} from './login/userAction';
 import config from '../config';
-
 EStyleSheet.build(); // Build Extended StyleSheet
-
-
+import openSocket from 'socket.io-client';
+var socket = require('socket.io-client')('http://localhost:3000');
+import {createTransactionAsync, issueRefundAsync} from '../feature/transaction/transactionAction';
 class App extends PureComponent {
     constructor(props) {
         super(props);
@@ -31,6 +31,23 @@ class App extends PureComponent {
         this.state = {
             firstScene: 'login'
         }
+    }
+
+    componentDidMount(){
+        socket.on('connect', ()=>{
+            this.asyncData()
+        });
+    }
+
+    asyncData(){
+        InteractionManager.runAfterInteractions(() => {
+            if (this.props.asyncTransaction.length > 0) {
+                this.props.createTransactionAsync(this.props.asyncTransaction)
+            }
+            if (this.props.asyncIssueRefund.length > 0) {
+                this.props.issueRefundAsync(this.props.asyncIssueRefund)
+            }
+        });
     }
 
     configureScene(route, navigator) {
@@ -197,7 +214,9 @@ class Home extends React.Component {
 const mapStateToProps = (state) => {
     return {
         router: state.menuReducer,
-        user: state.userReducer
+        user: state.userReducer,
+        asyncTransaction: state.transactionReducer.asyncTransaction,
+        asyncIssueRefund: state.transactionReducer.asyncIssueRefund
     }
 }
 const mapDispatchToProps = {
@@ -206,7 +225,9 @@ const mapDispatchToProps = {
     getPaymentMethod,
     getPaymentStatus,
     getCurrency,
-    getProduct
+    getProduct,
+    createTransactionAsync,
+    issueRefundAsync
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -7,20 +7,16 @@ import {connect} from 'react-redux';
 import PopupHeader from './_popupHeader';
 import {closePopup} from '../../popup/popupAction';
 import {numberwithThousandsSeparator, removeTypeName} from "../../../reuseable/function/function";
-import {graphql, compose} from 'react-apollo';
-import {QUERY} from '../../../constant/query';
-import {MUTATION, FRAGMENT} from '../../../constant/mutation';
 import {Navigator} from "react-native-deprecated-custom-components";
 import Moment from '../../moment';
-import {normalizeProductItemsInput} from '../../../reuseable/function/normalizeData';
 import MyDatePicker from '../../datePicker/datePicker';
 import ListProduct from '../../listProduct/listProduct';
 import LoadingOverlay from '../../loadingOverlay';
 import {clearCart} from '../../cart/cartAction';
 import _ from 'lodash';
-import {client} from '../../../root';
-import gql from 'graphql-tag';
+import {updateTransaction} from '../../../feature/transaction/transactionAction';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
+
 class UpdateTransaction extends React.Component {
     constructor(props) {
         super(props);
@@ -73,7 +69,7 @@ class UpdateTransaction extends React.Component {
     getTotalPaid(paid) {
         let price = 0;
         for (itemsPaid of paid) {
-            price = price + itemsPaid.amount;
+            price += (+itemsPaid.amount);
         }
         return price
     }
@@ -85,8 +81,6 @@ class UpdateTransaction extends React.Component {
 
 
     async onCharge() {
-
-
         let condition = await this.checkCondition();
         //this.subtractInventoryLocal()
         if (condition) {
@@ -98,17 +92,18 @@ class UpdateTransaction extends React.Component {
                     {
                         text: 'Có', onPress: async () => {
 
-                        this.props.updateTransaction({
-                            variables: {
-                                _id: this.state.transaction._id,
-                                dueDate: this.state.transaction.dueDate,
-                                paid: {date: new Date(), amount: this.state.paid},
-                                description: this.state.transaction.description,
-
-                            }
-                        });
-                        this.props.closePopup();
-                    }
+                            this.props.updateTransaction(this.state.transaction, this.state.transaction.dueDate, this.state.paid);
+                            // this.props.updateTransaction({
+                            //     variables: {
+                            //         _id: this.state.transaction._id,
+                            //         dueDate: this.state.transaction.dueDate,
+                            //         paid: {date: new Date(), amount: this.state.paid},
+                            //         description: this.state.transaction.description,
+                            //
+                            //     }
+                            // });
+                            this.props.closePopup();
+                        }
                     },
                 ],
                 {cancelable: false}
@@ -121,7 +116,7 @@ class UpdateTransaction extends React.Component {
                 [
                     {
                         text: 'OK', onPress: () => {
-                    }
+                        }
                     },
                 ],
                 {cancelable: false})
@@ -135,7 +130,7 @@ class UpdateTransaction extends React.Component {
         return (
             <View style={style.container}>
                 <PopupHeader
-                    title={`Tổng tiền: ${numberwithThousandsSeparator(this.state.transaction.totalPrice)}${_.get(this.props.currency, "currency[0].symbol", "")}`}
+                    title={`Tổng tiền: ${numberwithThousandsSeparator(this.state.transaction.totalPrice)}${_.get(this.props.currency, "symbol", "")}`}
                     isBack={this.state.currentView !== 'main'}
                     submitFunction={() => this.onCharge()}
                     backFunction={() => {
@@ -206,7 +201,8 @@ class Main extends React.Component {
                     <TextNormal style={[style.spaceLine]}>Hạn thanh
                         toán:{this.props.instance.state.transaction.dueDate && Moment(this.props.instance.state.transaction.dueDate).format("dddd [ngày] DD MMMM [năm] YYYY")}</TextNormal>
                 </TouchableWithoutFeedback>
-                <TextNormal style={[style.spaceLine]}>Tiền còn thiếu: {numberwithThousandsSeparator(this.props.transaction.totalPrice-this.props.totalPaid)} {_.get(this.props.currency, "currency[0].symbol", "")}</TextNormal>
+                <TextNormal style={[style.spaceLine]}>Tiền còn
+                    thiếu: {numberwithThousandsSeparator(this.props.transaction.totalPrice - this.props.totalPaid)} {_.get(this.props.currency, "symbol", "")}</TextNormal>
                 <View style={style.spaceLine}>
                     <View style={[{flexDirection: 'row'}]}>
                         <TextNormal>Tiền nhận:</TextNormal>
@@ -221,7 +217,7 @@ class Main extends React.Component {
                         this.props.transaction.paid > 0 &&
                         <View>
                             <TextSmall
-                                style={[style.priceHint]}>{this.props.transaction.paid < this.props.transaction.totalPrice ? "Thiếu" : "Thừa"} {numberwithThousandsSeparator(Math.abs(this.props.transaction.totalPrice - this.props.transaction.paid))} {_.get(this.props.instance.props.currency, "currency[0].symbol", "")}</TextSmall>
+                                style={[style.priceHint]}>{this.props.transaction.paid < this.props.transaction.totalPrice ? "Thiếu" : "Thừa"} {numberwithThousandsSeparator(Math.abs(this.props.transaction.totalPrice - this.props.transaction.paid))} {_.get(this.props.instance.props.currency, "symbol", "")}</TextSmall>
                         </View>
                     }
                 </View>
@@ -340,15 +336,17 @@ const style = EStyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         popup: state.popupReducer,
+        currency: state.userReducer.currency
     }
 };
 const mapDispatchToProps = {
     closePopup,
-    clearCart
+    clearCart,
+    updateTransaction
 };
-
-let UpdateTransactionApollo = compose(
-    graphql(QUERY.CURRENCY, {name: 'currency', options: {fetchPolicy: "cache-and-network"}}),
-    graphql(MUTATION.UPDATE_TRANSACTION, {name: 'updateTransaction'})
-)(UpdateTransaction);
-export default connect(mapStateToProps, mapDispatchToProps)(UpdateTransactionApollo);
+//
+// let UpdateTransactionApollo = compose(
+//     graphql(QUERY.CURRENCY, {name: 'currency', options: {fetchPolicy: "cache-and-network"}}),
+//     graphql(MUTATION.UPDATE_TRANSACTION, {name: 'updateTransaction'})
+// )(UpdateTransaction);
+export default connect(mapStateToProps, mapDispatchToProps)(UpdateTransaction);

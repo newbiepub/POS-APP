@@ -124,9 +124,8 @@ class Transaction extends React.Component {
     getTotalPaid(paid) {
         let price = 0;
         for (itemsPaid of paid) {
-            price = price + itemsPaid.amount;
+            price += (+itemsPaid.amount);
         }
-
         return price
     }
 
@@ -184,8 +183,8 @@ class Transaction extends React.Component {
     }
 
     onUpdateTransaction() {
-        if (this.state.selectedTransaction._id)
-            this.props.openPopup(<UpdateTransaction transaction={this.state.selectedTransaction}/>)
+        if (this.props.currentTransaction._id)
+            this.props.openPopup(<UpdateTransaction transaction={this.props.currentTransaction}/>)
     }
 
     async _onRefresh() {
@@ -212,7 +211,7 @@ class Transaction extends React.Component {
                             this.setState({transactionOptionVisible: !this.state.transactionOptionVisible})
                         }}>
                     {
-                        currentTransaction._id &&
+                        currentTransaction._id && currentTransaction.issueRefund === false &&
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
                             {
                                 currentTransaction._id && totalPaid >= currentTransaction.totalPrice &&
@@ -358,18 +357,19 @@ class Transaction extends React.Component {
                                                     style={[style.transactionCustomerDetailText, {textAlign: 'justify'}]}>
                                                     Địa chỉ: {currentTransaction.customer.address}</TextNormal>
                                             }
+
                                             {
-                                                !!currentTransaction.customer.company &&
-                                                <TextNormal
-                                                    style={[style.transactionCustomerDetailText, {textAlign: 'justify'}]}>
-                                                    Công ty: {currentTransaction.customer.company}</TextNormal>
-                                            }
-                                            {
-                                                !!currentTransaction.customer.phoneNumber &&
+                                                !!currentTransaction.customer.phone &&
                                                 <TextNormal
                                                     style={[style.transactionCustomerDetailText, {textAlign: 'justify'}]}>
                                                     Số điện
-                                                    thoại: {currentTransaction.customer.phoneNumber}</TextNormal>
+                                                    thoại: {currentTransaction.customer.phone}</TextNormal>
+                                            }
+                                            {
+                                                !!currentTransaction.customer.description &&
+                                                <TextNormal
+                                                    style={[style.transactionCustomerDetailText, {textAlign: 'justify'}]}>
+                                                    Ghi chú: {currentTransaction.customer.description}</TextNormal>
                                             }
 
                                         </View>
@@ -387,7 +387,7 @@ class Transaction extends React.Component {
                                         <ListProduct data={currentTransaction.productItems}/>
                                     </View>
 
-
+                                    <View style={{height:constantStyle.xl*2}}/>
                                 </ScrollView> :
                                 <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                                     <TextNormal>Hãy chọn giao dịch để hiển thị !</TextNormal>

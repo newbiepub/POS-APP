@@ -13,9 +13,10 @@ export const MUTATION = {
         $customer: TransactionCustomerInput,
         $issueRefund: Boolean,
         $issueRefundReason:String,
+        $createdAt: Date,
         $description:String){
             createTransaction(productItems:$productItems, type:$type,paymentStatus:$paymentStatus,
-                paymentMethod:$paymentMethod,dueDate:$dueDate, totalQuantity:$totalQuantity,totalPrice:$totalPrice,paid:$paid,description:$description,customer:$customer,issueRefund: $issueRefund,issueRefundReason:$issueRefundReason
+                paymentMethod:$paymentMethod,dueDate:$dueDate, totalQuantity:$totalQuantity,totalPrice:$totalPrice,paid:$paid,description:$description,customer:$customer,issueRefund: $issueRefund,issueRefundReason:$issueRefundReason, createdAt: $createdAt
             ) {
                 _id
                 createdAt

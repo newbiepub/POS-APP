@@ -55,7 +55,27 @@ function subtractInventoryLocal(state, product) {
     return state
 
 }
+function returnInventoryLocal(state, product) {
+    if (state.length === 0) {
+        return product
+    } else {
+        for (let i = 0; i < product.length; i++) {
+            for (let j = 0; j < state.length; j++) {
+                if (product[i].productId === state[j].product._id) {
+                    let newProduct = Object.assign({}, state[j]);
+                    newProduct.quantity = state[j].quantity + product[i].quantity;
 
+                    state.splice(j, 1);
+                    state.splice(j, 0, newProduct);
+                    break;
+                }
+            }
+
+        }
+    }
+    return state
+
+}
 export default function async(state = initialState, action = {}) {
     switch (action.type) {
         case PRODUCT.GET_PRODUCT: {
@@ -68,6 +88,14 @@ export default function async(state = initialState, action = {}) {
         }
         case PRODUCT.SUBTRACT_PRODUCT_INVENTORY: {
             let newProduct = subtractInventoryLocal(state.product, action.payload);
+            // console.warn(newProduct.length);
+            return {
+                ...state,
+                product: [...newProduct]
+            }
+        }
+        case PRODUCT.RETURN_PRODUCT_INVENTORY: {
+            let newProduct = returnInventoryLocal(state.product, action.payload);
             // console.warn(newProduct.length);
             return {
                 ...state,

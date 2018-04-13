@@ -14,13 +14,10 @@ import Header from '../../component/header';
 import EStyleSheet from "react-native-extended-stylesheet";
 import Entypo from 'react-native-vector-icons/Entypo';
 import {constantStyle} from '../../style/base';
-import {graphql} from 'react-apollo';
-import {QUERY} from '../../constant/query';
+
 import GridProduct from '../../component/listProduct/gridView/gridProduct';
 import CustomAmount from './customAmount';
 import Cart from '../../component/cart/cart';
-import {connect} from 'react-redux';
-import {createTransactionAsync, issueRefundAsync} from '../transaction/transactionAction';
 
 class POS extends PureComponent {
     constructor(props) {
@@ -34,17 +31,6 @@ class POS extends PureComponent {
         }
     }
 
-    componentWillMount() {
-        InteractionManager.runAfterInteractions(() => {
-            if (this.props.asyncTransaction.length > 0) {
-                this.props.createTransactionAsync(this.props.asyncTransaction)
-            }
-            if (this.props.asyncIssueRefund.length > 0) {
-                this.props.issueRefundAsync(this.props.asyncIssueRefund)
-            }
-        });
-
-    }
 
     async componentDidMount() {
         Dimensions.addEventListener("change", () => {
@@ -164,14 +150,5 @@ const style = EStyleSheet.create({
     '@media (min-width: 768) and (max-width: 1024)': {},
     '@media (min-width: 1024)': {}
 });
-const mapStateToProps = (state) => {
-    return {
-        asyncTransaction: state.transactionReducer.asyncTransaction,
-        asyncIssueRefund: state.transactionReducer.asyncIssueRefund
-    }
-};
-const mapDispatchToProps = {
-    createTransactionAsync,
-    issueRefundAsync
-};
-export default connect(mapStateToProps, mapDispatchToProps)(POS);
+
+export default POS;

@@ -36,6 +36,12 @@ function subtractInventoryLocalAction(payload) {
         payload
     }
 }
+function returnInventoryLocalAction(payload) {
+    return {
+        type: PRODUCT.RETURN_PRODUCT_INVENTORY,
+        payload
+    }
+}
 function switchCategoryViewAction(){
     return {
         type: PRODUCT.SWITCH_CATEGORY_VIEW
@@ -121,6 +127,17 @@ export function subtractInventoryLocal(productItems) {
             dispatch(subtractInventoryLocalAction(productItems))
         } catch (e) {
             console.warn("productAction.js-subtractInventoryLocal-"+e);
+        }
+    }
+}
+export function returnInventoryLocal(productItems) {
+
+    return async (dispatch, getState) => {
+
+        try {
+            dispatch(returnInventoryLocalAction(productItems))
+        } catch (e) {
+            console.warn("productAction.js-returnInventoryLocal-"+e);
         }
     }
 }

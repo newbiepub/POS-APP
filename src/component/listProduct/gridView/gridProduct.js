@@ -40,7 +40,7 @@ class GridProduct extends React.Component {
             refreshing: false,
 
         };
-        this.state.gridViewItemSize = ((width * this.gridWidthPercent) / 100 - 20 - constantStyle.headerHeight) / this.state.columnNumber;
+        this.state.gridViewItemSize = ((width * this.gridWidthPercent) / 100 - constantStyle.sm*2 - constantStyle.headerHeight) / this.state.columnNumber;
         this.props.length = 0;
 
     }
@@ -136,7 +136,7 @@ class GridProduct extends React.Component {
         <View style={[{
             width: (this.state.gridViewItemSize),
             height: (this.state.gridViewItemSize),
-            padding: 10
+            padding: constantStyle.sm
         }]}>
             <TouchableWithoutFeedback onPress={() => this.onClickProduct(item)}>
                 <View style={{flex: 1}}>
@@ -178,7 +178,7 @@ class GridProduct extends React.Component {
         }}/>
     );
     _renderFooter = () => (
-        <View style={{height: 90}}/>
+        {/*<View style={{height: constantStyle.sm*2}}/>*/}
     );
 
     onLayout(event) {
@@ -218,7 +218,7 @@ class GridProduct extends React.Component {
                             contentContainerStyle={style.gridView}
                             ListEmptyComponent={this._listEmptyComponent}
                             ListHeaderComponent={this._listHeaderComponent(this.props.products)}
-                            ListFooterComponent={this._renderFooter}
+                            // ListFooterComponent={this._renderFooter}
                             renderItem={this._renderItem}
                         /> :
                         <View style={[{flex: 1, justifyContent: "center", alignItems: 'center'}]}>
@@ -244,7 +244,7 @@ const style = EStyleSheet.create({
         borderTopRightRadius: 10,
         flex: 0.6,
         zIndex: 5,
-        padding: constantStyle.paddingGridItem,
+        padding: constantStyle.sm,
         backgroundColor: constantStyle.color2
     },
     gridItemName: {

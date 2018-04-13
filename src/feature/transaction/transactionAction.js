@@ -38,6 +38,13 @@ function asyncIssueRefundAction(payload) {
     }
 }
 
+function asyncUpdateTransactionAction(payload) {
+    return {
+        type: TRANSACTION.ASYNC_UPDATE_TRANSACTION,
+        payload
+    }
+}
+
 function removeTransactionAsyncLocalAction(payload) {
     return {
         type: TRANSACTION.REMOVE_TRANSACTION_ASYNC_LOCAL,
@@ -48,6 +55,13 @@ function removeTransactionAsyncLocalAction(payload) {
 function removeIssueRefundAsyncLocalAction(payload) {
     return {
         type: TRANSACTION.REMOVE_ISSUE_REFUND_ASYNC_LOCAL,
+        payload
+    }
+}
+
+function removeUpdateTransactionAsyncLocalAction(payload) {
+    return {
+        type: TRANSACTION.REMOVE_UPDATE_TRANSACTION_ASYNC_LOCAL,
         payload
     }
 }
@@ -65,6 +79,7 @@ function adjustTransactionNotCreatedAction(payload) {
         payload
     }
 }
+
 function selectTransactionAction(payload) {
     return {
         type: TRANSACTION.SELECT_TRANSACTION,
@@ -192,11 +207,17 @@ export function issueRefund(transaction, reason, productItems) {
         try {
 
             if (transaction.async) {
-                let newLocalTransaction = Object.assign({},transaction);
+                let newLocalTransaction = Object.assign({}, transaction);
                 newLocalTransaction.issueRefundReason = reason;
                 newLocalTransaction.refundDate = new Date();
                 newLocalTransaction.issueRefund = true;
                 dispatch(adjustTransactionNotCreatedAction(newLocalTransaction));
+                dispatch(asyncIssueRefundAction({
+                    _id: transaction._id,
+                    issueRefundReason: reason,
+                    refundDate: new Date(),
+                    productItems: productItems
+                }));
                 dispatch(selectTransaction(newLocalTransaction))
             } else {
                 const issueRefund = await client.mutate({
@@ -211,11 +232,9 @@ export function issueRefund(transaction, reason, productItems) {
                 dispatch(adjustTransactionAction(issueRefund.data.issueRefundTransaction));
                 dispatch(selectTransaction(issueRefund.data.issueRefundTransaction))
             }
-
-
         } catch (e) {
             dispatch(asyncIssueRefundAction({
-                _id: id,
+                _id: transaction._id,
                 issueRefundReason: reason,
                 refundDate: new Date(),
                 productItems: productItems
@@ -255,6 +274,42 @@ export function selectTransaction(item) {
 
         } catch (e) {
             console.warn("transactionAction.js-selectTransaction-" + e)
+        }
+    }
+}
+
+export function updateTransaction(transaction, dueDate, paid) {
+    return async (dispatch, getState) => {
+        try {
+            if (transaction.async) {
+                let newLocalTransaction = Object.assign({}, transaction);
+                newLocalTransaction.dueDate = dueDate;
+                newLocalTransaction.paid.push({date: new Date(), amount: paid});
+                newLocalTransaction.description = transaction.description;
+                dispatch(adjustTransactionNotCreatedAction(newLocalTransaction));
+                dispatch(selectTransaction(newLocalTransaction))
+            } else {
+                const updateTransaction = await client.mutate({
+                    mutation: MUTATION.UPDATE_TRANSACTION,
+                    variables: {
+                        _id: transaction._id,
+                        dueDate: dueDate,
+                        paid: {date: new Date(), amount: paid},
+                        description: transaction.description,
+
+                    }
+                });
+                dispatch(adjustTransactionAction(updateTransaction.data.updateTransaction));
+                dispatch(selectTransaction(updateTransaction.data.updateTransaction))
+            }
+        } catch (e) {
+            dispatch(asyncUpdateTransactionAction({
+                _id: transaction._id,
+                dueDate: dueDate,
+                paid: {date: new Date(), amount: paid},
+                description: transaction.description,
+            }));
+            console.warn("transactionAction.js-updateTransaction-" + e)
         }
     }
 }

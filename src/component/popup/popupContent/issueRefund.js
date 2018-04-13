@@ -1,13 +1,14 @@
 import React from "react";
 import {View, Dimensions, Alert} from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
-import {TextInputNormal,TextNormal} from '../../text';
+import {TextInputNormal, TextNormal} from '../../text';
 import {constantStyle} from '../../../style/base';
 import {connect} from 'react-redux';
 import PopupHeader from './_popupHeader';
 import {closePopup} from '../../popup/popupAction';
 import {issueRefund} from '../../../feature/transaction/transactionAction';
 import {normalizeProductItemsIssueRefund,} from '../../../reuseable/function/normalizeData';
+import {returnInventoryLocal} from '../../listProduct/productAction';
 
 class IssueRefund extends React.Component {
     constructor(props) {
@@ -51,7 +52,8 @@ class IssueRefund extends React.Component {
                     {text: 'Không', style: 'cancel'},
                     {
                         text: 'Có', onPress: () => {
-                            this.props.issueRefund(this.props.transaction, this.state.reason,normalizeProductItemsIssueRefund(this.props.transaction.productItems));
+                            this.props.returnInventoryLocal(this.props.transaction.productItems);
+                            this.props.issueRefund(this.props.transaction, this.state.reason, normalizeProductItemsIssueRefund(this.props.transaction.productItems));
                             this.props.closePopup()
                         }
                     },
@@ -127,6 +129,7 @@ const style = EStyleSheet.create({
 });
 const mapDispatchToProps = {
     closePopup,
-    issueRefund
-}
+    issueRefund,
+    returnInventoryLocal
+};
 export default connect(null, mapDispatchToProps)(IssueRefund);
