@@ -13,7 +13,7 @@ import {
 import EStyleSheet from "react-native-extended-stylesheet";
 import {constantStyle} from '../../../style/base';
 import {TextNormal, TextSmall} from '../../text';
-import {QUERY} from '../../../constant/query';
+import {getCategory} from '../productAction';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { switchCategoryView} from '../productAction';
@@ -30,6 +30,9 @@ class CategoryView extends React.PureComponent {
         };
     }
 
+    componentWillMount(){
+        this.props.getCategory()
+    }
 
     openCategoryView() {
         Animated.timing(
@@ -218,6 +221,7 @@ const mapStateToProps = (state)=>{
     }
 };
 const mapDispatchToProps={
-    switchCategoryView
+    switchCategoryView,
+    getCategory
 }
 export default connect(mapStateToProps,mapDispatchToProps)(CategoryView);

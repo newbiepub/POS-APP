@@ -9,7 +9,12 @@ function getProductAction(payload) {
         payload
     }
 }
-
+function getCategoryAction(payload) {
+    return {
+        type: PRODUCT.GET_CATEGORY,
+        payload
+    }
+}
 function getProductAmountAction(payload) {
     return {
         type: PRODUCT.GET_PRODUCT_AMOUNT,
@@ -88,7 +93,22 @@ export function getProductAmount(userId) {
         })
     }
 }
+export function getCategory(){
+    return async (dispatch, getState) => {
+        try {
+            const category = await client.query({
+                query: QUERY.CATEGORIES,
+                fetchPolicy: "network-only"
+            });
+            // console.warn(category)
+            dispatch(getCategoryAction(category.data.categories));
 
+        } catch (e) {
+            console.warn("productAction.js-getCategory-"+e);
+        }
+    }
+
+}
 export function getPaymentMethod() {
 
     return async (dispatch, getState) => {

@@ -72,42 +72,42 @@ class GridProduct extends React.Component {
         )
     }
 
-    // filterByCategory() {
-    //     try {
-    //         if (this.state.categoryFilter === 'all' && this.state.searchText === "") {
-    //             return this.props.inventoryProduct.getUserProductInventory
-    //
-    //         } else {
-    //             let data = [];
-    //             if (this.props.inventoryProduct && this.props.inventoryProduct.getUserProductInventory) {
-    //                 this.props.inventoryProduct.getUserProductInventory.forEach((item) => {
-    //
-    //                     if (item.product.categoryId) {
-    //                         if (item.product.categoryId._id === this.state.categoryFilter) {
-    //                             if (item.product.name.includes(this.state.searchText)) {
-    //                                 data.push(item)
-    //                             }
-    //                         }
-    //                     }
-    //
-    //                     if (this.state.categoryFilter === 'all') {
-    //
-    //                         if (item.product.name.includes(this.state.searchText)) {
-    //                             data.push(item)
-    //                         }
-    //                     }
-    //                 });
-    //             }
-    //
-    //             return data;
-    //
-    //         }
-    //     } catch (e) {
-    //         console.warn("filter-category" + e);
-    //         return []
-    //     }
-    //
-    // }
+    filterByCategory() {
+        try {
+            if (this.state.categoryFilter === 'all' && this.state.searchText === "") {
+                return this.props.products
+
+            } else {
+                let data = [];
+                if (this.props.products) {
+                    this.props.products.forEach((item) => {
+
+                        if (item.product.categoryId) {
+                            if (item.product.categoryId._id === this.state.categoryFilter) {
+                                if (item.product.name.includes(this.state.searchText)) {
+                                    data.push(item)
+                                }
+                            }
+                        }
+
+                        if (this.state.categoryFilter === 'all') {
+
+                            if (item.product.name.includes(this.state.searchText)) {
+                                data.push(item)
+                            }
+                        }
+                    });
+                }
+
+                return data;
+
+            }
+        } catch (e) {
+            console.warn("filter-category" + e);
+            return []
+        }
+
+    }
 
     shouldComponentUpdate(nextProps, nextState) {
         const productChanged = this.props.products !== nextProps.products;
@@ -191,7 +191,7 @@ class GridProduct extends React.Component {
 
     render() {
         // this.props.checkLoginExpire(this.props.inventoryProduct);
-        // let data = this.filterByCategory();
+        let data = this.filterByCategory();
         // console.warn(this.props.products.length)
         return (
             <View style={style.container} onLayout={(event) => this.onLayout(event)}>
@@ -207,7 +207,7 @@ class GridProduct extends React.Component {
                                     onRefresh={this._onRefresh.bind(this)}
                                 />
                             }
-                            data={this.props.products}
+                            data={data}
                             extraData={this.props}
                             numColumns={this.state.columnNumber}
                             initialNumToRender={3}

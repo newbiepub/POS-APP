@@ -86,6 +86,12 @@ export default function async(state = initialState, action = {}) {
                 product: [...newProduct]
             }
         }
+        case PRODUCT.GET_CATEGORY: {
+            return {
+                ...state,
+                category: action.payload
+            }
+        }
         case PRODUCT.SUBTRACT_PRODUCT_INVENTORY: {
             let newProduct = subtractInventoryLocal(state.product, action.payload);
             // console.warn(newProduct.length);
