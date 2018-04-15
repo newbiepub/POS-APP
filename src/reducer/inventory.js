@@ -1,7 +1,8 @@
 import {INVENTORY_ACTION} from "../constant/actionTypes";
 
 const initialState = {
-    products: []
+    products: [],
+    history: []
 };
 
 export default function (state = initialState, action = {}) {
@@ -10,6 +11,12 @@ export default function (state = initialState, action = {}) {
             return {
                 ...state,
                 products: action.payload
+            }
+        }
+        case INVENTORY_ACTION.FETCH_INVENTORY_HISTORY: {
+            return {
+                ...state,
+                history: action.payload
             }
         }
         default: return state

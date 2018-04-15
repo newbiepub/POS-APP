@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {StyleSheet, InteractionManager, ActivityIndicator, TextInput, View} from "react-native";
+import {InteractionManager, ActivityIndicator, View, TextInput, SafeAreaView, Text} from "react-native";
 import styleBase from "../../../../styles/base";
 import NoData from "../../../../component/noData/noData";
 import ProductItem from "./productItem";
@@ -8,6 +8,8 @@ import List from "../../../../component/list/list";
 import {INVENTORY} from "../../action/index";
 import {connect} from "react-redux";
 import {equals} from "../../../../utils/utils";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import ErrorBoundary from "../../../../component/errorBoundary/errorBoundary";
 
 class ProductList extends React.Component {
     constructor(props) {
@@ -125,48 +127,60 @@ class ProductList extends React.Component {
      * */
 
     renderItem(rowData, sectionId, index, numberOfRows) {
-        return <ProductItem key={index} navigator={this.props.navigator} item={rowData}/>
+        return <ErrorBoundary>
+            <ProductItem key={index} navigator={this.props.navigator} item={rowData}/>
+        </ErrorBoundary>
     }
 
     render() {
-        try {
-            let productItem = this.state.products || [];
-            return (
-                <View style={StyleSheet.flatten([styleBase.container])}>
-                    <View styleName="horizontal v-center" style={StyleSheet.flatten([styleBase.p_md_right])}>
-                        <View style={StyleSheet.flatten([styleBase.grow])}>
+        let productItem = this.state.products || [];
+        return (
+            <SafeAreaView style={[styleBase.container, styleBase.bgWhite]}>
+                <View style={[styleBase.container]}>
+                    <View style={[
+                        styleBase.row,
+                        styleBase.alignCenter,
+                        styleBase.p_md_horizontal,
+                        styleBase.p_md_vertical,
+                        styleBase.row,
+                        ]}>
+                        <View style={[styleBase.grow]}>
                             <TextInput
-                                styleName="full-width"
+                                style={[styleBase.grow]}
                                 onChangeText={this.handleChangeText}
                                 value={this.state.searchText}
                                 placeholder="TÌM KIẾM"/>
                         </View>
-                        <Icon name="search" style={{color: "#444"}}/>
+                        <Ionicons name="ios-search-outline" style={[styleBase.text4, {fontSize: 30}]}/>
                     </View>
                     {/* Search Box */}
-                    <View styleName="horizontal"
-                          style={StyleSheet.flatten([styleBase.p_md_vertical, styleBase.p_md_horizontal, styleBase.bgE5])}>
-                        <View style={{flex: 0.33}}>
-                            <Caption>
+                    <View style={[styleBase.p_md_vertical,
+                        styleBase.row,
+                        styleBase.p_md_horizontal, styleBase.bgE5]}>
+                        <View style={[{flex: 0.33}, styleBase.center]}>
+                            <Text>
                                 TÊN SẢN PHẨM
-                            </Caption>
+                            </Text>
                         </View>
-                        <View styleName="horizontal v-center h-center" style={{flex: 0.33}}>
-                            <Caption>
+                        <View style={[{flex: 0.33}, styleBase.center]}>
+                            <Text>
                                 SỐ LƯỢNG
-                            </Caption>
+                            </Text>
                         </View>
-                        <View styleName="horizontal v-center h-center" style={{flex: 0.2}}>
-                            <Caption>
+                        <View style={[
+                            {flex: 0.2},
+                            styleBase.center
+                        ]}>
+                            <Text>
                                 ĐƠN VỊ
-                            </Caption>
+                            </Text>
                         </View>
                         <View style={{flex: 0.13}}/>
                     </View>
-                    <View style={StyleSheet.flatten([styleBase.container])}>
+                    <View style={[styleBase.container]}>
                         {
                             this.state.loading && (productItem.length === 0) &&
-                            <Spinner/>
+                            <ActivityIndicator size="large"/>
                         }
                         {
                             (productItem.length > 0 && this.state.products !== "NoData") &&
@@ -184,19 +198,14 @@ class ProductList extends React.Component {
                         }
                         {
                             ((productItem === "NoData") && !this.state.loading) &&
-                            <View styleName="xl-gutter-top">
+                            <View style={[styleBase.m_xl_top]}>
                                 <NoData/>
                             </View>
                         }
                     </View>
                 </View>
-            )
-        }
-        catch (e) {
-            console.log(e);
-            console.warn("error - render ProductList");
-            throw e;
-        }
+            </SafeAreaView>
+        )
     }
 }
 

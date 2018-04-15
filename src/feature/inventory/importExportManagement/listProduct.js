@@ -30,19 +30,7 @@ class ListExportProducts extends React.Component {
     }
 
     componentDidMount() {
-        console.log(this.props);
-        this.handleGetData(this.props.listProduct)
-    }
 
-    handleGetData (listProduct) {
-        try {
-            let { getUserProductInventory = [], loading } = listProduct;
-            if(!loading) {
-                this.setState({products: getUserProductInventory, loading});
-            }
-        } catch (e) {
-            throw e;
-        }
     }
 
     render() {
@@ -70,8 +58,8 @@ ListExportProducts.defaultProps = {};
 
 const mapStateToProps = (state) => {
     return {
-
+        history: state.inventory.history
     }
 };
 
-export default ListExportProducts
+export default connect(mapStateToProps)(ListExportProducts)

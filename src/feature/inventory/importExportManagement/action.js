@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 // language=GraphQL format=false
-export const getInentoryHistory = gql`
+export const getInventoryHistory = gql`
     query userInventoryHistory($type: String!) {
         getUserInventoryHistory (type: $type) {
             _id

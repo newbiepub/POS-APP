@@ -70,7 +70,7 @@ class List extends React.Component {
                 }}
                 style={StyleSheet.flatten([...this.props.styles])}
                 data={this.props.dataSources}
-                extraData={this.state}
+                extraData={this.props}
                 onEndReached={this.onEndReach}
                 initialNumToRender={this.props.initialNumToRender}
                 getItemLayout={this.props.getItemLayout}
@@ -110,7 +110,7 @@ List.propTypes = {
 
 List.defaultProps = {
     dataSources: [],
-    disableVirtualization: true,
+    disableVirtualization: false,
     removeClippedSubviews: true,
     onEndReachedThreshold: 0.01,
     extraData: [],

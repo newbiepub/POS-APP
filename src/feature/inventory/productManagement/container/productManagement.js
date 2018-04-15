@@ -8,6 +8,7 @@ import {equals} from "../../../../utils/utils";
 import styleBase from "../../../../styles/base";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import NavBar from "../../../../component/navbar/navbar";
+import ErrorBoundary from "../../../../component/errorBoundary/errorBoundary";
 
 class ProductManagement extends React.Component {
     constructor(props) {
@@ -72,15 +73,15 @@ class ProductManagement extends React.Component {
     }
 
     render() {
-        try {
-            return (
+        return (
+            <ErrorBoundary>
                 <SafeAreaView style={[styleBase.container]}>
                     <NavBar
                         navigator={this.props.navigator}
                         renderCenterComponent={this.renderCenterComponent}/>
                     {
                         this.state.currentRoute.route === "product" &&
-                        <CommingSoon/>
+                        <ProductList {...this.props}/>
                     }
                     {
                         this.state.currentRoute.route === "category" &&
@@ -88,26 +89,9 @@ class ProductManagement extends React.Component {
                     }
 
                 </SafeAreaView>
-            )
-        }
-        catch (e) {
-            console.log(e);
-            console.warn("error - render productManagement");
-            return (
-                <Screen styleName="paper">
-                    <NavigationBar
-                        style={{container: {paddingHorizontal: 15}}}
-                        styleName="inline"
-                        centerComponent={this.renderCenterComponent()}
-                        leftComponent={this.renderLeftComponent()}
-                        rightComponent={this.renderRightComponent()}
-                    />
-                    <View styleName="xl-gutter-top">
-                        <NoData/>
-                    </View>
-                </Screen>
-            )
-        }
+            </ErrorBoundary>
+
+        )
     }
 }
 

@@ -1,7 +1,8 @@
 import React from "react";
-import { StyleSheet, View, TextInput } from "react-native";
+import { StyleSheet, View, TextInput, Text, TouchableOpacity } from "react-native";
 import PropTypes from "prop-types";
 import styleBase from "../../styles/base";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 class Table extends React.Component {
     constructor(props) {
@@ -27,32 +28,39 @@ class Table extends React.Component {
         let { fields } = this.state;
 
         return (
-            <View style={StyleSheet.flatten([styleBase.container])}>
-                <View styleName="horizontal v-center" style={StyleSheet.flatten([styleBase.p_md_right])}>
-                    <View style={StyleSheet.flatten([styleBase.grow])}>
+            <View style={[styleBase.container]}>
+                <View style={[
+                    styleBase.row,
+                    styleBase.alignCenter,
+                    styleBase.p_md_horizontal,
+                    styleBase.p_md_vertical,
+                    styleBase.row,
+                ]}>
+                    <View style={[styleBase.grow]}>
                         <TextInput
-                            styleName="full-width"
+                            style={[styleBase.grow]}
                             onChangeText={this.handleChangeText}
                             value={this.state.searchText}
                             placeholder="TÌM KIẾM"/>
                     </View>
-                    <Icon name="search" style={{color: "#444"}}/>
+                    <Ionicons name="ios-search-outline" style={[styleBase.text4, {fontSize: 30}]}/>
                 </View>
-                <View styleName="horizontal"
-                      style={StyleSheet.flatten([styleBase.p_md_vertical, styleBase.p_md_horizontal, styleBase.bgE5])}>
+                <View style={[styleBase.p_md_vertical,
+                    styleBase.row,
+                    styleBase.p_md_horizontal, styleBase.bgE5]}>
                     {
                         fields.map((field, index) => {
                             return (
-                                <View key={index} style={{flex: field.columnWidth}}>
-                                    <Caption>
+                                <View key={index} style={[{flex: field.columnWidth}]}>
+                                    <Text>
                                         {field.name.toUpperCase()}
-                                    </Caption>
+                                    </Text>
                                 </View>
                             )
                         })
                     }
                 </View>
-                <View style={StyleSheet.flatten([styleBase.container])}>
+                <View style={[styleBase.container]}>
                     {this.props.renderList()}
                 </View>
             </View>

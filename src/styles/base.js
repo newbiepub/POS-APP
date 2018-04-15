@@ -11,6 +11,9 @@ const styleBase = EStyleSheet.create({
     height80: {
         height: "80%"
     },
+    height70: {
+        height: '70%'
+    },
     width50: {
         height: "50%"
     },

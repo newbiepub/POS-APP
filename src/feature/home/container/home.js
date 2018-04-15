@@ -10,6 +10,7 @@ import styleBase from "../../../styles/base";
 import NavBar from "../../../component/navbar/navbar";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import DropDown from "../../../component/dropDown/index";
+import ErrorBoundary from "../../../component/errorBoundary/errorBoundary";
 
 class Home extends React.PureComponent {
     constructor(props) {
@@ -128,7 +129,10 @@ class Home extends React.PureComponent {
                         }
                         {
                             this.state.currentRoute.route === "inventory" &&
-                            <CompanyInventory {...this.props}/>
+                            <ErrorBoundary>
+                                <CompanyInventory {...this.props}/>
+                            </ErrorBoundary>
+
                         }
                         {
                             (this.state.currentRoute.route === "setting" || this.state.currentRoute.route === "report") &&

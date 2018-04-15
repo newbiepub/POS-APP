@@ -1,8 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { StyleSheet, ScrollView } from "react-native";
+import { ScrollView, View, TouchableOpacity, Text, SafeAreaView } from "react-native";
 import styleBase from "../../../../styles/base";
 import { connect } from "react-redux";
+import ErrorBoundary from "../../../../component/errorBoundary/errorBoundary";
 
 class CompanyInventory extends React.Component {
     constructor(props) {
@@ -34,36 +35,48 @@ class CompanyInventory extends React.Component {
     }
 
     render() {
-        try {
-            return (
-                <ScrollView style={StyleSheet.flatten([styleBase.container])}>
+        return (
+            <SafeAreaView style={[styleBase.container]}>
+                <ScrollView style={[styleBase.container]}>
                     {
                         this.listButton.map((item, index) => {
                             return (
-                                <View key={index} styleName="vertical v-center h-center xl-gutter-vertical"
-                                      style={StyleSheet.flatten([styleBase.bgE5, styleBase.m_md_vertical])}>
-                                    <Title styleName="md-gutter-bottom">
+                                <View key={index}
+                                      style={[
+                                          styleBase.p_lg_vertical,
+                                          styleBase.p_lg_horizontal,
+                                          styleBase.bgE5,
+                                          styleBase.center,
+                                          styleBase.m_lg_top]}>
+                                    <Text style={[
+                                        styleBase.title,
+                                        styleBase.m_md_bottom,
+                                        styleBase.fontRubik
+                                    ]}>
                                         {item.title}
-                                    </Title>
-                                    <Button
+                                    </Text>
+                                    <TouchableOpacity
                                         onPress={item.onPress}
-                                        style={StyleSheet.flatten([styleBase.bgBlack])}>
-                                        <Text style={StyleSheet.flatten([styleBase.textWhite])}>
+                                        style={[
+                                            styleBase.p_md_horizontal,
+                                            styleBase.p_md_vertical,
+                                            styleBase.bgBlack
+                                        ]}>
+                                        <Text style={[
+                                            styleBase.fontRubik,
+                                            styleBase.normalText,
+                                            styleBase.textWhite
+                                        ]}>
                                             ĐI ĐẾN
                                         </Text>
-                                    </Button>
+                                    </TouchableOpacity>
                                 </View>
                             )
                         })
                     }
                 </ScrollView>
-            )
-        }
-        catch(e) {
-            console.warn(e.message);
-            console.warn("error - render - companyInventory");
-            return <View/>
-        }
+            </SafeAreaView>
+        )
     }
 }
 

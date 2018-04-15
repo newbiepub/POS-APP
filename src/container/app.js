@@ -14,6 +14,7 @@ import IngredientManagement from "../feature/inventory/ingredientManagement/cont
 import ImportExportManagement from "../feature/inventory/importExportManagement/index";
 import ConfirmExport from "../feature/inventory/importExportManagement/confirmExport";
 import ProductDetail from "../feature/inventory/productManagement/component/productDetail";
+import ErrorBoundary from "../component/errorBoundary/errorBoundary";
 
 EStyleSheet.build(); //Build Extended StyleSheet
 
@@ -34,6 +35,10 @@ class AppContainer extends React.Component {
         })
     }
 
+    componentWillUnmount () {
+        emitter.removeAllListeners();
+    }
+
     configureScene(route, navigator) {
 
         if (route.id === "home" || route.id === "pos_product_management" || route.id === "company_product_management" ||  route.id === 'company_ingredient_management' || route.id === 'company_inventory_activity_management')
@@ -51,11 +56,20 @@ class AppContainer extends React.Component {
             case "home":
                 return <Home navigator={navigator}/>;
             case "pos_detail":
-                return <POSDetail navigator={navigator} title={route.title} user={route.user}/>;
+                return <ErrorBoundary>
+                    <POSDetail navigator={navigator} title={route.title} user={route.user}/>
+                </ErrorBoundary>;
             case "pos_product_management":
-                return <ProductManagement navigator={navigator} title={route.title} user={route.user} type={"employee"}/>;
+                return <ErrorBoundary>
+                    <ProductManagement navigator={navigator} title={route.title} user={route.user} type={"employee"}/>
+                </ErrorBoundary>;
             case "company_product_management":
-                return <ProductManagement navigator={navigator} title={route.title} user={route.user} type={"company"}/>;
+                return <ErrorBoundary>
+                    <ProductManagement navigator={navigator}
+                                       title={route.title}
+                                       user={route.user}
+                                       type={"company"}/>
+                </ErrorBoundary>;
             case 'company_ingredient_management':
                 return <IngredientManagement navigator={navigator} title={route.title} user={route.user} type="company"/>;
             case 'company_inventory_activity_management':

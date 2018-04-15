@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {StyleSheet, InteractionManager, ScrollView, View, Text} from "react-native";
+import {StyleSheet, InteractionManager, ScrollView, View, Text, SafeAreaView} from "react-native";
 import styleBase from "../../../../styles/base";
 import NavBar from "../../../../component/navbar/navbar";
 import {equals} from "../../../../utils/utils";
@@ -86,34 +86,36 @@ class ProductDetail extends React.Component {
         let info = this.renderProductInfo(data);
 
         return (
-            <View style={StyleSheet.flatten([styleBase.container])}>
-                <NavBar navigator={this.props.navigator} title={this.props.title}/>
-                <ScrollView>
-                    {info.length > 0 &&
-                    info.map((item, index) => {
-                        return (
-                            <View key={index} style={StyleSheet.flatten([
-                                styleBase.container,
-                                styleBase.row,
-                                styleBase.p_md_horizontal,
-                                styleBase.m_md_vertical
-                            ])}>
-                                <View style={{...StyleSheet.flatten([{flex: .5}, styleBase.center])}}>
-                                    <Text style={{...StyleSheet.flatten([styleBase.fontBold])}}>
-                                        {item.label}
-                                    </Text>
+            <SafeAreaView style={[styleBase.container, styleBase.bgWhite]}>
+                <View style={[styleBase.container]}>
+                    <NavBar navigator={this.props.navigator} title={this.props.title}/>
+                    <ScrollView>
+                        {info.length > 0 &&
+                        info.map((item, index) => {
+                            return (
+                                <View key={index} style={[
+                                    styleBase.container,
+                                    styleBase.row,
+                                    styleBase.p_md_horizontal,
+                                    styleBase.m_md_vertical
+                                ]}>
+                                    <View style={[{flex: .5}, styleBase.center]}>
+                                        <Text style={[styleBase.fontBold]}>
+                                            {item.label}
+                                        </Text>
+                                    </View>
+                                    <View style={[{flex: .5}, styleBase.center]}>
+                                        <Text numberOfLines={1}>
+                                            {item.value}
+                                        </Text>
+                                    </View>
                                 </View>
-                                <View style={{...StyleSheet.flatten([{flex: .5}, styleBase.center])}}>
-                                    <Text numberOfLines={1}>
-                                        {item.value}
-                                    </Text>
-                                </View>
-                            </View>
-                        )
-                    })
-                    }
-                </ScrollView>
-            </View>
+                            )
+                        })
+                        }
+                    </ScrollView>
+                </View>
+            </SafeAreaView>
         )
     }
 }

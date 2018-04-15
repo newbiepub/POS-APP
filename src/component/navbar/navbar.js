@@ -51,13 +51,13 @@ class NavBar extends React.Component {
                 styleBase.alignCenter,
                 styleBase.panelHeader
             ]}>
-                <View>
+                <View style={[{flex: 0.33}]}>
                     {this.renderLeftComponent()}
                 </View>
-                <View>
+                <View style={[{flex: 0.33}, styleBase.center]}>
                     {this.renderCenterComponent()}
                 </View>
-                <View>
+                <View style={[{flex: 0.33, justifyContent: 'flex-end'}, styleBase.row]}>
                     {this.renderRightComponent()}
                 </View>
             </View>

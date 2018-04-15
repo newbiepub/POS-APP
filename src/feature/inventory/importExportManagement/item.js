@@ -1,10 +1,18 @@
 import React from "react";
-import {StyleSheet, InteractionManager, Dimensions} from "react-native";
-import {  } from 'react-native';
+import {
+    StyleSheet,
+    InteractionManager,
+    Dimensions,
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity
+} from "react-native";
 import PropTypes from "prop-types";
 import styleBase from "../../../styles/base";
 import List from "../../../component/list/list";
 import {closePopup} from "../../../component/popup/actions/popupAction";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 class HistoryItem extends React.Component {
     constructor(props) {
@@ -30,7 +38,7 @@ class HistoryItem extends React.Component {
                 label: "SỐ LƯỢNG",
                 field: "quantity",
                 value: (v) => {
-                    let { quantity = 0, unit = ''} = v;
+                    let {quantity = 0, unit = ''} = v;
                     return `${quantity} ${unit.toUpperCase()}`;
                 }
             }
@@ -41,49 +49,59 @@ class HistoryItem extends React.Component {
         };
 
         this.renderItem = this.renderItem.bind(this);
-        this.getPrice   = this.getPrice.bind(this);
+        this.getPrice = this.getPrice.bind(this);
         this.handleChangeText = this.handleChangeText.bind(this);
     }
 
-    getPrice (prices = [], type) {
+    getPrice(prices = [], type) {
         let {price = 0} = prices.find(item => item.name === type) || {};
         return `${price.seperateNumber()} VND`;
     }
 
-    handleChangeText (text) {
+    handleChangeText(text) {
         InteractionManager.runAfterInteractions(() => {
-            this.setState({searchText: text, data: this.props.data.filter(data => {
-                return new RegExp(text, 'gi').test(data.name);
-            })})
+            this.setState({
+                searchText: text, data: this.props.data.filter(data => {
+                    return new RegExp(text, 'gi').test(data.name);
+                })
+            })
         });
     }
 
-    renderItem (item, index) {
+    renderItem(item, index) {
         return (
-            <View key={item._id} style={StyleSheet.flatten([styleBase.container, styleBase.card])}>
-                <View styleName="content">
-                    <Title style={StyleSheet.flatten([styleBase.m_sm_vertical])}>
+            <View key={item._id} style={[styleBase.container, styleBase.card]}>
+                <View style={[styleBase.container]}>
+                    <Text style={[styleBase.m_sm_vertical]}>
                         {item.name}
-                    </Title>
+                    </Text>
                     {
                         this.productList.map((product, index) => {
                             return (
-                                <View key={`ITEM_${index}`} styleName="horizontal v-center space-between"
-                                      style={StyleSheet.flatten([styleBase.m_sm_vertical])}>
-                                    <Subtitle>
-                                        {product.label}
-                                    </Subtitle>
+                                <View key={`ITEM_${index}`}
+                                      style={[styleBase.m_sm_vertical,
+                                          styleBase.row, styleBase.center, styleBase.spaceBetween
+                                      ]}>
+                                    <View>
+                                        <Text>
+                                            {product.label}
+                                        </Text>
+                                    </View>
                                     {
                                         product.field === "price" &&
-                                        <Caption>
-                                            {product.value(this.getPrice(item.price, product.type))}
-                                        </Caption>
+                                        <View>
+                                            <Text>
+                                                {product.value(this.getPrice(item.price, product.type))}
+                                            </Text>
+                                        </View>
                                     }
                                     {
                                         product.field === "quantity" &&
-                                        <Caption>
-                                            {product.value(item)}
-                                        </Caption>
+                                        <View>
+                                            <Text>
+                                                {product.value(item)}
+                                            </Text>
+                                        </View>
                                     }
                                 </View>
                             )
@@ -96,32 +114,41 @@ class HistoryItem extends React.Component {
 
     render() {
         return (
-            <View styleName="h-center v-center"
-                  style={StyleSheet.flatten([styleBase.bgWhite,
-                      styleBase.height80,
-                      styleBase.m_xl_horizontal,
-                      styleBase.m_xl_vertical])}>
-                <View style={StyleSheet.flatten([styleBase.panelHeader])} styleName="horizontal space-between v-center">
-                    <Title>
+            <View style={[
+                styleBase.shadowBox,
+                styleBase.bgWhite,
+                styleBase.height80,
+                styleBase.m_xl_horizontal,
+                styleBase.m_xl_vertical]}>
+                <View style={[styleBase.panelHeader, styleBase.row, styleBase.spaceBetween, styleBase.alignCenter]}>
+                    <Text style={[styleBase.fontRubik, styleBase.title]}>
                         {this.props.title}
-                    </Title>
+                    </Text>
                     <TouchableOpacity onPress={closePopup}>
-                        <Icon name="close" style={{color: "#444"}}/>
+                        <Ionicons name="ios-close-outline" style={[styleBase.text4,
+                            {fontSize: 40},
+                            styleBase.fontRubik]}/>
                     </TouchableOpacity>
                 </View>
-                <View styleName="horizontal v-center" style={StyleSheet.flatten([styleBase.p_md_right])}>
-                    <View style={StyleSheet.flatten([styleBase.grow])}>
+                <View style={[
+                    styleBase.row,
+                    styleBase.alignCenter,
+                    styleBase.p_md_horizontal,
+                    styleBase.p_md_vertical,
+                    styleBase.row,
+                ]}>
+                    <View style={[styleBase.grow]}>
                         <TextInput
-                            styleName="full-width"
+                            style={[styleBase.grow]}
                             onChangeText={this.handleChangeText}
                             value={this.state.searchText}
                             placeholder="TÌM KIẾM"/>
                     </View>
-                    <Icon name="search" style={{color: "#444"}}/>
+                    <Ionicons name="ios-search-outline" style={[styleBase.text4, {fontSize: 30}]}/>
                 </View>
-                <View style={StyleSheet.flatten([styleBase.m_md_vertical, styleBase.m_md_horizontal])}>
+                <View style={[styleBase.m_md_vertical, styleBase.m_md_horizontal]}>
                     <List
-                        styles={[styleBase.height80]}
+                        styles={[styleBase.height70]}
                         dataSources={this.state.data}
                         extraData={this.state}
                         keyExtractor={(item, index) => item._id}
