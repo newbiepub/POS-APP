@@ -64,6 +64,7 @@ export function getProduct(userId, limit, skip) {
                 },
                 fetchPolicy: "network-only"
             });
+
             dispatch(getProductAction(products.data.getUserProductInventory));
 
         } catch (e) {

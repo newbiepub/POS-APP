@@ -17,6 +17,7 @@ import {PersistGate} from 'redux-persist/integration/react'
 
 const authLink = setContext(async (req, {headers}) => {
     let authToken = await AsyncStorage.getItem(ASYNC_STORAGE.AUTH_TOKEN);
+
     authToken = JSON.parse(authToken);
     return {
         ...headers,

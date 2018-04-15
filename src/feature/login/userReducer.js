@@ -40,7 +40,14 @@ export default function (state = initialState, action = {}) {
             }
 
         }
-
+        case USER.LOG_OUT: {
+            return {
+                token: {},
+                profile: {},
+                _id: "",
+                currency: {}
+            };
+        }
 
         default:
             return {

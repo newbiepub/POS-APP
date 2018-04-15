@@ -25,7 +25,6 @@ class Setting extends React.Component {
         this.item = [
             {id: 'logout', name: 'Đăng xuất'}
         ]
-
     }
 
     onItemPress(id) {
@@ -42,7 +41,6 @@ class Setting extends React.Component {
                             this.props.logout()
                             // client.resetStore()
                         }
-
                     },
                 ],
                 {cancelable: false}

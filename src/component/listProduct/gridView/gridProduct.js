@@ -141,10 +141,15 @@ class GridProduct extends React.Component {
             <TouchableWithoutFeedback onPress={() => this.onClickProduct(item)}>
                 <View style={{flex: 1}}>
                     <View style={style.gridItem}>
-                        <TextSmall>Giá:{numberwithThousandsSeparator(_.get(item, "product.price[0].price", 0))}{_.get(item, "product.price[0].currency.symbol", "")}/{item.product.unit || ""}</TextSmall>
-                        <TextSmall>Số lượng: {item.quantity} {item.product.unit}</TextSmall>
+                        <TextSmall>Giá: {numberwithThousandsSeparator(_.get(item, "product.price[0].price", 0))}{_.get(item, "product.price[0].currency.symbol", "")}</TextSmall>
+                        <TextSmall>Đơn vị: {item.product.unit || ""}</TextSmall>
+                        <TextSmall>Số lượng: {item.quantity}</TextSmall>
                         {/*<TextSmall>Mã sản phẩm: {item.product.productCode}</TextSmall>*/}
-                        <TextSmall>Loại hàng:{_.get(item, "product.categoryId.name", "")}</TextSmall>
+                        {
+                            item.product.categoryId &&
+                            <TextSmall>Loại hàng:{_.get(item, "product.categoryId.name", "")}</TextSmall>
+                        }
+
 
                     </View>
 
@@ -192,40 +197,34 @@ class GridProduct extends React.Component {
     render() {
         // this.props.checkLoginExpire(this.props.inventoryProduct);
         let data = this.filterByCategory();
+        // console.warn("render")
         // console.warn(this.props.products.length)
         return (
             <View style={style.container} onLayout={(event) => this.onLayout(event)}>
                 {/*View category*/}
                 <ListCategory onChangeCategoryFilter={(id) => this.onChangeCategoryFilter(id)}
                               categoryFilter={this.state.categoryFilter}/>
-                {
-                    this.props.products !== [] ?
-                        <FlatList
-                            refreshControl={
-                                <RefreshControl
-                                    refreshing={this.state.refreshing}
-                                    onRefresh={this._onRefresh.bind(this)}
-                                />
-                            }
-                            data={data}
-                            extraData={this.props}
-                            numColumns={this.state.columnNumber}
-                            initialNumToRender={3}
-                            getItemLayout={(data, index) => (
-                                {length: 6, offset: 30 * index, index}
-                            )}
-                            keyExtractor={(item) => item.product._id}
-                            contentContainerStyle={style.gridView}
-                            ListEmptyComponent={this._listEmptyComponent}
-                            ListHeaderComponent={this._listHeaderComponent(this.props.products)}
-                            // ListFooterComponent={this._renderFooter}
-                            renderItem={this._renderItem}
-                        /> :
-                        <View style={[{flex: 1, justifyContent: "center", alignItems: 'center'}]}>
-                            <ActivityIndicator size={"large"}/>
-                        </View>
-                }
-
+                <FlatList
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this._onRefresh.bind(this)}
+                        />
+                    }
+                    data={data}
+                    extraData={this.props.products}
+                    numColumns={this.state.columnNumber}
+                    initialNumToRender={10}
+                    getItemLayout={(data, index) => (
+                        {length: this.props.productAmount, offset: this.state.gridViewItemSize * index, index}
+                    )}
+                    keyExtractor={(item) => item.product._id}
+                    contentContainerStyle={style.gridView}
+                    ListEmptyComponent={this._listEmptyComponent}
+                    ListHeaderComponent={this._listHeaderComponent(this.props.products)}
+                    // ListFooterComponent={this._renderFooter}
+                    renderItem={this._renderItem}
+                />
 
             </View>
         )

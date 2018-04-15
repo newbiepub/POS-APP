@@ -24,10 +24,11 @@ function logoutAction() {
 export function getProfile() {
     return async (dispatch, getState) => {
         try {
-            const products = await client.query({
-                query: QUERY.CURRENT_USER
+            const profile = await client.query({
+                query: QUERY.CURRENT_USER,
+                fetchPolicy: "network-only"
             });
-            dispatch(getUserProfileAction(products.data.currentUser))
+            dispatch(getUserProfileAction(profile.data.currentUser))
 
         } catch (e) {
             console.warn("userAction.js-getProfile-"+e);
@@ -39,6 +40,7 @@ export function getCurrency(){
         try {
             const currency = await client.query({
                 query: QUERY.CURRENCY,
+                fetchPolicy: "network-only"
             });
             // console.warn(currency)
             dispatch(getCurrencyAction(currency.data.currency[0]))
