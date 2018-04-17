@@ -156,6 +156,7 @@ class ChargeView extends React.Component {
                     {text: 'Không', style: 'cancel'},
                     {
                         text: 'Có', onPress: async () => {
+                            this.chargeProgressing.setLoading();
                             await this.setState({
                                 transaction: {
                                     ...this.state.transaction,
@@ -168,7 +169,8 @@ class ChargeView extends React.Component {
                             //Subtract inventory
                             this.props.subtractInventoryLocal(productItems);
                             //Mutate Transaction
-                            this.props.createTransaction(productItems, paymentStatus, paymentMethod, this.state.transaction.dueDate, this.state.transaction.totalQuantity, this.state.transaction.totalPrice, this.state.transaction.paid, this.state.transaction.description, this.state.transaction.customer);
+                            await this.props.createTransaction(productItems, paymentStatus, paymentMethod, this.state.transaction.dueDate, this.state.transaction.totalQuantity, this.state.transaction.totalPrice, this.state.transaction.paid, this.state.transaction.description, this.state.transaction.customer);
+                            this.chargeProgressing.stopLoading()
                             this.props.clearCart();
                             this.props.closePopup();
                         }
