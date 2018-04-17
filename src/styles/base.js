@@ -15,13 +15,13 @@ const styleBase = EStyleSheet.create({
         height: '70%'
     },
     width50: {
-        height: "50%"
+        width: "50%"
     },
     height50: {
         height: "50%"
     },
     width30: {
-        height: "30%"
+        width: "30%"
     },
     height30: {
         height: "30%"

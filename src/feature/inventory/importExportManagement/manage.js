@@ -87,8 +87,7 @@ class Management extends React.Component {
         let data = item;
         return (
             <TouchableOpacity onPress={() => this.handleClickItem(data)}>
-                <View
-                      style={[{height: 65},
+                <View style={[{height: 65},
                           styleBase.alignCenter, styleBase.row, styleBase.spaceBetween,
                           styleBase.p_md_horizontal]}>
                     {

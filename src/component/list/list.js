@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {StyleSheet, Platform, FlatList, View} from "react-native";
+import {StyleSheet, Platform, FlatList, View, InteractionManager} from "react-native";
 import styleBase from "../../styles/base";
 
 class List extends React.Component {
@@ -9,33 +9,25 @@ class List extends React.Component {
         this._scrollRef = null;
         this._backTopTop = null;
         this.currentOffset = 0;
-        this.delayed = () => new Promise ((resolve, reject) => setTimeout(resolve, 1000));
         this.isReached = true;
         this.state = {
-            refreshing: false
+            refreshing: false,
+            isUpdateList: false
         };
 
         this.onEndReach = this.onEndReach.bind(this);
         this.onRefresh = this.onRefresh.bind(this);
         this.onScroll  = this.onScroll.bind(this);
-        this.handleUpdateData = this.handleUpdateData.bind(this);
     }
 
     async onScroll () {
 
     }
 
-    handleUpdateData (dataSources, index) {
-        this.setState(prevState => {
-            let nextData, newData;
-
-            nextData = dataSources.slice(index - 1, index + this.props.initialNumToRender);
-            newData  = [...prevState.data, ...nextData];
-            return {
-                ...prevState,
-                data: newData
-            };
-        });
+    onUpdateList() {
+        InteractionManager.runAfterInteractions(() => {
+            this.setState({isUpdateList: !this.state.isUpdateList});
+        })
     }
 
     async onEndReach() {
@@ -70,7 +62,7 @@ class List extends React.Component {
                 }}
                 style={StyleSheet.flatten([...this.props.styles])}
                 data={this.props.dataSources}
-                extraData={this.props}
+                extraData={this.state}
                 onEndReached={this.onEndReach}
                 initialNumToRender={this.props.initialNumToRender}
                 getItemLayout={this.props.getItemLayout}
@@ -110,7 +102,7 @@ List.propTypes = {
 
 List.defaultProps = {
     dataSources: [],
-    disableVirtualization: false,
+    disableVirtualization: true,
     removeClippedSubviews: true,
     onEndReachedThreshold: 0.01,
     extraData: [],

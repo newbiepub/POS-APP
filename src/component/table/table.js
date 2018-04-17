@@ -48,6 +48,7 @@ class Table extends React.Component {
                 <View style={[styleBase.p_md_vertical,
                     styleBase.row,
                     styleBase.p_md_horizontal, styleBase.bgE5]}>
+                    {this.props.customLeftColumn()}
                     {
                         fields.map((field, index) => {
                             return (
@@ -59,6 +60,7 @@ class Table extends React.Component {
                             )
                         })
                     }
+                    {this.props.customRightColumn()}
                 </View>
                 <View style={[styleBase.container]}>
                     {this.props.renderList()}
@@ -70,6 +72,8 @@ class Table extends React.Component {
 
 Table.propTypes = {
     fields: PropTypes.array,
+    customRightColumn: PropTypes.func,
+    customLeftColumn: PropTypes.func,
     onSearchText: PropTypes.func,
     renderList: PropTypes.func
 };
@@ -83,6 +87,8 @@ Table.propTypes = {
  */
 Table.defaultProps = {
     fields: [],
+    customRightColumn: () => {},
+    customLeftColumn: () => {},
     onSearchText: () => {},
     renderList: () => null
 };

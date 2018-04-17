@@ -4,6 +4,7 @@ import {StyleSheet, InteractionManager, ScrollView, View, Text, SafeAreaView} fr
 import styleBase from "../../../../styles/base";
 import NavBar from "../../../../component/navbar/navbar";
 import {equals} from "../../../../utils/utils";
+import {AfterInteractions} from "react-native-interactions";
 
 class ProductDetail extends React.Component {
     constructor(props) {
@@ -89,31 +90,33 @@ class ProductDetail extends React.Component {
             <SafeAreaView style={[styleBase.container, styleBase.bgWhite]}>
                 <View style={[styleBase.container]}>
                     <NavBar navigator={this.props.navigator} title={this.props.title}/>
-                    <ScrollView>
-                        {info.length > 0 &&
-                        info.map((item, index) => {
-                            return (
-                                <View key={index} style={[
-                                    styleBase.container,
-                                    styleBase.row,
-                                    styleBase.p_md_horizontal,
-                                    styleBase.m_md_vertical
-                                ]}>
-                                    <View style={[{flex: .5}, styleBase.center]}>
-                                        <Text style={[styleBase.fontBold]}>
-                                            {item.label}
-                                        </Text>
+                    <AfterInteractions>
+                        <ScrollView>
+                            {info.length > 0 &&
+                            info.map((item, index) => {
+                                return (
+                                    <View key={index} style={[
+                                        styleBase.container,
+                                        styleBase.row,
+                                        styleBase.p_md_horizontal,
+                                        styleBase.m_md_vertical
+                                    ]}>
+                                        <View style={[{flex: .5}, styleBase.center]}>
+                                            <Text style={[styleBase.fontBold]}>
+                                                {item.label}
+                                            </Text>
+                                        </View>
+                                        <View style={[{flex: .5}, styleBase.center]}>
+                                            <Text numberOfLines={1}>
+                                                {item.value}
+                                            </Text>
+                                        </View>
                                     </View>
-                                    <View style={[{flex: .5}, styleBase.center]}>
-                                        <Text numberOfLines={1}>
-                                            {item.value}
-                                        </Text>
-                                    </View>
-                                </View>
-                            )
-                        })
-                        }
-                    </ScrollView>
+                                )
+                            })
+                            }
+                        </ScrollView>
+                    </AfterInteractions>
                 </View>
             </SafeAreaView>
         )

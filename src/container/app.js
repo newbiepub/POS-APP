@@ -15,6 +15,7 @@ import ImportExportManagement from "../feature/inventory/importExportManagement/
 import ConfirmExport from "../feature/inventory/importExportManagement/confirmExport";
 import ProductDetail from "../feature/inventory/productManagement/component/productDetail";
 import ErrorBoundary from "../component/errorBoundary/errorBoundary";
+import ListPos from "../feature/inventory/importExportManagement/listPos";
 
 EStyleSheet.build(); //Build Extended StyleSheet
 
@@ -41,10 +42,10 @@ class AppContainer extends React.Component {
 
     configureScene(route, navigator) {
 
-        if (route.id === "home" || route.id === "pos_product_management" || route.id === "company_product_management" ||  route.id === 'company_ingredient_management' || route.id === 'company_inventory_activity_management')
+        if (route.id === "home" || route.id === "pos_product_management" || route.id === "company_product_management" ||  route.id === 'company_ingredient_management' || route.id === 'company_inventory_activity_management' || route.id === "product_detail")
             return Navigator.SceneConfigs.FadeAndroid;
 
-        if(route.id === "pos_detail" || route.id === "product_detail")
+        if(route.id === "pos_detail")
             return Navigator.SceneConfigs.FloatFromBottom;
 
         return Navigator.SceneConfigs.PushFromRight
@@ -74,8 +75,8 @@ class AppContainer extends React.Component {
                 return <IngredientManagement navigator={navigator} title={route.title} user={route.user} type="company"/>;
             case 'company_inventory_activity_management':
                 return <ImportExportManagement navigator={navigator} title={route.title} user={route.user} type="company"/>;
-            case 'company_inventory_export_action':
-                return <ConfirmExport navigator={navigator} title="XUẤT HÀNG SANG ĐIỂM BÁN HÀNG" user={route.user} type="company"/>
+            case 'company_inventory_export_list_pos':
+                return <ListPos navigator={navigator} title="CHỌN ĐIỂM BÁN HÀNG"/>
             case  'product_detail':
                 return <ProductDetail navigator={navigator}
                                       title={route.product.product.name}

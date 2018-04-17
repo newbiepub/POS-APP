@@ -61,3 +61,20 @@ export const exportActionFields = [
     }
 ];
 
+export const listPOSFields = [
+    {
+        name: "STT",
+        field: "STT",
+        columnWidth: 0.1
+    },
+    {
+        name: "TÊN ĐIỂM BÁN HÀNG",
+        field: "profile.name",
+        columnWidth: 0.4
+    },
+    {
+        name: "SỐ ĐIỆN THOẠI",
+        field: 'profile.phoneNumber',
+        columnWidth: 0.4
+    }
+]

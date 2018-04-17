@@ -11,7 +11,8 @@ import {equals} from "../../../../utils/utils";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import ErrorBoundary from "../../../../component/errorBoundary/errorBoundary";
 
-class ProductList extends React.Component {
+
+class ProductList extends React.PureComponent {
     constructor(props) {
         super(props);
         this.routes = [
@@ -32,7 +33,6 @@ class ProductList extends React.Component {
         };
 
         this.handleChangeText    = this.handleChangeText.bind(this);
-        this.onEndReach          = this.onEndReach.bind(this);
         this.handleFetchProducts = this.handleFetchProducts.bind(this);
         this.onRefresh           = this.onRefresh.bind(this);
     }
@@ -48,20 +48,16 @@ class ProductList extends React.Component {
         this.handleFetchProducts()
         InteractionManager.runAfterInteractions(() => {
             this.setState({
-                products: this.props.products.slice(0, this.NUMBER_OF_ITEM),
+                products: this.props.products,
                 loading: false
             })
         })
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return !equals(this.state, nextState);
-    }
-
     componentWillReceiveProps(nextProps) {
         InteractionManager.runAfterInteractions(() => {
             this.setState({
-                products: nextProps.products.slice(0, this.NUMBER_OF_ITEM),
+                products: nextProps.products,
                 loading: false
             })
         })
@@ -88,28 +84,15 @@ class ProductList extends React.Component {
                 return new RegExp(searchText, 'gi').test(item.product.name);
             });
         } else {
-            products = this.props.products.slice(0, this.NUMBER_OF_ITEM);
+            products = this.props.products;
         }
 
         this.setState({
-            searchText,
-            products
+            searchText
         })
-    }
-
-    async onEndReach() {
-        try {
-            let { products = [] } = this.state;
-
-            if(products.length <= this.props.products.length) {
-                products = products.concat( this.props.products.slice(this.state.products - 1, this.NUMBER_OF_ITEM))
-                this.setState({
-                    products
-                })
-            }
-        } catch (e) {
-            console.warn(e.message);
-        }
+        InteractionManager.runAfterInteractions(() => {
+            this.setState({products})
+        })
     }
 
     async onRefresh() {
@@ -191,7 +174,6 @@ class ProductList extends React.Component {
                                     length: this.ITEM_HEIGHT, offset: this.ITEM_HEIGHT * index, index
                                 })}
                                 onEndReachedThreshold={400}
-                                onEndReach={this.onEndReach}
                                 dataSources={productItem}
                                 renderItem={this.renderItem.bind(this)}
                             />

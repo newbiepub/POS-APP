@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {View, Text, InteractionManager, TouchableOpacity, SafeAreaView} from "react-native";
+import {View, Text, InteractionManager, TouchableOpacity, SafeAreaView, ActivityIndicator} from "react-native";
 import NoData from "../../../../component/noData/noData";
 import ProductList from "../component/productList";
 import CommingSoon from "../../../../component/commingSoon/commingSoon";
@@ -9,6 +9,7 @@ import styleBase from "../../../../styles/base";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import NavBar from "../../../../component/navbar/navbar";
 import ErrorBoundary from "../../../../component/errorBoundary/errorBoundary";
+import {AfterInteractions} from "react-native-interactions";
 
 class ProductManagement extends React.Component {
     constructor(props) {
@@ -81,7 +82,11 @@ class ProductManagement extends React.Component {
                         renderCenterComponent={this.renderCenterComponent}/>
                     {
                         this.state.currentRoute.route === "product" &&
-                        <ProductList {...this.props}/>
+                            <ErrorBoundary>
+                                <AfterInteractions>
+                                    <ProductList {...this.props}/>
+                                </AfterInteractions>
+                            </ErrorBoundary>
                     }
                     {
                         this.state.currentRoute.route === "category" &&

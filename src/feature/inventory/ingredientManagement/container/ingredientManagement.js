@@ -1,8 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {StyleSheet, Image, View, TouchableOpacity} from "react-native";
+import {StyleSheet, Image, View, TouchableOpacity, SafeAreaView} from "react-native";
 import styleBase from "../../../../styles/base";
 import CommingSoon from "../../../../component/commingSoon/commingSoon";
+import NavBar from "../../../../component/navbar/navbar";
 
 class IngredientManagement extends React.Component {
     constructor(props) {
@@ -11,9 +12,10 @@ class IngredientManagement extends React.Component {
 
     render() {
         return (
-            <View style={[styleBase.container]}>
+            <SafeAreaView style={[styleBase.container]}>
+                <NavBar title={this.props.title.toUpperCase()} navigator={this.props.navigator}/>
                 <CommingSoon/>
-            </View>
+            </SafeAreaView>
         )
     }
 }

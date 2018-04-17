@@ -94,7 +94,9 @@ class ImportExportManagement extends React.Component {
                 }
                 {
                     this.state.currentRoute.route === "inventory_export_action" &&
-                    <CommingSoon/>
+                        <ErrorBoundary>
+                            <ExportAction navigator={this.props.navigator}/>
+                        </ErrorBoundary>
                 }
             </SafeAreaView>
         )
