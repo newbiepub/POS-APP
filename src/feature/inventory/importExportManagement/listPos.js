@@ -38,19 +38,10 @@ class ListPos extends React.PureComponent {
 
     handlePressItem (item) {
         return () => {
-            this.setState(state => {
-                if(state.checkList.includes(item._id)) {
-                    pull(state.checkList, item._id);
-                } else {
-                    state.checkList = [...state.checkList, item._id];
-                }
-
-                this.listComponent.onUpdateList();
-                return {
-                    ...state,
-                    checkList: [...state.checkList]
-                };
-            });
+            this.props.navigator.push({
+                id: 'company_inventory_export_list_product',
+                employee: item
+            })
         }
     }
 
@@ -70,25 +61,17 @@ class ListPos extends React.PureComponent {
                             return (
                                 <View key={`FIELD${i}`} style={[{flex: field.columnWidth}]}>
                                     {field.field === "STT" ?
-                                        <Text style={[styleBase.normalText]}>
+                                        <Text style={[styleBase.normalText, styleBase.fontRubik]}>
                                             {+index + 1}
                                         </Text>
                                         :
-                                        <Text style={[styleBase.normalText]}>
+                                        <Text style={[styleBase.normalText, styleBase.fontRubik]}>
                                             {objectValue(item, field.field)}
                                         </Text>
                                     }
                                 </View>
                             )
                         })
-                    }
-                    {
-                        this.state.checkList.includes(item._id) &&
-                        <View style={[{flex: 0.1}, styleBase.center]}>
-                            <Text style={[styleBase.normalText]}>
-                                Checked
-                            </Text>
-                        </View>
                     }
                 </View>
             </TouchableOpacity>

@@ -16,6 +16,7 @@ import ConfirmExport from "../feature/inventory/importExportManagement/confirmEx
 import ProductDetail from "../feature/inventory/productManagement/component/productDetail";
 import ErrorBoundary from "../component/errorBoundary/errorBoundary";
 import ListPos from "../feature/inventory/importExportManagement/listPos";
+import ListExportProducts from "../feature/inventory/importExportManagement/listProduct";
 
 EStyleSheet.build(); //Build Extended StyleSheet
 
@@ -41,14 +42,10 @@ class AppContainer extends React.Component {
     }
 
     configureScene(route, navigator) {
-
-        if (route.id === "home" || route.id === "pos_product_management" || route.id === "company_product_management" ||  route.id === 'company_ingredient_management' || route.id === 'company_inventory_activity_management' || route.id === "product_detail")
-            return Navigator.SceneConfigs.FadeAndroid;
-
         if(route.id === "pos_detail")
             return Navigator.SceneConfigs.FloatFromBottom;
 
-        return Navigator.SceneConfigs.PushFromRight
+        return Navigator.SceneConfigs.FadeAndroid;
     }
     renderScene(route, navigator) {
         switch (route.id) {
@@ -77,6 +74,8 @@ class AppContainer extends React.Component {
                 return <ImportExportManagement navigator={navigator} title={route.title} user={route.user} type="company"/>;
             case 'company_inventory_export_list_pos':
                 return <ListPos navigator={navigator} title="CHỌN ĐIỂM BÁN HÀNG"/>
+            case 'company_inventory_export_list_product':
+                return <ListExportProducts navigator={navigator} title="SẢN PHẨM XUẤT KHO" employee={route.employee}/>
             case  'product_detail':
                 return <ProductDetail navigator={navigator}
                                       title={route.product.product.name}

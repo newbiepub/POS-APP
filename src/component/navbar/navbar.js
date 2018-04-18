@@ -11,7 +11,7 @@ class NavBar extends React.Component {
 
     renderCenterComponent() {
         let centerComponent = (
-            <Text style={[styleBase.title]}>
+            <Text style={[styleBase.title, styleBase.fontRubik]}>
                 {this.props.title}
             </Text>
         )

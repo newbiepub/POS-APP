@@ -4,6 +4,7 @@ import store from "../../../store/store";
 import {INVENTORY_ACTION} from "../../../constant/actionTypes";
 import {PRODUCT_STORAGE} from "../../../localStorage/index";
 import {getInventoryHistory} from "../importExportManagement/action";
+import {exportProductToPOS} from "./graph";
 
 export const INVENTORY = {
     FETCH_USER_PRODUCT: async (userId, type) => {
@@ -86,6 +87,23 @@ export const INVENTORY = {
             })
 
             return payload;
+        } catch (e) {
+            throw e;
+        }
+    },
+
+    EXPORT_PRODUCT: async (employeeId, products, confirmOption = false) => {
+        try {
+            let { data = {} } = await client.mutate({
+                mutation: exportProductToPOS,
+                variables: {
+                    employeeId,
+                    products,
+                    confirmOption
+                }
+            })
+            let { requestPOSToCompany = {}} = data;
+            return requestPOSToCompany;
         } catch (e) {
             throw e;
         }

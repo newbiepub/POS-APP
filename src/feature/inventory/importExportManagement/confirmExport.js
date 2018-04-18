@@ -11,7 +11,7 @@ class ConfirmExport extends React.Component {
     }
 
     componentWillMount() {
-        console.log("CONFIRM EXPORT - ",this.props);
+
     }
 
     render() {
