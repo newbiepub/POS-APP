@@ -102,7 +102,7 @@ export default function async(state = initialState, action = {}) {
         }
         case PRODUCT.RETURN_PRODUCT_INVENTORY: {
             let newProduct = returnInventoryLocal(state.product, action.payload);
-            // console.warn(newProduct.length);
+            // console.warn(newProduct);
             return {
                 ...state,
                 product: [...newProduct]

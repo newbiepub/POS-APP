@@ -60,7 +60,7 @@ class GridProduct extends React.Component {
         Dimensions.addEventListener("change", () => {
             let {width, height} = Dimensions.get('window');
         });
-        this.initProduct()
+        await this.initProduct()
 
     }
 
@@ -141,7 +141,7 @@ class GridProduct extends React.Component {
             <TouchableWithoutFeedback onPress={() => this.onClickProduct(item)}>
                 <View style={{flex: 1}}>
                     <View style={style.gridItem}>
-                        <TextSmall>Giá: {numberwithThousandsSeparator(_.get(item, "product.price[0].price", 0))}{_.get(item, "product.price[0].currency.symbol", "")}</TextSmall>
+                        <TextSmall>Giá: {numberwithThousandsSeparator(_.get(item, "product.price[1].price", 0))}{_.get(item, "product.price[0].currency.symbol", "")}</TextSmall>
                         <TextSmall>Đơn vị: {item.product.unit || ""}</TextSmall>
                         <TextSmall>Số lượng: {item.quantity}</TextSmall>
                         {/*<TextSmall>Mã sản phẩm: {item.product.productCode}</TextSmall>*/}

@@ -36,9 +36,30 @@ class Setting extends React.Component {
                     {text: 'Không', style: 'cancel'},
                     {
                         text: 'OK', onPress: async () => {
-                            await AsyncStorage.clear();
-                            this.props.navigator.resetTo({id: "login"});
-                            this.props.logout()
+                            if(this.props.asyncTransaction.length>0)
+                            {
+                                Alert.alert(
+                                    'Thông báo !',
+                                    'Ứng dụng có dữ liệu chưa đồng bộ lên server, nếu đăng xuất sẽ bị mất. Bạn có muốn đăng xuất không ?',
+                                    [
+                                        {text: 'Không', style: 'cancel'},
+                                        {
+                                            text: 'OK', onPress: async () => {
+                                                await AsyncStorage.clear();
+                                                this.props.navigator.resetTo({id: "login"});
+                                                this.props.logout()
+                                                // client.resetStore()
+                                            }
+                                        },
+                                    ],
+                                    {cancelable: false}
+                                )
+                            }else{
+                                await AsyncStorage.clear();
+                                this.props.navigator.resetTo({id: "login"});
+                                this.props.logout()
+                            }
+
                             // client.resetStore()
                         }
                     },
@@ -49,6 +70,7 @@ class Setting extends React.Component {
     }
 
     render() {
+        console.warn(this.props.asyncTransaction)
         return (
             <View style={style.container}>
                 <Header type={"normal"} titleLeft={"Cài đặt"} titleRight={"Thông tin điểm bán hàng"}/>
@@ -114,5 +136,10 @@ const style = EStyleSheet.create({
 const mapDispatchToProps = {
     logout
 };
+const mapStateToProps = (state)=>{
+    return {
+        asyncTransaction : state.transactionReducer.asyncTransaction
+    }
 
-export default connect(null, mapDispatchToProps)(Setting);
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Setting);

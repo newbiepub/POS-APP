@@ -97,7 +97,7 @@ class chartBar extends React.Component {
                                             onLoad: {duration: 500}
                                         }}
                                         theme={VictoryTheme.material}
-                                        width={this.state.widthChart * (length / 4)}
+                                        width={this.state.widthChart * (length / 3)}
                                         domainPadding={{x: [100, 100], y: [0 , 0]}}
                                         height={this.state.heightChart}
 

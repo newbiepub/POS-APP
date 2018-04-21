@@ -62,7 +62,7 @@ class App extends PureComponent {
             case "login":
                 return <Login navigator={navigator}/>;
             case "home":
-                return <Home router={this.props.router} navigator={navigator}/>;
+                return <Home router={this.props.router} navigator={navigator} initDatabase={()=>this.initData()}/>;
 
         }
     }
@@ -74,7 +74,7 @@ class App extends PureComponent {
             authToken = JSON.parse(authToken);
             let {access_token, refresh_token} = authToken;
             try {
-                let response = await fetch(`${api}/account/token/exchanges`, {
+                var response = await fetch(`${api}/account/token/exchanges`, {
                     method: "POST",
                     headers: {
                         "Accept": "application/json",
@@ -103,8 +103,13 @@ class App extends PureComponent {
                     this.navigator.resetTo({id: "home"})
                 }
             } catch (e) {
-                console.warn("app.js-ensuringLogined-" + e);
-                this.navigator.resetTo({id: "home"})
+                console.warn(response)
+                if(response == undefined)
+                {
+                    console.warn("app.js-ensuringLogined-" + e);
+                    this.navigator.resetTo({id: "home"})
+                }
+
             }
 
         }
@@ -112,13 +117,14 @@ class App extends PureComponent {
 
     async componentWillMount() {
 
-        this.ensuringLogined();
+        await this.ensuringLogined();
         let {_id} = this.props.user;
-        this.initData();
+        // await this.initData();
     }
 
 
     async initData() {
+        console.warn('init')
         await this.props.getPaymentMethod();
         await this.props.getPaymentStatus();
         await this.props.getCurrency();
@@ -176,7 +182,10 @@ class Home extends React.Component {
 
 
     };
-
+    componentWillMount()
+    {
+        this.props.initDatabase()
+    }
     shouldComponentUpdate(nextProps, nextState) {
         const changeRoute = this.props.router.currentItem.id !== nextProps.router.currentItem.id;
         return changeRoute;

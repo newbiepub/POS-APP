@@ -119,6 +119,7 @@ export function getPaymentMethod() {
                     query: QUERY.PAYMENT_METHOD,
                     fetchPolicy: "network-only"
                 });
+                console.warn(paymentMethod)
                 dispatch(getPaymentMethodAction(paymentMethod.data.paymentMethod));
             } catch (e) {
                 console.warn("productAction.js-getPaymentMethod-"+e);
