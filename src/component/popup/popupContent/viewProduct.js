@@ -12,6 +12,7 @@ import {graphql} from 'react-apollo';
 import {QUERY} from '../../../constant/query';
 import _ from 'lodash';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
+
 class ViewProduct extends React.Component {
     constructor(props) {
         super(props);
@@ -23,7 +24,8 @@ class ViewProduct extends React.Component {
                 _id: this.props.item.product._id,
                 quantity: this.props.item.quantity > 0 ? 1 : 0,
                 name: this.props.item.product.name,
-                price: this.props.item.product.price[0],
+                price: this.props.item.product.price[1],
+                priceImport: this.props.item.product.price[0].price,
                 prices: this.props.item.product.price,
                 unit: this.props.item.product.unit,
                 inventoryQuantity: this.props.item.quantity
@@ -107,19 +109,24 @@ class ViewProduct extends React.Component {
         });
     }
 
-    _renderPrice = ({item, index}) => (
-        <TouchableWithoutFeedback onPress={() => this.onChangePrice(item, index)}>
-            <View
-                style={[style.pricePicker, this.state.product.price._id === item._id && {backgroundColor: constantStyle.color1}]}>
-                <TextSmall numberOfLines={1}
-                           style={[{flex: 1}, this.state.product.price._id === item._id && {color: constantStyle.color2}]}>{item.name}</TextSmall>
-                <TextSmall
-                    style={this.state.product.price._id === item._id && {color: constantStyle.color2}}>{numberwithThousandsSeparator(item.price)}{item.currency.symbol}/{this.state.product.unit}</TextSmall>
+    _renderPrice= ({item, index})=> {
+        if (index > 0) {
 
-            </View>
-        </TouchableWithoutFeedback>
+            return (
+                <TouchableWithoutFeedback onPress={() => this.onChangePrice(item, index)}>
+                    <View
+                        style={[style.pricePicker, this.state.product.price._id === item._id && {backgroundColor: constantStyle.color1}]}>
+                        <TextSmall numberOfLines={1}
+                                   style={[{flex: 1}, this.state.product.price._id === item._id && {color: constantStyle.color2}]}>{item.name}</TextSmall>
+                        <TextSmall
+                            style={this.state.product.price._id === item._id && {color: constantStyle.color2}}>{numberwithThousandsSeparator(item.price)}{item.currency.symbol}/{this.state.product.unit}</TextSmall>
 
-    );
+                    </View>
+                </TouchableWithoutFeedback>
+
+            )
+        }
+    }
 
     addToCart() {
         // console.warn(this.state.product)
@@ -151,14 +158,14 @@ class ViewProduct extends React.Component {
                         keyExtractor={(item) => item.name}
                         renderItem={this._renderPrice}
                     />
-                    <View style={{flexDirection: 'row', alignItems: 'center',marginTop:constantStyle.md}}>
+                    <View style={{flexDirection: 'row', alignItems: 'center', marginTop: constantStyle.md}}>
                         <TextNormal>Nhập giá: </TextNormal>
                         <TextInputPriceMask value={this.state.product.price.price} style={{flex: 1}}
                                             onChangeText={async (num) => {
                                                 await this.setState({
                                                     product: {
                                                         ...this.state.product,
-                                                        price:{
+                                                        price: {
                                                             ...this.state.product.price,
                                                             price: num
                                                         }

@@ -170,7 +170,7 @@ class ChargeView extends React.Component {
                             this.props.subtractInventoryLocal(productItems);
                             //Mutate Transaction
                             await this.props.createTransaction(productItems, paymentStatus, paymentMethod, this.state.transaction.dueDate, this.state.transaction.totalQuantity, this.state.transaction.totalPrice, this.state.transaction.paid, this.state.transaction.description, this.state.transaction.customer);
-                            this.chargeProgressing.stopLoading()
+                            this.chargeProgressing.stopLoading();
                             this.props.clearCart();
                             this.props.closePopup();
                         }

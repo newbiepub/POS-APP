@@ -10,6 +10,7 @@ export function normalizeProductItemsInput(data) {
                 productName: items.name || items.productName,
                 quantity: items.quantity,
                 price: getPriceInput(items.price),
+                priceImport: items.priceImport,
                 totalPrice: items.totalPrice,
                 unit: items.unit,
                 discount: items.discount || null
@@ -20,6 +21,7 @@ export function normalizeProductItemsInput(data) {
                 productName: items.name || items.productName,
                 quantity: items.quantity,
                 price: getPriceInput(items.price),
+                priceImport: items.priceImport,
                 totalPrice: items.totalPrice,
                 unit: items.unit,
                 discount: items.discount || null
@@ -41,6 +43,7 @@ export function normalizeProductItemsIssueRefund(data) {
                 quantity: items.quantity,
                 price: getPriceInput(items.price),
                 totalPrice: items.totalPrice,
+                priceImport: items.priceImport,
                 unit: items.unit,
                 discount: items.discount || null
             };
@@ -51,6 +54,7 @@ export function normalizeProductItemsIssueRefund(data) {
                 quantity: items.quantity,
                 price: getPriceInput(items.price),
                 totalPrice: items.totalPrice,
+                priceImport: items.priceImport,
                 unit: items.unit,
                 discount: items.discount || null
             };
@@ -100,7 +104,7 @@ export function normalizeTransactionSectionList(data) {
         return result
     }catch(e)
     {
-        console.warn("e-normalizeTransactionSectionList-" + e)
+        console.warn("e-normalizeTransactionSectionList-" + e);
         return []
     }
 
