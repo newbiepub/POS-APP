@@ -56,11 +56,12 @@ class ListExportProducts extends React.Component {
            let { employee = {} } = this.props;
            let { _id = '' } = employee;
            let products = this.table.handleSubmitExport();
-           let response = await INVENTORY.EXPORT_PRODUCT(_id, products, false);
-
-           Alert.alert('Thông báo', 'Xuất kho thành công',[
-               {text: 'OK', onPress: () => this.props.navigator.pop()},
-           ],)
+           console.warn(JSON.stringify(products[0], null, 4));
+           // let response = await INVENTORY.EXPORT_PRODUCT(_id, products, false);
+           //
+           // Alert.alert('Thông báo', 'Xuất kho thành công',[
+           //     {text: 'OK', onPress: () => this.props.navigator.pop()},
+           // ],)
         } catch (e) {
             console.warn(e.message);
             alert('Đã có lỗi xảy ra')

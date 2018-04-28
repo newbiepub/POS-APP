@@ -1,6 +1,8 @@
 import gql from "graphql-tag";
 import {client} from "../../../../App";
 import store from "../../../store/store";
+import {POS_ACTION} from "../../../constant/actionTypes";
+import {pos_data} from "../../../api/dataHandler/pos";
 
 const getAllPOS = gql`
     query getAllPOS {
@@ -57,23 +59,50 @@ export const POS_MANAGEMENT = {
             }
         });
         store.dispatch({
-            type: POS_MANAGEMENT.FETCH_ALL_POS,
+            type: POS_ACTION.FETCH_ALL,
             payload
         })
     },
     ADD_POS: async (username, password, name, address, phoneNumber) => {
-        let { data } = await client.query({
-            query: createPOS,
-            fetchPolicy: 'network-only',
-            variables: {
-                username,
-                password,
-                name,
-                address,
-                phoneNumber
+        try {
+            // Add optimistic
+            let localPos = {
+                _id: Math.round(Math.random() * -1000000).toString(),
+                profile: {
+                    name: name,
+                    address: address,
+                    phoneNumber: phoneNumber
+                },
+                username: username,
+                companyId: ""
             }
-        });
-        console.log("FETCH DATA - ", data);
+            store.dispatch({
+                type: POS_ACTION.ADD_OPTIMISTIC,
+                payload: localPos
+            })
+            // Fetch data
+            let { data } = await client.mutate({
+                mutation: createPOS,
+                fetchPolicy: 'network-only',
+                variables: {
+                    username,
+                    password,
+                    name,
+                    address,
+                    phoneNumber
+                }
+            });
+            // Add data from server
+            data = data.addNewPOS;
+            data = data && pos_data(data);
+            store.dispatch({
+                type: POS_ACTION.ADD,
+                payload: {_id: localPos._id, data}
+            })
+        } catch (e) {
+            console.warn(e.message);
+            alert('Đã có lỗi xảy ra !');
+        }
     }
 };
 

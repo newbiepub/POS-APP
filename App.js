@@ -46,14 +46,22 @@ const errorLink = onError(({graphQLErrors, networkError, response}) => {
         graphQLErrors.map(({ message, locations, path }) => {
             console.warn("MESSAGE - ", message);
             // Catch Error Unauthorized
-            if(message === "Unauthorized" || message === "Token is expired" || message === "Topology was destroyed") {
-                // Remove token
-                Alert.alert('Thông báo', "Phiên đăng nhập hết hạn mời đăng nhập lại", [{
-                    text: "OK", onPress: () => {
-                        removeToken(); // Remove Token
-                        client.resetStore(); // Reset store when user logout
-                    }
-                }]);
+            switch (message) {
+                case "Unauthorized":
+                case "Token is expired":
+                case "Topology was destroyed":
+                    // Remove token
+                    Alert.alert('Thông báo', "Phiên đăng nhập hết hạn mời đăng nhập lại", [{
+                        text: "OK", onPress: () => {
+                            removeToken(); // Remove Token
+                            client.resetStore(); // Reset store when user logout
+                        }
+                    }]);
+                case "TOTAL_QUANTITY_EMPTY":
+                    // Remove token
+                    Alert.alert('Thông báo', "Không thể xuất kho khi không có số lượng", [{
+                        text: "OK"
+                    }]);
             }
         });
 

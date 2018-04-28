@@ -5,6 +5,7 @@ import {INVENTORY_ACTION} from "../../../constant/actionTypes";
 import {PRODUCT_STORAGE} from "../../../localStorage/index";
 import {getInventoryHistory} from "../importExportManagement/action";
 import {exportProductToPOS} from "./graph";
+import {inventory_history, product_inventory_data} from "../../../api/dataHandler/inventory";
 
 export const INVENTORY = {
     FETCH_USER_PRODUCT: async (userId, type) => {
@@ -27,19 +28,8 @@ export const INVENTORY = {
             let { getUserProductInventory = []} = data;
             // Payload data save to store
             let payload = getUserProductInventory.reduce((result, item) => {
-                let { product = {} } = item;
-                result.push({
-                    employeeId: item.employeeId,
-                    companyId: item.companyId,
-                    product: {
-                        categoryId: product.categoryId,
-                        name: product.name,
-                        price: product.price || [],
-                        unit: product.unit || '',
-                        _id: product._id || ''
-                    },
-                    quantity: item.quantity || 0
-                });
+
+                result.push(product_inventory_data(item));
                 return result;
             }, []);
             // SAVE PRODUCT TO LOCAL STORAGE
@@ -63,28 +53,7 @@ export const INVENTORY = {
                 }
             });
             let { getUserInventoryHistory = [] } = data;
-            let payload = getUserInventoryHistory.map(item => {
-                let { products = []} = item;
-                products = products.map(product => {
-                    return {
-                        "_id": product._id || '',
-                        "name": product.name || '',
-                        "price": product.price || [],
-                        "quantity": product.quantity || 0,
-                        "unit": product.unit || '',
-                        "productCode": product.productCode || ''
-                    }
-                })
-                return {
-                    _id: item._id || '',
-                    products,
-                    type: item.type || '',
-                    "totalQuantity": item.totalQuantity || 0,
-                    "totalPrice": item.totalPrice || 0,
-                    "dateDelivered": item.dateDelivered || 0,
-                    "dateReceived": item.dateReceived || 0,
-                }
-            })
+            let payload = getUserInventoryHistory.map(inventory_history)
 
             return payload;
         } catch (e) {

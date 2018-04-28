@@ -11,6 +11,7 @@ import NavBar from "../../../component/navbar/navbar";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import DropDown from "../../../component/dropDown/index";
 import ErrorBoundary from "../../../component/errorBoundary/errorBoundary";
+import NoData from "../../../component/noData/noData";
 
 class Home extends React.PureComponent {
     constructor(props) {
@@ -28,6 +29,7 @@ class Home extends React.PureComponent {
 
         this.renderLeftComponent     = this.renderLeftComponent.bind(this);
         this.renderCenterComponent   = this.renderCenterComponent.bind(this);
+        this.renderRightComponent    = this.renderRightComponent.bind(this);
         this.handleOpenDropDown      = this.handleOpenDropDown.bind(this);
         this.handleClickItemDropDown = this.handleClickItemDropDown.bind(this);
     }
@@ -100,21 +102,25 @@ class Home extends React.PureComponent {
         return <View/>
     }
 
-    // renderRightComponent() {
-    //     if (this.state.currentRoute.route === "pos") {
-    //
-    //         // Render Button Add POS
-    //         return (
-    //             <TouchableOpacity onPress={() => {
-    //                 openPopup();
-    //                 renderContent(<POSCreator/>)
-    //             }}>
-    //                 <Icon name="plus-button"/>
-    //             </TouchableOpacity>
-    //         )
-    //     }
-    //     return null;
-    // }
+    renderRightComponent() {
+        if (this.state.currentRoute.route === "pos") {
+
+            // Render Button Add POS
+            return (
+                <TouchableOpacity onPress={() => {
+                    openPopup();
+                    renderContent(
+                        <ErrorBoundary fallback={null}>
+                            <POSCreator/>
+                        </ErrorBoundary>
+                    )
+                }}>
+                    <Ionicons name="ios-add-outline" style={{fontSize: 30}}/>
+                </TouchableOpacity>
+            )
+        }
+        return null;
+    }
 
     render() {
         try {
@@ -123,6 +129,7 @@ class Home extends React.PureComponent {
                     <View style={[styleBase.container]}>
                         <NavBar navigator={this.props.navigator}
                                 renderCenterComponent={this.renderCenterComponent}
+                                renderRightComponent={this.renderRightComponent}
                                 renderLeftComponent={this.renderLeftComponent}/>
                         {this.state.currentRoute.route === "pos" &&
                             <POS {...this.props}/>

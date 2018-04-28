@@ -1,11 +1,20 @@
 import React from "react";
-import {StyleSheet, Dimensions, SafeAreaView, TextInput, TouchableOpacity} from "react-native";
+import {
+    StyleSheet,
+    Dimensions,
+    SafeAreaView,
+    TextInput,
+    TouchableOpacity,
+    View,
+    Text,
+} from "react-native";
 import styleBase from "../../../styles/base";
 import {closePopup} from "../../../component/popup/actions/popupAction";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import PropTypes from "prop-types";
-import {createPOS, getAllPOS} from "../action/posAction";
+import {createPOS, getAllPOS, POS_MANAGEMENT} from "../action/posAction";
 import {pick} from "../../../utils/utils";
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 class POSCreator extends React.Component {
     constructor(props) {
@@ -28,37 +37,13 @@ class POSCreator extends React.Component {
                     return alert(messageValidator[`messageValidator${field}`]);
                 }
             }
-
-            this.props.addNewPOS({
-                variables: formData,
-                optimisticResponse: {
-                    addNewPOS: {
-                        __typename: "CurrentEmployee",
-                        _id: Math.round(Math.random() * -1000000).toString(),
-                        profile: {
-                            __typename: "CurrentEmployee_Profile",
-                            name: formData.name,
-                            address: formData.address,
-                            phoneNumber: formData.phoneNumber
-                        },
-                        username: formData.username,
-                        companyId: ""
-                    }
-                },
-                update (store, {data: {addNewPOS}}) {
-                    try {
-                        const data = store.readQuery({query: getAllPOS});
-                        console.log("Add New POS: ", addNewPOS);
-                        data.getAllPOS.push(addNewPOS);
-                        console.log("new Data: ", data);
-                        store.writeQuery({query: getAllPOS, data});
-                    }
-                    catch(e) {
-                        console.warn("error - update - addNewPOS")
-                    }
-                }
-            });
-
+            POS_MANAGEMENT.ADD_POS(
+                formData.username,
+                formData.password,
+                formData.name,
+                formData.address,
+                formData.phoneNumber
+            )
             closePopup(); // Close Popup
         }
         catch (e) {
@@ -75,28 +60,26 @@ class POSCreator extends React.Component {
 
     render() {
         return (
-            <SafeAreaView style={[styleBase.container]}>
-                <View
-                    style={StyleSheet.flatten(this.modalStyle())}>
-                    <View styleName="horizontal v-center space-between" style={StyleSheet.flatten([styleBase.panelHeader])}>
-                        <TouchableOpacity
-                            onPress={() => closePopup()}>
-                            <Icon name="close"/>
-                        </TouchableOpacity>
-                        <Title>
-                            TẠO ĐIỂM BÁN HÀNG
-                        </Title>
-                        <Button
-                            style={{backgroundColor: "transparent"}}
-                            onPress={() => this.onCreatePOS()}>
-                            <Title>
-                                TẠO
-                            </Title>
-                        </Button>
-                    </View>
-                    <POSForm ref="posCreator"/>
+            <View
+                style={[...this.modalStyle(), styleBase.shadowBox]}>
+                <View style={[styleBase.panelHeader, styleBase.spaceBetween, styleBase.row, styleBase.alignCenter]}>
+                    <TouchableOpacity
+                        onPress={() => closePopup()}>
+                        <Ionicons name="ios-close-outline" style={[styleBase.fontIcon, styleBase.text4]}/>
+                    </TouchableOpacity>
+                    <Text style={[styleBase.title]}>
+                        TẠO ĐIỂM BÁN HÀNG
+                    </Text>
+                    <TouchableOpacity
+                        style={{backgroundColor: "transparent"}}
+                        onPress={() => this.onCreatePOS()}>
+                        <Text style={[styleBase.title]}>
+                            TẠO
+                        </Text>
+                    </TouchableOpacity>
                 </View>
-            </SafeAreaView>
+                <POSForm ref="posCreator"/>
+            </View>
         )
     }
 }
@@ -194,9 +177,10 @@ class POSForm extends React.Component {
                 {
                     this.props.fields.map((item, index) => {
                         return (
-                            <View key={index} styleName="md-gutter-vertical">
-                                <FormGroup styleName="stretch">
+                            <View key={index} style={[styleBase.m_md_vertical]}>
+                                <View style={[styleBase.grow]}>
                                     <TextInput
+                                        style={[styleBase.m_md_vertical]}
                                         placeholder={item.label}
                                         keyboardType={item.type}
                                         secureTextEntry={item.secureTextEntry}
@@ -213,14 +197,17 @@ class POSForm extends React.Component {
                                         <View style={{position: "absolute", right: 0}}>
                                             {
                                                 this.state["validator"+item.fieldName] ?
-                                                    <Icon name="checkbox-on" style={{color: "green"}}/>
+                                                    <Ionicons
+                                                        name="ios-checkmark-circle"
+                                                        style={[{color: "green"}, styleBase.fontIcon]}/>
                                                     :
-                                                    <Icon name="error" style={{color: "red"}}/>
+                                                    <Ionicons name="ios-alert"
+                                                          style={[{color: "red"}, styleBase.fontIcon]}/>
                                             }
                                         </View>
                                     }
-                                </FormGroup>
-                                <Divider styleName="line"/>
+                                </View>
+                                <View style={[styleBase.divider]}/>
                             </View>
                         )
                     })

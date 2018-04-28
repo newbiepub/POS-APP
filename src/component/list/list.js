@@ -114,7 +114,7 @@ List.defaultProps = {
     onEndReach: () => {},
     renderHeader: () => null,
     keyExtractor: (item, index) => {
-        return index;
+        return `LIST_${index}`;
     },
     getItemLayout: (data, index) => (
         {length: 100, offset: 100 * index, index}

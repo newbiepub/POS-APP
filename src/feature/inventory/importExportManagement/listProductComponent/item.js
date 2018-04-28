@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {View, TextInput, Text, TouchableOpacity, InteractionManager} from "react-native";
+import {View, Text, TouchableOpacity, InteractionManager, TextInput} from "react-native";
 import styleBase from "../../../../styles/base";
 
 class ProductItem extends React.Component {
@@ -9,7 +9,8 @@ class ProductItem extends React.Component {
         this.state = {
             priceImport: 0,
             priceSale: 0,
-            quantity: 0
+            quantity: 0,
+            quantityExport: 0
         }
 
         this.handleChangePrice    = this.handleChangePrice.bind(this);
@@ -34,14 +35,15 @@ class ProductItem extends React.Component {
      */
 
     handleGetPrice (props) {
-        let { product = {}, quantity = 0 } = props.item || {};
+        let { product = {}, quantity = 0, quantityExport = 0 } = props.item || {};
         let price = product.price.find(price => price.name === 'import') || {};
         let priceSale = product.price.find(price => price.name === 'default') || {};
         InteractionManager.runAfterInteractions(() => {
             this.setState(state => {
-                state.priceImport = price.price;
-                state.priceSale = priceSale.price;
-                state.quantity = quantity;
+                state.priceImport    = price.price;
+                state.priceSale      = priceSale.price;
+                state.quantity       = quantity;
+                state.quantityExport = quantityExport
                 return state;
             })
         })
@@ -51,19 +53,29 @@ class ProductItem extends React.Component {
         price = price || '0';
         price = price.match(/\d/gi).join('') || 0;
         this.setState({priceSale: +price});
+        InteractionManager.runAfterInteractions(() => {
+            this.props.handleChangeItemPrice(+price, this.props.index);
+        })
     }
 
     handleChangeQuantity (qty) {
         let {quantity = 0} = this.props.item;
         // Check quantity input is lower than quantity of inventory
-        if(qty < quantity)
-           this.setState({quantity: qty});
+        if(qty <= quantity) {
+            this.setState({quantityExport: +qty});
+            InteractionManager.runAfterInteractions(() => {
+                this.props.handleChangeItemQuantity(+qty, this.props.index)
+            })
+        }
     }
 
     handleSubmitRatio (ratio) {
         InteractionManager.runAfterInteractions(() => {
             this.setState(state => {
+                let { item = {} }    = this.props;
+                let { product = {} } = item;
                 state.priceSale = state.priceImport + (state.priceImport * ratio / 100);
+                this.props.handleSubmitRatio(product._id, state.priceSale);
                 return state;
             })
         })
@@ -77,7 +89,7 @@ class ProductItem extends React.Component {
     render() {
         let {item = {}} = this.props;
         let { product = {} } = item;
-        let { priceSale, priceImport, quantity } = this.state;
+        let { priceSale, priceImport, quantity, quantityExport } = this.state;
 
         return (
             <View style={[{height: 200},
@@ -90,14 +102,14 @@ class ProductItem extends React.Component {
                         <View style={[styleBase.column]}>
                             <ProductInfo label="TÊN HÀNG" value={product.name}/>
                             <ProductInfo label="SỐ LƯỢNG TRONG KHO"
-                                         value={!item.quantity ? 'HẾT HÀNG' : item.quantity}/>
+                                         value={!item.quantity ? 'HẾT HÀNG' : quantity - quantityExport}/>
                             <ProductInfo label="GIÁ NHẬP VÀO"
                                          value={`${priceImport.seperateNumber()} VND`}/>
                         </View>
                         <View style={[styleBase.column]}>
                             <InputGroup label="SỐ LƯỢNG XUẤT"
                                         onChangeText={this.handleChangeQuantity}
-                                        value={quantity.seperateNumber()}
+                                        value={quantityExport.seperateNumber()}
                                         placeholder="0"/>
                             <View style={[styleBase.row]}>
                                 <InputGroup label="GIÁ BÁN"
@@ -160,12 +172,13 @@ class RatioSale extends React.PureComponent {
 
     render () {
         return (
-            <View style={[styleBase.row,
-                {width: 160, borderWidth: 1, borderColor: "#e5e5e5"}]}>
+            <View style={[styleBase.row]}>
                 <TextInput
-                    style={[styleBase.p_md_horizontal]}
+                    style={[styleBase.p_md_horizontal, {borderWidth: 1, borderColor: "#e5e5e5"}]}
                     onChangeText={this.handleChangeRatio}
-                    value={`${this.state.ratio}%`}
+                    autoCorrect={false}
+                    keyboardType="number-pad"
+                    value={`%${this.state.ratio}`}
                     placeholder="% GIÁ NHẬP"/>
                 <TouchableOpacity
                     onPress={this.handleSubmitRatio}
@@ -218,11 +231,17 @@ const ProductInfo = (props) => {
 }
 
 ProductItem.propTypes = {
-    item: PropTypes.object
+    item: PropTypes.object,
+    handleSubmitRatio: PropTypes.func,
+    handleChangeItemQuantity: PropTypes.func,
+    handleChangeItemPrice: PropTypes.func
 };
 
 ProductItem.defaultProps = {
-    item: {}
+    item: {},
+    handleSubmitRatio: () => {},
+    handleChangeItemPrice: () => {},
+    handleChangeItemQuantity: () => {}
 };
 
 export default ProductItem;

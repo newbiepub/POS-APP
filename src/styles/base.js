@@ -118,6 +118,9 @@ const styleBase = EStyleSheet.create({
         borderBottomWidth: 1,
         borderTopWidth: 1
     },
+    fontIcon: {
+        fontSize: '2.2rem'
+    },
     title: {
         fontSize: '1.1rem'
     },

@@ -6,6 +6,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import List from "../../../../component/list/list";
 import ProductItem from "./item";
 import ErrorBoundary from "../../../../component/errorBoundary/errorBoundary";
+import index from "../index";
 
 class TableProducts extends React.PureComponent {
     constructor(props) {
@@ -13,11 +14,12 @@ class TableProducts extends React.PureComponent {
         this.list = null;
         this.state = {
             confirmOption: false,
-            products: props.products
+            products: props.products.map(item => ({...item, quantityExport: item.quantity}))
         }
 
-        this.handleChangeSwitch = this.handleChangeSwitch.bind(this);
-        this.handleSubmitRatio  = this.handleSubmitRatio.bind(this);
+        this.handleChangeSwitch    = this.handleChangeSwitch.bind(this);
+        this.handleSubmitRatio     = this.handleSubmitRatio.bind(this);
+        this.handleSubmitItemRatio = this.handleSubmitItemRatio.bind(this);
     }
 
     /**
@@ -34,48 +36,83 @@ class TableProducts extends React.PureComponent {
         })
     }
 
+    handleSetPriceByRatio (item, ratio = 0, priceSale = 0) {
+        let product = item.product || {};
+        let price = product.price || [];
+        let importPrice = price.find(price => price.name === 'import') || {};
+        let salePrice   = price.find(price => price.name === "default") || {};
+        let priceImport = importPrice.price || 0;
+        let sale = salePrice.price || 0;
+
+        sale = priceSale ? priceSale : priceImport + (priceImport * ratio / 100);
+        price = [
+            {...importPrice, price: priceImport},
+            {...salePrice, price: sale}
+        ]
+        return {
+            ...item,
+            product: {
+                ...product,
+                price
+            }
+        }
+    }
+
     handleSubmitRatio (ratio) {
         InteractionManager.runAfterInteractions( () => {
             let { products = [] } = this.state;
-            let data = products.map(item => {
-                let product = item.product || {};
-                let price = product.price || [];
-                let importPrice = price.find(price => price.name === 'import') || {};
-                let salePrice   = price.find(price => price.name === "default") || {};
-                let priceImport = importPrice.price || 0;
-                let sale = salePrice.price || 0;
-
-                sale = priceImport + (priceImport * ratio / 100);
-                price = [
-                    {...importPrice, price: priceImport},
-                    {...salePrice, price: sale}
-                ]
-                return {
-                    ...item,
-                    product: {
-                        ...product,
-                        price
-                    }
-                }
-            })
-            this.list.onUpdateList()
+            let data = products.map((item) => this.handleSetPriceByRatio(item, ratio))
+            this.list.onUpdateList();
             this.setState({
                 products: data
             })
         })
     }
 
+    /**
+     * Item handlers
+     * @param productId
+     * @param salePrice
+     */
+    handleSubmitItemRatio (productId, salePrice) {
+        let { products = [] } = this.state;
+        let index = products.findIndex(item => item.product._id === productId);
+        let product = this.handleSetPriceByRatio(products[index], 0, salePrice);
+
+        products[index] = product;
+        this.setState({products}, () => {
+            console.warn(JSON.stringify(this.state.products[0], null, 4));
+        })
+    }
+
+    handleChangeItemQuantity (quantity, itemIndex) {
+        let { products = [] } = this.state;
+        let product = products[itemIndex] || {};
+
+        product.quantityExport = quantity;
+        this.setState({products})
+    }
+
+    handleChangeItemPrice(price, itemIndex) {
+        let { products = [] } = this.state;
+        let product = products[itemIndex] || {};
+
+        product = this.handleSetPriceByRatio(product, 0, price);
+        products[itemIndex] = product;
+        this.setState({products})
+    }
+
     handleSubmitExport () {
         let { products = [] } = this.state;
         products = products.map(item => {
-            let { product = {}, quantity = 0 } = item;
+            let { product = {}, quantityExport = 0 } = item;
             let { price = [] } = product;
             let salePrice = price.find(price => price.name === 'default') || {};
 
             salePrice = salePrice.price || 0;
             return {
                 _id: product._id,
-                quantity,
+                quantity: quantityExport,
                 salePrice
             }
         });
@@ -94,7 +131,12 @@ class TableProducts extends React.PureComponent {
                 </Text>
             </View>
         )}>
-            <ProductItem key={`ITEM-${index}`} item={item}/>
+            <ProductItem key={`ITEM-${index}`}
+                         index={index}
+                         item={item}
+                         handleChangeItemPrice={(price, index) => this.handleChangeItemPrice(price, index)}
+                         handleChangeItemQuantity={(quantity, index) => this.handleChangeItemQuantity(quantity, index)}
+                         handleSubmitRatio={this.handleSubmitItemRatio}/>
         </ErrorBoundary>
     }
 
@@ -168,7 +210,7 @@ class SalePercentage extends React.PureComponent {
                 <TextInput
                     style={[styleBase.p_md_horizontal]}
                     onChangeText={this.handleChangeRatio}
-                    value={`${this.state.ratio}%`}
+                    value={`%${this.state.ratio}`}
                     placeholder="% GIÁ NHẬP"
                 />
                 <TouchableOpacity
