@@ -38,6 +38,9 @@ const styleBase = EStyleSheet.create({
     row: {
         flexDirection: "row"
     },
+    wrap: {
+        flexWrap: 'wrap'
+    },
     divider: {
         height: 1,
         borderColor: "#e5e5e5",
@@ -80,6 +83,12 @@ const styleBase = EStyleSheet.create({
     text4: {
         color: "#444"
     },
+    text6: {
+        color: '#666'
+    },
+    textE5: {
+        color: '#e5e5e5'
+    },
     imgLargeTile: {
         height: "20%",
         width: "20%"
@@ -110,6 +119,12 @@ const styleBase = EStyleSheet.create({
         paddingHorizontal: 20,
         borderBottomWidth: 1,
         borderBottomColor: "#e5e5e5"
+    },
+    roundButton: {
+        $size: 60,
+        height: '$size',
+        width: '$size',
+        borderRadius: '$size * 0.5'
     },
     card: {
         paddingVertical: 10,

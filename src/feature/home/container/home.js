@@ -12,6 +12,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import DropDown from "../../../component/dropDown/index";
 import ErrorBoundary from "../../../component/errorBoundary/errorBoundary";
 import NoData from "../../../component/noData/noData";
+import Setting from "../../setting/index";
 
 class Home extends React.PureComponent {
     constructor(props) {
@@ -142,7 +143,11 @@ class Home extends React.PureComponent {
 
                         }
                         {
-                            (this.state.currentRoute.route === "setting" || this.state.currentRoute.route === "report") &&
+                            (this.state.currentRoute.route === "setting") &&
+                            <Setting/>
+                        }
+                        {
+                            (this.state.currentRoute.route === "report") &&
                             <CommingSoon/>
                         }
                     </View>

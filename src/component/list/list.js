@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import {StyleSheet, Platform, FlatList, View, InteractionManager} from "react-native";
 import styleBase from "../../styles/base";
 
-class List extends React.Component {
+class List extends React.PureComponent {
     constructor(props) {
         super(props);
         this._scrollRef = null;

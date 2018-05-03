@@ -6,7 +6,7 @@ import {getInentoryHistory} from "./action";
 import {getCurrentUser} from "../../login/action/login";
 import NoData from "../../../component/noData/noData";
 import styleBase from "../../../styles/base";
-import {ActivityIndicator, Text, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, Text, TouchableOpacity, View, InteractionManager} from "react-native";
 import List from "../../../component/list/list";
 import {openPopup, renderContent} from "../../../component/popup/actions/popupAction";
 import HistoryItem from "./item";
@@ -22,6 +22,8 @@ class Management extends React.Component {
             item.name = item.name.replace("$type", '');
             return item;
         });
+        this.list = null;
+
         this.state = {
             currentUser: null,
             type: '',
@@ -33,6 +35,7 @@ class Management extends React.Component {
         this.renderItem = this.renderItem.bind(this);
         this.handleClickItem = this.handleClickItem.bind(this);
         this.handleLoadInventoryHistory = this.handleLoadInventoryHistory.bind(this);
+        this.handleOnRefresh = this.handleOnRefresh.bind(this);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -40,7 +43,7 @@ class Management extends React.Component {
     }
 
     async componentDidMount() {
-        let history = await this.handleLoadInventoryHistory(this.props.type)
+        let history = await this.handleLoadInventoryHistory(this.props.type);
         this.setState({
             inventoryHistory: history,
             loading: false,
@@ -52,6 +55,16 @@ class Management extends React.Component {
      * Handle
      * @returns {Promise.<void>}
      */
+
+    async handleOnRefresh () {
+        try {
+            let history = await this.handleLoadInventoryHistory(this.props.type);
+            this.list.onUpdateList();
+            this.setState({inventoryHistory: history});
+        } catch (e) {
+            console.warn('Error - manage.js - ', e.lineNumber, ' ',e.message);
+        }
+    }
 
     async handleLoadInventoryHistory (type) {
         try {
@@ -84,7 +97,7 @@ class Management extends React.Component {
      */
 
     renderItem(item, index) {
-        let data = item;
+        let data = {...item};
         return (
             <TouchableOpacity onPress={() => this.handleClickItem(data)}>
                 <View style={[{height: 65},
@@ -114,9 +127,10 @@ class Management extends React.Component {
 
     renderList() {
         return <List
+            ref={list => this.list = list}
             keyExtractor={(item, index) => item._id}
+            onRefresh={this.handleOnRefresh}
             dataSources={this.state.inventoryHistory}
-            extraData={this.state}
             renderItem={this.renderItem}
         />
     }

@@ -12,9 +12,9 @@ export const getInventoryHistory = gql`
                     name
                     price
                 }
+                quantity
                 unit
                 productCode
-                quantity
             }
             type
             totalQuantity

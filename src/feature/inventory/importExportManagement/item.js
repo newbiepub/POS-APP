@@ -43,6 +43,8 @@ class HistoryItem extends React.Component {
                 }
             }
         ];
+        this.list = null;
+
         this.state = {
             searchText: "",
             data: this.props.data
@@ -148,6 +150,7 @@ class HistoryItem extends React.Component {
                 </View>
                 <View style={[styleBase.m_md_vertical, styleBase.m_md_horizontal]}>
                     <List
+                        ref={list => this.list = list}
                         styles={[styleBase.height70]}
                         dataSources={this.state.data}
                         extraData={this.state}

@@ -48,12 +48,13 @@ export const INVENTORY = {
             // FETCH INVENTORY HISTORY FROM API
             let { data = {} } = await client.query({
                 query: getInventoryHistory,
+                fetchPolicy: 'network-only',
                 variables: {
                     type
                 }
             });
             let { getUserInventoryHistory = [] } = data;
-            let payload = getUserInventoryHistory.map(inventory_history)
+            let payload = getUserInventoryHistory.map(inventory_history);
 
             return payload;
         } catch (e) {

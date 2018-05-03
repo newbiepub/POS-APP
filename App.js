@@ -1,7 +1,7 @@
 import React, {PureComponent} from 'react';
 import {HttpLink} from "apollo-link-http";
 import {ApolloClient} from "apollo-client";
-import {InMemoryCache, IntrospectionFragmentMatcher} from "apollo-cache-inmemory";
+import {InMemoryCache, IntrospectionFragmentMatcher, defaultDataIdFromObject} from "apollo-cache-inmemory";
 import introspectionQueryResultData from "./src/utils/fragmentMatcher.json";
 import AppContainer from "./src/container/app";
 import {setContext} from "apollo-link-context";
@@ -9,8 +9,9 @@ import {getToken, removeToken} from "./src/feature/login/utils/loginToken";
 import {Provider} from "react-redux";
 import store from "./src/store/store";
 import {onError} from "apollo-link-error";
-import { Alert } from "react-native";
+import { Alert, Platform, StatusBar } from "react-native";
 import config from "./src/configs";
+import {uuid} from "./src/utils/utils";
 
 const fragmentMatcher = new IntrospectionFragmentMatcher({
     introspectionQueryResultData
@@ -68,8 +69,17 @@ const errorLink = onError(({graphQLErrors, networkError, response}) => {
     if (networkError) Alert.alert("Thông báo", "Lỗi kết nối vui lòng kiểm tra lại kết nối");
 });
 
+const dataIdFromObject = (object) => {
+    switch (object.__typename) {
+        case 'InventoryHistoryProduct':
+            return `InventoryHistoryProduct_${object._id}_${uuid()}`
+        default: return defaultDataIdFromObject(object)
+    }
+}
+
 const cache = new InMemoryCache({
-    fragmentMatcher
+    fragmentMatcher,
+    dataIdFromObject
 });
 
 const client = new ApolloClient({
@@ -86,12 +96,16 @@ export default class AppRoot extends PureComponent {
         super(props);
     }
 
+    componentDidMount () {
+        // Hide status bar
+        Platform.OS === 'ios' && StatusBar.setHidden(true);
+    }
+
     render() {
         return (
             <Provider store={store}>
                 <AppContainer/>
             </Provider>
-
         )
     }
 }

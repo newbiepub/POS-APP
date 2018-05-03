@@ -9,6 +9,8 @@ export function formatDate(date) {
     return moment(date).format('dddd DD-MM-YYYY [lúc] h:mm a');
 }
 
+export const uuid = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
 export const equals = (a, b) => {
     if (a === b) return true;
     if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime();

@@ -80,9 +80,7 @@ class TableProducts extends React.PureComponent {
         let product = this.handleSetPriceByRatio(products[index], 0, salePrice);
 
         products[index] = product;
-        this.setState({products}, () => {
-            console.warn(JSON.stringify(this.state.products[0], null, 4));
-        })
+        this.setState({products})
     }
 
     handleChangeItemQuantity (quantity, itemIndex) {
@@ -104,18 +102,22 @@ class TableProducts extends React.PureComponent {
 
     handleSubmitExport () {
         let { products = [] } = this.state;
-        products = products.map(item => {
+        products = products.reduce((result, item) => {
             let { product = {}, quantityExport = 0 } = item;
-            let { price = [] } = product;
-            let salePrice = price.find(price => price.name === 'default') || {};
 
-            salePrice = salePrice.price || 0;
-            return {
-                _id: product._id,
-                quantity: quantityExport,
-                salePrice
+            if(quantityExport) {
+                let { price = [] } = product;
+                let salePrice = price.find(price => price.name === 'default') || {};
+
+                salePrice = salePrice.price || 0;
+                result.push({
+                    _id: product._id,
+                    quantity: quantityExport,
+                    salePrice
+                })
             }
-        });
+            return result;
+        }, []);
         return products;
     }
 

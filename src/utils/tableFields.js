@@ -70,11 +70,16 @@ export const listPOSFields = [
     {
         name: "TÊN ĐIỂM BÁN HÀNG",
         field: "profile.name",
-        columnWidth: 0.4
+        columnWidth: 0.3
     },
     {
         name: "SỐ ĐIỆN THOẠI",
         field: 'profile.phoneNumber',
-        columnWidth: 0.4
+        columnWidth: 0.3
+    },
+    {
+        name: 'ĐỊA CHỈ',
+        field: 'profile.address',
+        columnWidth: 0.3
     }
 ]
