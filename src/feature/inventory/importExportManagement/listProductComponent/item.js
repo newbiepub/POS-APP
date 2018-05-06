@@ -36,12 +36,11 @@ class ProductItem extends React.Component {
 
     handleGetPrice (props) {
         let { product = {}, quantity = 0, quantityExport = 0 } = props.item || {};
-        let price = product.price.find(price => price.name === 'import') || {};
-        let priceSale = product.price.find(price => price.name === 'default') || {};
+
         InteractionManager.runAfterInteractions(() => {
             this.setState(state => {
-                state.priceImport    = price.price;
-                state.priceSale      = priceSale.price;
+                state.priceImport    = props.item.importPrice;
+                state.priceSale      = props.item.salesPrice;
                 state.quantity       = quantity;
                 state.quantityExport = quantityExport
                 return state;
@@ -90,7 +89,6 @@ class ProductItem extends React.Component {
         let {item = {}} = this.props;
         let { product = {} } = item;
         let { priceSale, priceImport, quantity, quantityExport } = this.state;
-
         return (
             <View style={[{height: 200},
                 styleBase.m_md_vertical,

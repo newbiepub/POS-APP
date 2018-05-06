@@ -38,22 +38,17 @@ class TableProducts extends React.PureComponent {
 
     handleSetPriceByRatio (item, ratio = 0, priceSale = 0) {
         let product = item.product || {};
-        let price = product.price || [];
-        let importPrice = price.find(price => price.name === 'import') || {};
-        let salePrice   = price.find(price => price.name === "default") || {};
-        let priceImport = importPrice.price || 0;
-        let sale = salePrice.price || 0;
+        let importPrice = item.importPrice || 0;
+        let salesPrice   = item.salesPrice;
 
-        sale = priceSale ? priceSale : priceImport + (priceImport * ratio / 100);
-        price = [
-            {...importPrice, price: priceImport},
-            {...salePrice, price: sale}
-        ]
+        salesPrice = priceSale ? priceSale : importPrice + (importPrice * ratio / 100)
+
         return {
             ...item,
+            importPrice,
+            salesPrice,
             product: {
-                ...product,
-                price
+                ...product
             }
         }
     }
@@ -107,9 +102,8 @@ class TableProducts extends React.PureComponent {
 
             if(quantityExport) {
                 let { price = [] } = product;
-                let salePrice = price.find(price => price.name === 'default') || {};
+                let salePrice = item.salesPrice;
 
-                salePrice = salePrice.price || 0;
                 result.push({
                     _id: product._id,
                     quantity: quantityExport,

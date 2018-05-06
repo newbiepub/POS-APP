@@ -25,7 +25,7 @@ class ProductList extends React.PureComponent {
         ];
         this.delayed = (time) => new Promise((resolve) => setTimeout(resolve, time));
         this.ITEM_HEIGHT = 65;
-        this.NUMBER_OF_ITEM = 5;
+        this.NUMBER_OF_ITEM = 15;
         this.state = {
             products: [],
             searchText: "",
@@ -48,18 +48,16 @@ class ProductList extends React.PureComponent {
         this.handleFetchProducts()
         InteractionManager.runAfterInteractions(() => {
             this.setState({
-                products: this.props.products,
-                loading: false
-            })
+                products: this.props.products
+            }, () => this.setState({loading: false}))
         })
     }
 
     componentWillReceiveProps(nextProps) {
         InteractionManager.runAfterInteractions(() => {
             this.setState({
-                products: nextProps.products,
-                loading: false
-            })
+                products: nextProps.products
+            }, () => this.setState({loading: false}))
         })
     }
 
@@ -117,6 +115,7 @@ class ProductList extends React.PureComponent {
 
     render() {
         let productItem = this.state.products || [];
+
         return (
             <SafeAreaView style={[styleBase.container, styleBase.bgWhite]}>
                 <View style={[styleBase.container]}>
@@ -179,7 +178,7 @@ class ProductList extends React.PureComponent {
                             />
                         }
                         {
-                            ((productItem === "NoData") && !this.state.loading) &&
+                            ((!productItem.length) && !this.state.loading) &&
                             <View style={[styleBase.m_xl_top]}>
                                 <NoData/>
                             </View>

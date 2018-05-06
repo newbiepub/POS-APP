@@ -6,13 +6,13 @@ export const getInventoryHistory = gql`
         getUserInventoryHistory (type: $type) {
             _id
             products {
-                _id
                 name
-                price {
+                quantity
+                importPrice
+                prices {
                     name
                     price
                 }
-                quantity
                 unit
                 productCode
             }

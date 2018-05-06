@@ -7,20 +7,17 @@ export const getProductInventory = gql`
                 product {
                     _id
                     name
-                    price {
-                        name
-                        price
-                        currency {
-                            name
-                            symbol
-                        }
-                    }
                     unit
                     categoryId {
                         _id
                         name
                         description
                     }
+                }
+                importPrice
+                prices {
+                    name
+                    price
                 }
                 quantity
             }

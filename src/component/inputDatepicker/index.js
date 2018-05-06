@@ -38,7 +38,7 @@ class InputDatePicker extends React.Component {
                 <TouchableOpacity
                     onPress={() => this.setState({datePickerVisible: true})}
                     style={[styleBase.p_md_horizontal, styleBase.p_md_vertical,
-                    styleBase.m_md_vertical,]}>
+                    styleBase.m_md_vertical, ...this.props.style]}>
                     <Text style={[styleBase.text6]}>
                         {this.state.datePicked != undefined
                             ?

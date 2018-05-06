@@ -1,12 +1,17 @@
 export const product_inventory_data = (item) => {
     let { product = {} } = item;
+    let { prices = [] } = item;
+    let salesPrice  = prices.find(price => price.name === "default") || {};
+    let { categoryId = {name: 'Không có'} } = product;
+
     return {
         employeeId: item.employeeId,
         companyId: item.companyId,
+        importPrice: item.importPrice,
+        salesPrice: salesPrice.price || 0,
         product: {
-            categoryId: product.categoryId,
+            category: categoryId,
             name: product.name,
-            price: product.price || [],
             unit: product.unit || '',
             _id: product._id || ''
         },
@@ -20,7 +25,8 @@ export const inventory_history = item => {
         return {
             "_id": product._id || '',
             "name": product.name || '',
-            "price": product.price || [],
+            "prices": product.prices || [{name: 'default', price: 0}],
+            "importPrice": product.importPrice || 0,
             "quantity": product.quantity || 0,
             "unit": product.unit || '',
             "productCode": product.productCode || ''

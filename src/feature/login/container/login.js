@@ -75,7 +75,7 @@ class Login extends React.Component {
             });
         }
         catch (e) {
-            console.warn("error - onSubmitLogin");
+            console.warn("error - ", e.message);
             if(e.message === "INCORRECT_PASSWORD") {
                 alert("Sai mật khẩu");
             } else if(e.message === "INCORRECT_EMAIL") {

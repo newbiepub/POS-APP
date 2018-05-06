@@ -64,8 +64,8 @@ class DiscountInput extends React.Component {
                             value={this.state.amount > 0 ? this.state.amount.seperateNumber() : ''}
                             onChangeText={this.handleChangeAmount}
                             placeholder="Giảm giá"/>
-                        <InputDatePicker placeholder="Thời gian bắt đầu giảm giá"/>
-                        <InputDatePicker placeholder="Thời gian kết thúc giảm giá"/>
+                        <InputDatePicker placeholder="Thời gian bắt đầu giảm giá" style={[styles.input]}/>
+                        <InputDatePicker placeholder="Thời gian kết thúc giảm giá" style={[styles.input]}/>
                         <GroupCheckbox options={this.options}/>
                         <TouchableOpacity
                             style={[

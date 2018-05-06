@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import {StyleSheet, Platform, FlatList, View, InteractionManager} from "react-native";
 import styleBase from "../../styles/base";
+import {uuid} from "../../utils/utils";
 
 class List extends React.PureComponent {
     constructor(props) {
@@ -114,7 +115,7 @@ List.defaultProps = {
     onEndReach: () => {},
     renderHeader: () => null,
     keyExtractor: (item, index) => {
-        return `LIST_${index}`;
+        return uuid();
     },
     getItemLayout: (data, index) => (
         {length: 100, offset: 100 * index, index}

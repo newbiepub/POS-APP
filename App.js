@@ -52,7 +52,7 @@ const errorLink = onError(({graphQLErrors, networkError, response}) => {
                 case "Token is expired":
                 case "Topology was destroyed":
                     // Remove token
-                    Alert.alert('Thông báo', "Phiên đăng nhập hết hạn mời đăng nhập lại", [{
+                    return Alert.alert('Thông báo', "Phiên đăng nhập hết hạn mời đăng nhập lại", [{
                         text: "OK", onPress: () => {
                             removeToken(); // Remove Token
                             client.resetStore(); // Reset store when user logout
@@ -60,20 +60,20 @@ const errorLink = onError(({graphQLErrors, networkError, response}) => {
                     }]);
                 case "TOTAL_QUANTITY_EMPTY":
                     // Remove token
-                    Alert.alert('Thông báo', "Không thể xuất kho khi không có số lượng", [{
+                    return Alert.alert('Thông báo', "Không thể xuất kho khi không có số lượng", [{
                         text: "OK"
                     }]);
             }
         });
 
-    if (networkError) Alert.alert("Thông báo", "Lỗi kết nối vui lòng kiểm tra lại kết nối");
+    if (networkError) return Alert.alert("Thông báo", "Lỗi kết nối vui lòng kiểm tra lại kết nối");
 });
 
 const dataIdFromObject = (object) => {
     switch (object.__typename) {
         case 'InventoryHistoryProduct':
-            return `InventoryHistoryProduct_${object._id}_${uuid()}`
-        default: return defaultDataIdFromObject(object)
+            return `InventoryHistoryProduct_${object._id}_${uuid()}`;
+        default: return `${object.__typename}_${uuid()}`;
     }
 }
 

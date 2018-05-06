@@ -19,6 +19,7 @@ export const INVENTORY = {
             // FETCH PRODUCT FROM API
             let { data = {} } = await client.query({
                 query: getProductInventory,
+                fetchPolicy: 'network-only',
                 variables: {
                     userId,
                     type
@@ -27,13 +28,9 @@ export const INVENTORY = {
             // User products from inventory
             let { getUserProductInventory = []} = data;
             // Payload data save to store
-            let payload = getUserProductInventory.reduce((result, item) => {
-
-                result.push(product_inventory_data(item));
-                return result;
-            }, []);
+            let payload = getUserProductInventory.map((item) => product_inventory_data(item));
             // SAVE PRODUCT TO LOCAL STORAGE
-            PRODUCT_STORAGE.SAVE_PRODUCT(userId, payload)
+            PRODUCT_STORAGE.SAVE_PRODUCT(userId, payload);
             store.dispatch({
                 type: INVENTORY_ACTION.FETCH_USER_PRODUCT,
                 payload

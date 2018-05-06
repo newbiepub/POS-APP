@@ -5,59 +5,36 @@ import styleBase from "../../../../styles/base";
 import NavBar from "../../../../component/navbar/navbar";
 import {equals} from "../../../../utils/utils";
 import {AfterInteractions} from "react-native-interactions";
+import {product_inventory_data} from "../../../../api/dataHandler/inventory";
 
 class ProductDetail extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            item: this.props.item,
-        };
 
         this.handleData = this.handleData.bind(this);
         this.renderProductInfo = this.renderProductInfo.bind(this);
     }
 
-    componentDidMount() {
-        InteractionManager.runAfterInteractions(() => {
-            this.setState({
-                item: this.props.item.product
-            })
-        })
-    }
-
     shouldComponentUpdate(nextProps, nextState) {
-        let itemChanged   = !equals(this.state.item, nextState.item);
+        let itemChanged             = !equals(this.state.item, nextState.item);
+        let productInventoryChanged = !equals(this.state.productInventory, nextState.productInventory);
 
-        return itemChanged;
-    }
-
-    componentWillReceiveProps (nextProps) {
-        this.setState({
-            item: nextProps.item.product
-        })
+        return itemChanged || productInventoryChanged;
     }
 
     /**
      * Normalize Data
      */
     handleData () {
-        let {item = {}} = this.state;
-        let { price = [] } = item;
-        let { category = {} } = item;
-        let { currency = {} } = price;
-        let importPrice = price.find(price => price.name === "import") || {};
-        let salesPrice  = price.find(price => price.name === "default") || {};
-        let currencyName = currency.name || "VND";
-        let categoryName = category.name || "Không có";
-        let quantity    = item.quantity || 0;
+        try {
+            let currencyName = "VND";
 
-        return {
-            name: item.name || "",
-            importPrice: importPrice.price || 0,
-            salesPrice: salesPrice.price || 0,
-            currency: currencyName,
-            quantity,
-            category: categoryName
+            return {
+                ...this.props.item,
+                currency: currencyName
+            }
+        } catch (e) {
+            console.log(e.message);
         }
     }
 
@@ -65,7 +42,7 @@ class ProductDetail extends React.Component {
         return [
             {
                 label: "TÊN SẢN PHẨM",
-                value: data.name
+                value: data.product.name
             },
             {
                 label: "GIÁ NHẬP VÀO",
@@ -77,7 +54,7 @@ class ProductDetail extends React.Component {
             },
             {
                 label: "LOẠI HÀNG",
-                value: data.category
+                value: data.product.category.name
             }
         ]
     }
