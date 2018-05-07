@@ -14,8 +14,6 @@ import {constantStyle} from '../../style/base';
 import {TextNormal, TextSmall} from '../../component/text';
 import {numberwithThousandsSeparator} from '../../reuseable/function/function';
 import Header from '../../component/header';
-import {graphql, compose} from 'react-apollo';
-import {QUERY} from '../../constant/query';
 import {normalizeTransactionSectionList} from '../../reuseable/function/normalizeData';
 import NoData from '../../component/noData';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -24,6 +22,7 @@ import _ from 'lodash';
 import {connect} from 'react-redux';
 import ListProduct from '../../component/listProduct/listProduct';
 import IssueRefund from '../../component/popup/popupContent/issueRefund';
+import PrintInvoice from '../../component/popup/popupContent/printInvoice';
 import {openPopup} from '../../component/popup/popupAction';
 import UpdateTransaction from '../../component/popup/popupContent/updateTransaction';
 import {getTransactionAmount, getTransaction, selectTransaction} from './transactionAction';
@@ -188,7 +187,6 @@ class Transaction extends React.Component {
     }
 
     async _onRefresh() {
-        // console.warn('refreshing');
         await this.setState({
             refreshing: true,
             skip: 0
@@ -215,7 +213,8 @@ class Transaction extends React.Component {
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
                             {
                                 currentTransaction._id && totalPaid >= currentTransaction.totalPrice &&
-                                <TouchableWithoutFeedback>
+                                <TouchableWithoutFeedback onPress={() => this.props.openPopup(<PrintInvoice
+                                    transaction={currentTransaction}/>)}>
                                     <TextNormal style={style.functionButton}>In hoá đơn</TextNormal>
                                 </TouchableWithoutFeedback>
                             }
@@ -387,7 +386,7 @@ class Transaction extends React.Component {
                                         <ListProduct data={currentTransaction.productItems}/>
                                     </View>
 
-                                    <View style={{height:constantStyle.xl*2}}/>
+                                    <View style={{height: constantStyle.xl * 2}}/>
                                 </ScrollView> :
                                 <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                                     <TextNormal>Hãy chọn giao dịch để hiển thị !</TextNormal>

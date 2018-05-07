@@ -1,4 +1,4 @@
-import {removeTypeName} from './function';
+
 import moment from '../../component/moment';
 
 export function normalizeProductItemsInput(data) {
@@ -27,12 +27,11 @@ export function normalizeProductItemsInput(data) {
                 discount: items.discount || null
             };
         }
-
-        newItem.price.currency = removeTypeName(newItem.price.currency);
         result.push(newItem)
     }
     return result
 }
+
 export function normalizeProductItemsIssueRefund(data) {
     let result = [];
     for (items of data) {
@@ -60,24 +59,23 @@ export function normalizeProductItemsIssueRefund(data) {
             };
         }
 
-        newItem.price.currency = removeTypeName(newItem.price.currency);
         result.push(newItem)
     }
     return result
 }
 
-function getPriceInput(price){
-    const result =  Object.assign({}, removeTypeName(price));
+function getPriceInput(price) {
+    const result = Object.assign({}, price);
     delete result._id;
     // console.warn(result)
     return result
 }
 
 export function normalizeTransactionSectionList(data) {
-    try{
+    try {
         let result = [];
         for (var i = 0; i < data.length; i++) {
-            try{
+            try {
                 if (result.length === 0) {
                     result.push({title: data[i].createdAt, data: [data[i]]});
                 } else {
@@ -95,15 +93,13 @@ export function normalizeTransactionSectionList(data) {
                         }
                     }
                 }
-            }catch(e)
-            {
+            } catch (e) {
                 console.warn("e-normalizeTransactionSectionList-" + e)
             }
 
         }
         return result
-    }catch(e)
-    {
+    } catch (e) {
         console.warn("e-normalizeTransactionSectionList-" + e);
         return []
     }

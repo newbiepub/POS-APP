@@ -46,26 +46,25 @@ export const QUERY = {
     INVENTORY_PRODUCT: gql`
         query getUserProductInventory($userId: String!,$limit:Int, $skip: Int){
             getUserProductInventory(type: "employee", userId: $userId, limit:$limit, skip: $skip) {
+                _id
                 product {
                     _id
                     name
-                    price {
-                        _id
-                        name
-                        price
-                        currency {
-                            name
-                            symbol
-                        }
-                    }
                     unit
                     categoryId {
                         _id
                         name
                     }
                     productCode
+                    detail
                 }
                 quantity
+                importPrice
+                prices{
+                    _id
+                    name
+                    price
+                }
                 description
                 ... on updateProductInventoryQuantityFragment{
                     quantity
@@ -114,13 +113,10 @@ export const QUERY = {
                     productId
                     productName
                     quantity
+                    priceImport
                     price{
                         name
                         price
-                        currency{
-                            name
-                            symbol
-                        }
                     }
                     totalPrice
                     unit

@@ -1,6 +1,6 @@
 import {TRANSACTION, USER} from '../../constant/constant';
 import {REHYDRATE} from 'redux-persist';
-
+import {omitDeep} from '../../reuseable/function/function';
 const initialState = {
     transactionAmount: 0,
     transaction: [],
@@ -10,7 +10,8 @@ const initialState = {
     currentTransaction: {},
 };
 
-function updateTransaction(state, transaction) {
+function updateTransaction(state, newTransaction) {
+    let transaction = omitDeep(newTransaction, '__typename');
     if (state.length === 0) {
         return transaction
     } else {
@@ -22,6 +23,7 @@ function updateTransaction(state, transaction) {
                     break;
                 } else {
                     if (j === state.length - 1) {
+
                         state.push(transaction[i])
                     }
                 }
@@ -123,7 +125,7 @@ export default function (state = initialState, action = {}) {
             return {
                 ...state,
                 transaction: [...newTransaction],
-                asyncIssueRefund: [...state.asyncIssueRefund,action.payload],
+                asyncIssueRefund: [...state.asyncIssueRefund, action.payload],
                 currentTransaction: {
                     ...state.currentTransaction,
                     issueRefund: true,
@@ -140,8 +142,8 @@ export default function (state = initialState, action = {}) {
                 asyncUpdateTransaction: [...state.asyncIssueRefund, action.payload],
                 currentTransaction: {
                     ...state.currentTransaction,
-                    dueDate:  action.payload.dueDate,
-                    paid: [...state.currentTransaction.paid,action.payload.paid],
+                    dueDate: action.payload.dueDate,
+                    paid: [...state.currentTransaction.paid, action.payload.paid],
                     description: action.payload.description,
                 }
             }

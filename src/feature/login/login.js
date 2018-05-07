@@ -87,7 +87,7 @@ class Login extends PureComponent {
                            style={{width: 100, height: 100, marginBottom: 100}}/>
                     <View style={{flexDirection: 'row', marginVertical: 10, marginHorizontal: 5}}>
                         <TextInputUserName value={this.state.username}
-                                           onChangeText={(text) => this.setState({username: text})}/>
+                                           onChangeText={(text) => this.setState({username: text.toLowerCase()})}/>
                     </View>
                     <View style={{flexDirection: 'row', marginVertical: 10, marginHorizontal: 5}}>
                         <TextInputPassword value={this.state.password}

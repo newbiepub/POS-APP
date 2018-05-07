@@ -45,6 +45,7 @@ persistCache({
 
 const client = new ApolloClient({
     link: authLink.concat(httpLink),
+    addTypename: false,
     cache
 });
 

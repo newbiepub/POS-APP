@@ -29,7 +29,6 @@ class UpdateTransaction extends React.Component {
             transaction: this.props.transaction,
             paid: 0
         }
-// console.warn(this.props.transaction)
     }
 
     componentDidMount() {
@@ -76,13 +75,25 @@ class UpdateTransaction extends React.Component {
 
     checkCondition() {
         // if(this.getTotalPaid(this.state.transaction.paid + this.state.paid > this.state.totalPrice ))
-        return true;
+        if (this.state.paid > 0) {
+            return true;
+        } else {
+            Alert.alert(
+                'Thông báo !',
+                'Bạn phải nhập số tiền thanh thanh toán !',
+                [
+                    {text: 'OK', style: 'cancel'},
+                ],
+                {cancelable: false}
+            );
+            return false
+        }
+
     }
 
 
     async onCharge() {
         let condition = await this.checkCondition();
-        //this.subtractInventoryLocal()
         if (condition) {
             Alert.alert(
                 'Thông báo !',
@@ -93,15 +104,6 @@ class UpdateTransaction extends React.Component {
                         text: 'Có', onPress: async () => {
 
                             this.props.updateTransaction(this.state.transaction, this.state.transaction.dueDate, this.state.paid);
-                            // this.props.updateTransaction({
-                            //     variables: {
-                            //         _id: this.state.transaction._id,
-                            //         dueDate: this.state.transaction.dueDate,
-                            //         paid: {date: new Date(), amount: this.state.paid},
-                            //         description: this.state.transaction.description,
-                            //
-                            //     }
-                            // });
                             this.props.closePopup();
                         }
                     },
@@ -109,21 +111,7 @@ class UpdateTransaction extends React.Component {
                 {cancelable: false}
             )
 
-        } else {
-            Alert.alert(
-                'Thông báo !',
-                'Bạn phải điền đúng thông tin',
-                [
-                    {
-                        text: 'OK', onPress: () => {
-                        }
-                    },
-                ],
-                {cancelable: false})
         }
-
-
-        //this.chargeProgressing.setLoading()
     }
 
     render() {

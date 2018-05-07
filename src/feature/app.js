@@ -103,7 +103,6 @@ class App extends PureComponent {
                     this.navigator.resetTo({id: "home"})
                 }
             } catch (e) {
-                console.warn(response)
                 if(response == undefined)
                 {
                     console.warn("app.js-ensuringLogined-" + e);
@@ -124,7 +123,6 @@ class App extends PureComponent {
 
 
     async initData() {
-        console.warn('init')
         await this.props.getPaymentMethod();
         await this.props.getPaymentStatus();
         await this.props.getCurrency();

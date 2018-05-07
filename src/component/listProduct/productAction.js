@@ -64,7 +64,6 @@ export function getProduct(userId, limit, skip) {
                 },
                 fetchPolicy: "network-only"
             });
-
             dispatch(getProductAction(products.data.getUserProductInventory));
 
         } catch (e) {
@@ -85,6 +84,7 @@ export function getProductAmount(userId) {
                     },
                     fetchPolicy: "network-only"
                 });
+
                 dispatch(getProductAmountAction(productAmount.data.getAmountUserProductInventory.inventoryAmount));
                 resolve(productAmount.data.getAmountUserProductInventory.inventoryAmount);
             } catch (e) {
@@ -119,7 +119,6 @@ export function getPaymentMethod() {
                     query: QUERY.PAYMENT_METHOD,
                     fetchPolicy: "network-only"
                 });
-                console.warn(paymentMethod)
                 dispatch(getPaymentMethodAction(paymentMethod.data.paymentMethod));
             } catch (e) {
                 console.warn("productAction.js-getPaymentMethod-"+e);

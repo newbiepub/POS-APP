@@ -14,9 +14,6 @@ import EStyleSheet from "react-native-extended-stylesheet";
 import {constantStyle} from '../../style/base';
 import {SearchInput, TextSmall, TextNormal} from '../text';
 import {numberwithThousandsSeparator} from '../../reuseable/function/function';
-import {connect} from 'react-redux';
-import {QUERY} from '../../constant/query';
-import {graphql, compose} from 'react-apollo';
 import _ from 'lodash';
 
 class ListProduct extends React.Component {
@@ -72,7 +69,7 @@ class ListProduct extends React.Component {
                     </View>
                     <View style={style.itemPrice}>
                         <TextNormal
-                            style={style.itemPriceText}>{numberwithThousandsSeparator(this.getTotalPrice(data))} {_.get(this.props.currency, "currency[0].symbol", "")}</TextNormal>
+                            style={style.itemPriceText}>{numberwithThousandsSeparator(this.getTotalPrice(data))} {_.get(this.props.currency, "symbol", "")}</TextNormal>
                     </View>
                 </View>
             </View>
@@ -123,7 +120,4 @@ const style = EStyleSheet.create({
     '@media (min-width: 768) and (max-width: 1024)': {},
     '@media (min-width: 1024)': {}
 });
-let ListProductApollo = compose(
-    graphql(QUERY.CURRENCY, {name: 'currency', options: {fetchPolicy: "cache-and-network"}}),
-)(ListProduct);
-export default ListProductApollo;
+export default ListProduct;

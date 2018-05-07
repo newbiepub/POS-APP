@@ -98,6 +98,7 @@ export function getTransaction(limit, skip) {
                 },
                 fetchPolicy: "network-only"
             });
+            // console.warn(transaction.data.getTransactionEmployee)
             dispatch(getTransactionAction(transaction.data.getTransactionEmployee))
         } catch (e) {
             console.warn("transactionAction.js-getTransaction-" + e)

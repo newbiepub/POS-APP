@@ -36,8 +36,7 @@ class Setting extends React.Component {
                     {text: 'Không', style: 'cancel'},
                     {
                         text: 'OK', onPress: async () => {
-                            if(this.props.asyncTransaction.length>0)
-                            {
+                            if (this.props.asyncTransaction.length > 0 || this.props.asyncUpdateTransaction.length > 0 || this.props.asyncIssueRefund.length > 0) {
                                 Alert.alert(
                                     'Thông báo !',
                                     'Ứng dụng có dữ liệu chưa đồng bộ lên server, nếu đăng xuất sẽ bị mất. Bạn có muốn đăng xuất không ?',
@@ -54,7 +53,7 @@ class Setting extends React.Component {
                                     ],
                                     {cancelable: false}
                                 )
-                            }else{
+                            } else {
                                 await AsyncStorage.clear();
                                 this.props.navigator.resetTo({id: "login"});
                                 this.props.logout()
@@ -70,7 +69,6 @@ class Setting extends React.Component {
     }
 
     render() {
-        console.warn(this.props.asyncTransaction)
         return (
             <View style={style.container}>
                 <Header type={"normal"} titleLeft={"Cài đặt"} titleRight={"Thông tin điểm bán hàng"}/>
@@ -136,9 +134,11 @@ const style = EStyleSheet.create({
 const mapDispatchToProps = {
     logout
 };
-const mapStateToProps = (state)=>{
+const mapStateToProps = (state) => {
     return {
-        asyncTransaction : state.transactionReducer.asyncTransaction
+        asyncTransaction: state.transactionReducer.asyncTransaction,
+        asyncUpdateTransaction: state.transactionReducer.asyncUpdateTransaction,
+        asyncIssueRefund: state.transactionReducer.asyncIssueRefund
     }
 
 };

@@ -1,7 +1,6 @@
 import {PRODUCT, USER} from '../../constant/constant';
 import {REHYDRATE} from 'redux-persist';
-import _ from 'lodash'
-
+import {omitDeep} from '../../reuseable/function/function';
 const initialState = {
     paymentMethod: [],
     paymentStatus: [],
@@ -11,13 +10,14 @@ const initialState = {
     isCategoryViewOpen:true,
 };
 
-function updateProduct(state, product) {
+function updateProduct(state, newProduct) {
+    let product = omitDeep(newProduct, '__typename');
     if (state.length === 0) {
         return product
     } else {
         for (let i = 0; i < product.length; i++) {
             for (let j = 0; j < state.length; j++) {
-                if (product[i].product._id === state[j].product._id) {
+                if (product[i]._id === state[j]._id) {
                     state.splice(j, 1);
                     state.splice(j, 0, product[i]);
                     break;
@@ -40,7 +40,7 @@ function subtractInventoryLocal(state, product) {
     } else {
         for (let i = 0; i < product.length; i++) {
             for (let j = 0; j < state.length; j++) {
-                if (product[i].productId === state[j].product._id) {
+                if (product[i].productId === state[j]._id) {
                     let newProduct = Object.assign({}, state[j]);
                     newProduct.quantity = state[j].quantity - product[i].quantity;
 
@@ -61,7 +61,7 @@ function returnInventoryLocal(state, product) {
     } else {
         for (let i = 0; i < product.length; i++) {
             for (let j = 0; j < state.length; j++) {
-                if (product[i].productId === state[j].product._id) {
+                if (product[i].productId === state[j]._id) {
                     let newProduct = Object.assign({}, state[j]);
                     newProduct.quantity = state[j].quantity + product[i].quantity;
 

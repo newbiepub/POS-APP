@@ -7,9 +7,6 @@ import {connect} from 'react-redux';
 import PopupHeader from './_popupHeader';
 import {closePopup} from '../../popup/popupAction';
 import {numberwithThousandsSeparator, removeTypeName} from "../../../reuseable/function/function";
-import {graphql, compose} from 'react-apollo';
-import {QUERY} from '../../../constant/query';
-import {MUTATION, FRAGMENT} from '../../../constant/mutation';
 import {Navigator} from "react-native-deprecated-custom-components";
 import Moment from '../../moment';
 import {normalizeProductItemsInput} from '../../../reuseable/function/normalizeData';
@@ -18,7 +15,6 @@ import ListProduct from '../../listProduct/listProduct';
 import LoadingOverlay from '../../loadingOverlay';
 import {clearCart} from '../../cart/cartAction';
 import _ from 'lodash';
-import {client} from '../../../root';
 import {subtractInventoryLocal} from '../../listProduct/productAction';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import {createTransaction} from '../.././../feature/transaction/transactionAction';
@@ -165,7 +161,10 @@ class ChargeView extends React.Component {
                             });
                             let paymentStatus = await removeTypeName(this.getPaymentStatus()),
                                 paymentMethod = await removeTypeName(this.state.transaction.paymentMethod),
+
                                 productItems = await normalizeProductItemsInput(this.state.transaction.productItems);
+                            console.warn(this.state.transaction.productItems);
+                            console.warn(productItems)
                             //Subtract inventory
                             this.props.subtractInventoryLocal(productItems);
                             //Mutate Transaction

@@ -28,10 +28,6 @@ export const MUTATION = {
                     price{
                         name
                         price
-                        currency{
-                            name
-                            symbol
-                        }
                     }
                     totalPrice
                     unit
@@ -95,10 +91,7 @@ export const MUTATION = {
                     price{
                         name
                         price
-                        currency{
-                            name
-                            symbol
-                        }
+
                     }
                     totalPrice
                     unit
@@ -158,10 +151,7 @@ export const MUTATION = {
                     price{
                         name
                         price
-                        currency{
-                            name
-                            symbol
-                        }
+ 
                     }
                     totalPrice
                     unit
@@ -207,6 +197,12 @@ export const MUTATION = {
                 description
            
             }
+        }`,
+    SEND_INVOICE_EMAIL: gql`
+        mutation sendMailInvoice(
+        $transaction:TransactionInput!,
+        $email:String!){
+            sendMailInvoice(transaction:$transaction, email: $email)
         }`,
 };
 export const FRAGMENT = {

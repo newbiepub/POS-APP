@@ -20,6 +20,7 @@ import {openPopup} from '../popup/popupAction';
 import ViewProduct from '../popup/popupContent/viewProduct';
 import CustomAmountView from '../popup/popupContent/customAmountView';
 import ChargeView from '../popup/popupContent/chargeView';
+import _ from "lodash";
 
 class Cart extends PureComponent {
     constructor(props) {
@@ -154,11 +155,11 @@ class Cart extends PureComponent {
                                                     item.quantity > 1 &&
                                                     <TextSmall style={{color: 'gray'}}>x{item.quantity} </TextSmall>
                                                 }
-                                                <TextSmall> {numberwithThousandsSeparator(item.price.price)}{item.price.currency.symbol}</TextSmall>
+                                                <TextSmall> {numberwithThousandsSeparator(item.price.price)}{_.get(this.props.currency, "symbol", "")}</TextSmall>
                                             </View>
 
                                         </View>
-                                        <TextSmall>{numberwithThousandsSeparator(item.totalPrice)}{item.price.currency.symbol}</TextSmall>
+                                        <TextSmall>{numberwithThousandsSeparator(item.totalPrice)}{_.get(this.props.currency, "symbol", "")}</TextSmall>
 
                                     </View>
                                 </TouchableWithoutFeedback>
@@ -234,7 +235,8 @@ const style = EStyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        cart: state.cartReducer.cart
+        cart: state.cartReducer.cart,
+        currency: state.userReducer.currency
     }
 };
 const mapDispatchToProps = {

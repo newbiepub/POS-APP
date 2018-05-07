@@ -21,12 +21,12 @@ class ViewProduct extends React.Component {
             width,
             height,
             product: this.props.edit ? this.props.item : {
-                _id: this.props.item.product._id,
+                _id: this.props.item._id,
                 quantity: this.props.item.quantity > 0 ? 1 : 0,
                 name: this.props.item.product.name,
-                price: this.props.item.product.price[1],
-                priceImport: this.props.item.product.price[0].price,
-                prices: this.props.item.product.price,
+                price: this.props.item.prices[0],
+                priceImport: this.props.item.importPrice,
+                prices: this.props.item.prices,
                 unit: this.props.item.product.unit,
                 inventoryQuantity: this.props.item.quantity
             },
@@ -109,23 +109,20 @@ class ViewProduct extends React.Component {
         });
     }
 
-    _renderPrice= ({item, index})=> {
-        if (index > 0) {
+    _renderPrice = ({item, index}) => {
+        return (
+            <TouchableWithoutFeedback onPress={() => this.onChangePrice(item, index)}>
+                <View
+                    style={[style.pricePicker, this.state.product.price._id === item._id && {backgroundColor: constantStyle.color1}]}>
+                    <TextSmall numberOfLines={1}
+                               style={[{flex: 1}, this.state.product.price._id === item._id && {color: constantStyle.color2}]}>{item.name}</TextSmall>
+                    <TextSmall
+                        style={this.state.product.price._id === item._id && {color: constantStyle.color2}}>{numberwithThousandsSeparator(item.price)}{_.get(this.props.currency, "symbol", "")}/{this.state.product.unit}</TextSmall>
 
-            return (
-                <TouchableWithoutFeedback onPress={() => this.onChangePrice(item, index)}>
-                    <View
-                        style={[style.pricePicker, this.state.product.price._id === item._id && {backgroundColor: constantStyle.color1}]}>
-                        <TextSmall numberOfLines={1}
-                                   style={[{flex: 1}, this.state.product.price._id === item._id && {color: constantStyle.color2}]}>{item.name}</TextSmall>
-                        <TextSmall
-                            style={this.state.product.price._id === item._id && {color: constantStyle.color2}}>{numberwithThousandsSeparator(item.price)}{item.currency.symbol}/{this.state.product.unit}</TextSmall>
+                </View>
+            </TouchableWithoutFeedback>
 
-                    </View>
-                </TouchableWithoutFeedback>
-
-            )
-        }
+        )
     }
 
     addToCart() {
@@ -134,17 +131,19 @@ class ViewProduct extends React.Component {
         // {
         //     this.state.product.price.
         // }
-        this.props.addToCart(this.state.product);
-        this.props.closePopup()
+        if (this.state.product.quantity > 0 && this.state.product.price.price > 1) {
+            this.props.addToCart(this.state.product);
+            this.props.closePopup()
+        }
+
     }
 
     render() {
-        // console.warn(this.props.item)
         let item = this.props.edit ? this.props.item : this.props.item.product;
         return (
             <View style={style.container}>
                 <PopupHeader
-                    title={`${item.name} (${ numberwithThousandsSeparator(this.state.product.totalPrice)}${_.get(this.props.currency, "currency[0].symbol", "")})`}
+                    title={`${item.name} (${ numberwithThousandsSeparator(this.state.product.totalPrice)}${_.get(this.props.currency, "symbol", "")})`}
                     submitFunction={() => {
                         this.addToCart()
                     }}
@@ -158,22 +157,23 @@ class ViewProduct extends React.Component {
                         keyExtractor={(item) => item.name}
                         renderItem={this._renderPrice}
                     />
-                    <View style={{flexDirection: 'row', alignItems: 'center', marginTop: constantStyle.md}}>
-                        <TextNormal>Nhập giá: </TextNormal>
-                        <TextInputPriceMask value={this.state.product.price.price} style={{flex: 1}}
-                                            onChangeText={async (num) => {
-                                                await this.setState({
-                                                    product: {
-                                                        ...this.state.product,
-                                                        price: {
-                                                            ...this.state.product.price,
-                                                            price: num
-                                                        }
-                                                    }
-                                                });
-                                                this.updateProduct()
-                                            }}/>
-                    </View>
+                    {/* -----------PRICE TYPING--------------*/}
+                    {/*<View style={{flexDirection: 'row', alignItems: 'center', marginTop: constantStyle.md}}>*/}
+                    {/*<TextNormal>Nhập giá: </TextNormal>*/}
+                    {/*<TextInputPriceMask value={this.state.product.price.price} style={{flex: 1}}*/}
+                    {/*onChangeText={async (num) => {*/}
+                    {/*await this.setState({*/}
+                    {/*product: {*/}
+                    {/*...this.state.product,*/}
+                    {/*price: {*/}
+                    {/*...this.state.product.price,*/}
+                    {/*price: num*/}
+                    {/*}*/}
+                    {/*}*/}
+                    {/*});*/}
+                    {/*this.updateProduct()*/}
+                    {/*}}/>*/}
+                    {/*</View>*/}
 
                     <TextNormal
                         style={style.titleQuantity}>Chọn số lượng (Trong kho có
@@ -269,7 +269,8 @@ const style = EStyleSheet.create({
 });
 const mapStateToProps = (state) => {
     return {
-        popup: state.popupReducer
+        popup: state.popupReducer,
+        currency: state.userReducer.currency
     }
 };
 const mapDispatchToProps = {
@@ -277,9 +278,5 @@ const mapDispatchToProps = {
     removeFromCart,
     closePopup
 };
-let ViewProductApollo = graphql(QUERY.CURRENCY, {
-    name: 'currency', options: {
-        fetchPolicy: "cache-and-network"
-    }
-})(ViewProduct);
-export default connect(mapStateToProps, mapDispatchToProps)(ViewProductApollo);
+
+export default connect(mapStateToProps, mapDispatchToProps)(ViewProduct);

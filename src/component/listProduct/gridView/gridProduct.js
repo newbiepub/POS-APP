@@ -18,13 +18,10 @@ import {numberwithThousandsSeparator} from '../../../reuseable/function/function
 import {openPopup} from '../../popup/popupAction';
 import {connect} from 'react-redux';
 import ViewProduct from '../../popup/popupContent/viewProduct';
-import {QUERY} from '../../../constant/query';
 import NoData from '../../noData';
 import ListCategory from './listCategory';
-import {graphql, compose} from 'react-apollo';
 import _ from 'lodash';
 import {getProduct, getProductAmount} from '../productAction';
-import {client} from '../../../root';
 
 class GridProduct extends React.Component {
     constructor(props) {
@@ -120,7 +117,6 @@ class GridProduct extends React.Component {
     }
 
     async _onRefresh() {
-        // console.warn('refreshing');
         await this.setState({
             refreshing: true
         });
@@ -141,7 +137,7 @@ class GridProduct extends React.Component {
             <TouchableWithoutFeedback onPress={() => this.onClickProduct(item)}>
                 <View style={{flex: 1}}>
                     <View style={style.gridItem}>
-                        <TextSmall>Giá: {numberwithThousandsSeparator(_.get(item, "product.price[1].price", 0))}{_.get(item, "product.price[0].currency.symbol", "")}</TextSmall>
+                        <TextSmall>Giá: {numberwithThousandsSeparator(_.get(item, "prices[0].price", 0))}{_.get(item, "product.price[0].currency.symbol", "")}</TextSmall>
                         <TextSmall>Đơn vị: {item.product.unit || ""}</TextSmall>
                         <TextSmall>Số lượng: {item.quantity}</TextSmall>
                         {/*<TextSmall>Mã sản phẩm: {item.product.productCode}</TextSmall>*/}
@@ -149,8 +145,6 @@ class GridProduct extends React.Component {
                             item.product.categoryId &&
                             <TextSmall>Loại hàng:{_.get(item, "product.categoryId.name", "")}</TextSmall>
                         }
-
-
                     </View>
 
                     <View style={style.gridItemName}>
