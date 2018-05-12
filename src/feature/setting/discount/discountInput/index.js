@@ -7,6 +7,7 @@ import GroupCheckbox from "../../../../component/groupCheckbox/index";
 import ListPosApply from '../listPosApply';
 import {openPopup, renderContent} from "../../../../component/popup/actions/popupAction";
 import InputDatePicker from "../../../../component/inputDatepicker/index";
+import ListProductApply from "../listProductApply/index";
 
 const styles = EStyleSheet.create({
     formInner: {
@@ -67,23 +68,32 @@ class DiscountInput extends React.Component {
                         <InputDatePicker placeholder="Thời gian bắt đầu giảm giá" style={[styles.input]}/>
                         <InputDatePicker placeholder="Thời gian kết thúc giảm giá" style={[styles.input]}/>
                         <GroupCheckbox options={this.options}/>
-                        <TouchableOpacity
-                            style={[
-                                styleBase.p_md_horizontal, styleBase.p_md_vertical,
-                                styleBase.m_md_vertical, styles.input]}
-                            onPress={() => {
+                        <ListApplied title="ÁP DỤNG CHO CÁC ĐIỂM BÁN HÀNG" onPress={() => {
                             openPopup();
-                            renderContent(<ListPosApply/>)}}>
-                            <Text style={[styleBase.text6]}>
-                                ÁP DỤNG CHO CÁC ĐIỂM BÁN HÀNG
-                            </Text>
-                        </TouchableOpacity>
+                            renderContent(<ListPosApply/>)}}/>
+                        <ListApplied title="ÁP DỤNG CHO CÁC SẢN PHẨM" onPress={() => {
+                            openPopup();
+                            renderContent(<ListProductApply/>)}}/>
                     </ScrollView>
                     <SubmitButton/>
                 </View>
             </View>
         )
     }
+}
+
+const ListApplied = (props) => {
+    return (
+        <TouchableOpacity
+            style={[
+                styleBase.p_md_horizontal, styleBase.p_md_vertical,
+                styleBase.m_md_vertical, styles.input]}
+            onPress={props.onPress}>
+            <Text style={[styleBase.text6]}>
+                {props.title}
+            </Text>
+        </TouchableOpacity>
+    )
 }
 
 const SubmitButton = (props) => {

@@ -17,6 +17,7 @@ import ProductDetail from "../feature/inventory/productManagement/component/prod
 import ErrorBoundary from "../component/errorBoundary/errorBoundary";
 import ListPos from "../feature/inventory/importExportManagement/listPos";
 import ListExportProducts from "../feature/inventory/importExportManagement/listProduct";
+import ActivityLoggerContainer from "../feature/inventory/activityLogger/index";
 
 EStyleSheet.build(); //Build Extended StyleSheet
 
@@ -80,6 +81,8 @@ class AppContainer extends React.Component {
                 return <ProductDetail navigator={navigator}
                                       title={route.product.product.name}
                                       item={route.product}/>
+            case 'company_inventory_activity_logger_management':
+                return <ActivityLoggerContainer navigator={navigator} title={route.title}/>
         }
     }
 

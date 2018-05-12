@@ -133,28 +133,6 @@ class POSDetail extends React.Component {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={[styleBase.m_lg_top]}>
-                            <View style={[
-                                styleBase.p_lg_vertical,
-                                styleBase.p_lg_horizontal,
-                                styleBase.bgE5,
-                                styleBase.center
-                            ]}>
-                                <Text style={[
-                                    styleBase.p_md_bottom, styleBase.text4,
-                                    styleBase.fontRubik, styleBase.title
-                                ]}>
-                                    QUẢN LÝ NGUYÊN LIỆU
-                                </Text>
-                                <TouchableOpacity style={[styleBase.center,
-                                    styleBase.p_md_horizontal,
-                                    styleBase.bgBlack, styleBase.p_md_vertical]}>
-                                    <Text style={[styleBase.textWhite, styleBase.fontBold]}>
-                                        ĐI ĐẾN
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
                     </ScrollView>
                 </View>
             </SafeAreaView>

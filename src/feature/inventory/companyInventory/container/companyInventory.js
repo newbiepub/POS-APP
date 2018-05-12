@@ -11,8 +11,9 @@ class CompanyInventory extends React.Component {
         this.state = {};
         this.listButton = [
             { title: 'QUẢN LÝ SẢN PHẨM', onPress: () => this.navigateManagement("product", "QUẢN LÝ SẢN PHẨM") },
-            { title: 'QUẢN LÝ NGUYÊN LIỆU' , onPress: () => this.navigateManagement('ingredient', 'quản lý nguyên liệu') },
-            { title: 'QUẢN LÝ XUẤT/NHẬP KHO', onPress: () => this.navigateManagement('inventory_activity', 'quản lý nhập xuất/kho') }
+            // { title: 'QUẢN LÝ NGUYÊN LIỆU' , onPress: () => this.navigateManagement('ingredient', 'quản lý nguyên liệu') },
+            { title: 'QUẢN LÝ XUẤT/NHẬP KHO', onPress: () => this.navigateManagement('inventory_activity', 'quản lý nhập xuất/kho') },
+            { title: 'NHẬT KÝ KHO', onPress: () => this.navigateManagement('inventory_activity_logger', 'nhật ký kho') }
         ]
     }
 

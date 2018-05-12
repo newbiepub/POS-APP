@@ -54,7 +54,7 @@ class ProductDetail extends React.Component {
             },
             {
                 label: "LOẠI HÀNG",
-                value: data.product.category.name
+                value: data.product.category != undefined ? data.product.category.name : 'Không có'
             }
         ]
     }

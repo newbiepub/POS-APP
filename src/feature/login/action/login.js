@@ -47,7 +47,7 @@ export const AUTH = {
             });
             response = await response.json();
 
-            if(response.error) {
+            if(response.errors) {
                 throw new Error(response.errors[0].message);
             }
             return response;

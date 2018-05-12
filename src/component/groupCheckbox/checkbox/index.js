@@ -6,7 +6,7 @@ import styleBase from "../../../styles/base";
 
 const checkboxStyle = EStyleSheet.create({
     checkBox: {
-        $size: 30,
+        $size: 20,
         height: "$size",
         width: '$size',
         borderRadius: '0.5 * $size',
