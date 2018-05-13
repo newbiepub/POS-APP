@@ -21,7 +21,7 @@ import ViewProduct from '../../popup/popupContent/viewProduct';
 import NoData from '../../noData';
 import ListCategory from './listCategory';
 import _ from 'lodash';
-import {getProduct, getProductAmount} from '../productAction';
+import {getProduct, getProductAmount, getDiscountEmployee} from '../productAction';
 
 class GridProduct extends React.Component {
     constructor(props) {
@@ -35,9 +35,8 @@ class GridProduct extends React.Component {
             categoryFilter: 'all',
             searchText: '',
             refreshing: false,
-
         };
-        this.state.gridViewItemSize = ((width * this.gridWidthPercent) / 100 - constantStyle.sm*2 - constantStyle.headerHeight) / this.state.columnNumber;
+        this.state.gridViewItemSize = ((width * this.gridWidthPercent) / 100 - constantStyle.sm * 2 - constantStyle.headerHeight) / this.state.columnNumber;
         this.props.length = 0;
 
     }
@@ -47,17 +46,18 @@ class GridProduct extends React.Component {
         let amount = await this.props.getProductAmount(_id);
         InteractionManager.runAfterInteractions(async () => {
             for (let i = 0; i <= amount; i += 10) {
+                // console.warn(i)
                 await this.props.getProduct(_id, 10, i);
             }
-        });
 
+        });
     }
 
     async componentDidMount() {
         Dimensions.addEventListener("change", () => {
             let {width, height} = Dimensions.get('window');
         });
-        await this.initProduct()
+        await this.initProduct();
 
     }
 
@@ -135,15 +135,15 @@ class GridProduct extends React.Component {
             padding: constantStyle.sm
         }]}>
             <TouchableWithoutFeedback onPress={() => this.onClickProduct(item)}>
-                <View style={{flex: 1}}>
+                <View style={{flex: 1,backgroundColor:constantStyle.color2}}>
                     <View style={style.gridItem}>
-                        <TextSmall>Giá: {numberwithThousandsSeparator(_.get(item, "prices[0].price", 0))}{_.get(item, "product.price[0].currency.symbol", "")}</TextSmall>
-                        <TextSmall>Đơn vị: {item.product.unit || ""}</TextSmall>
-                        <TextSmall>Số lượng: {item.quantity}</TextSmall>
+                        <TextSmall numberOfLines={1}>Giá: {numberwithThousandsSeparator(_.get(item, "prices[0].price", 0))}{_.get(item, "product.price[0].currency.symbol", "")}</TextSmall>
+                        <TextSmall numberOfLines={1}>Đơn vị: {item.product.unit || ""}</TextSmall>
+                        <TextSmall numberOfLines={1}>Số lượng: {item.quantity}</TextSmall>
                         {/*<TextSmall>Mã sản phẩm: {item.product.productCode}</TextSmall>*/}
                         {
                             item.product.categoryId &&
-                            <TextSmall>Loại hàng:{_.get(item, "product.categoryId.name", "")}</TextSmall>
+                            <TextSmall numberOfLines={1}>Loại hàng:{_.get(item, "product.categoryId.name", "")}</TextSmall>
                         }
                     </View>
 
@@ -235,14 +235,14 @@ const style = EStyleSheet.create({
         borderWidth: 1,
         borderColor: constantStyle.colorBorder,
         borderTopRightRadius: 10,
-        flex: 0.6,
+        flex: 1,
         zIndex: 5,
         padding: constantStyle.sm,
         backgroundColor: constantStyle.color2
     },
     gridItemName: {
-        padding: constantStyle.paddingGridItem,
-        flex: 0.4,
+        paddingVertical: constantStyle.md,
+        paddingHorizontal:constantStyle.sm,
         justifyContent: 'center',
         backgroundColor: constantStyle.color1
     },
@@ -268,6 +268,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
     openPopup,
     getProduct,
-    getProductAmount
+    getProductAmount,
+    getDiscountEmployee
 };
 export default connect(mapStateToProps, mapDispatchToProps)(GridProduct);

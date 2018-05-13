@@ -12,16 +12,12 @@ import EStyleSheet from "react-native-extended-stylesheet";
 import {connect} from 'react-redux';
 import Menu from '../component/menu/menu';
 import Popup from '../component/popup/popup';
-import {QUERY} from '../constant/query';
-import {client} from '../root';
-import * as Animatable from 'react-native-animatable';
 import LoadingOverlay from '../component/loadingOverlay';
-import {getProductAmount, getPaymentMethod, getPaymentStatus, getProduct} from '../component/listProduct/productAction';
+import {getProductAmount, getPaymentMethod, getPaymentStatus, getProduct,getDiscountEmployee} from '../component/listProduct/productAction';
 import {ASYNC_STORAGE} from '../constant/constant'
 import {getProfile, getCurrency} from './login/userAction';
 import config from '../config';
 EStyleSheet.build(); // Build Extended StyleSheet
-import openSocket from 'socket.io-client';
 var socket = require('socket.io-client')('http://localhost:3000');
 import {createTransactionAsync, issueRefundAsync} from '../feature/transaction/transactionAction';
 class App extends PureComponent {
@@ -123,9 +119,11 @@ class App extends PureComponent {
 
 
     async initData() {
+        await this.props.getProfile();
         await this.props.getPaymentMethod();
         await this.props.getPaymentStatus();
         await this.props.getCurrency();
+        await this.props.getDiscountEmployee();
         // let {_id} = this.props.user;
         // let amount = await this.props.getProductAmount(_id);
         // for (let i = 0; i <= amount; i += 10) {
@@ -234,7 +232,8 @@ const mapDispatchToProps = {
     getCurrency,
     getProduct,
     createTransactionAsync,
-    issueRefundAsync
+    issueRefundAsync,
+    getDiscountEmployee
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

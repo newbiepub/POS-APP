@@ -8,10 +8,10 @@ import PopupHeader from './_popupHeader';
 import {addToCart, removeFromCart} from '../../cart/cartAction';
 import {closePopup} from '../../popup/popupAction';
 import {numberwithThousandsSeparator} from "../../../reuseable/function/function";
-import {graphql} from 'react-apollo';
-import {QUERY} from '../../../constant/query';
+import Ionicons from 'react-native-vector-icons/Ionicons'
 import _ from 'lodash';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
+import moment from '../../moment';
 
 class ViewProduct extends React.Component {
     constructor(props) {
@@ -28,9 +28,10 @@ class ViewProduct extends React.Component {
                 priceImport: this.props.item.importPrice,
                 prices: this.props.item.prices,
                 unit: this.props.item.product.unit,
-                inventoryQuantity: this.props.item.quantity
+                inventoryQuantity: this.props.item.quantity,
+                discounts: this.getDiscount()
             },
-            otherPrice: 0
+            otherPrice: -1
         };
         this.state.product.totalPrice = this.computeTotalPrice();
 
@@ -48,7 +49,22 @@ class ViewProduct extends React.Component {
 
     computeTotalPrice() {
         try {
-            return !!this.state.otherPrice ? this.state.otherPrice * this.state.product.quantity : this.state.product.price.price * this.state.product.quantity
+            let total = 0;
+            if (this.state.otherPrice > 0) {
+                total = this.state.otherPrice * this.state.product.quantity
+            } else {
+                total = this.state.product.price.price * this.state.product.quantity;
+            }
+            let totalDiscount = 0;
+            for (itemDiscount of this.state.product.discounts) {
+                if (itemDiscount.type === "amount") {
+                    totalDiscount += itemDiscount.value;
+                } else {
+                    totalDiscount += total * itemDiscount.value / 100;
+                }
+            }
+            let result = total - totalDiscount;
+            return result
         } catch (e) {
             return 0
         }
@@ -123,7 +139,7 @@ class ViewProduct extends React.Component {
             </TouchableWithoutFeedback>
 
         )
-    }
+    };
 
     addToCart() {
         // console.warn(this.state.product)
@@ -138,8 +154,27 @@ class ViewProduct extends React.Component {
 
     }
 
+    getDiscount() {
+        let renderDiscount = [];
+        if (this.props.discount)
+            for (itemDiscount of this.props.discount) {
+                let newDiscount = Object.assign({}, itemDiscount);
+                if (moment(itemDiscount.dueDate) >= moment()) {
+                    for (item of itemDiscount.products) {
+                        if (this.props.item.product._id === item) {
+                            // console.warn(itemDiscount)
+                            delete newDiscount["products"]
+                            renderDiscount.push(newDiscount)
+                        }
+                    }
+                }
+            }
+        return renderDiscount;
+    }
+
     render() {
         let item = this.props.edit ? this.props.item : this.props.item.product;
+        // console.warn(this.props.discount)
         return (
             <View style={style.container}>
                 <PopupHeader
@@ -206,6 +241,24 @@ class ViewProduct extends React.Component {
                             </View>
                         </TouchableWithoutFeedback>
                     }
+                    <View style={style.discount}>
+                        {
+                            this.state.product.discounts.map((item) => {
+                                return (
+                                    <View key={item._id} style={style.discountItem}>
+                                        <View style={style.discountIconBackground}>
+                                            <Ionicons name={"ios-pricetags-outline"}
+                                                      style={style.discountIcon}/>
+                                        </View>
+                                        <View style={style.discountContent}>
+                                            <TextNormal style={{flex: 1}}>{item.name}</TextNormal>
+                                            <TextNormal>{item.type === "amount" ? `${item.value}${_.get(this.props.currency, "symbol", "")}` : `${item.value}%`}</TextNormal>
+                                        </View>
+                                    </View>
+                                )
+                            })
+                        }
+                    </View>
                     <KeyboardSpacer/>
                 </ScrollView>
             </View>
@@ -237,7 +290,8 @@ const style = EStyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         alignItems: "center",
-        height: constantStyle.headerHeight
+        height: constantStyle.headerHeight,
+
     },
     subtend: {
         height: constantStyle.headerHeight,
@@ -249,11 +303,12 @@ const style = EStyleSheet.create({
     },
     titleQuantity: {
         marginTop: constantStyle.headerHeight,
-        marginBottom: constantStyle.paddingHorizontal
+        marginBottom: constantStyle.paddingHorizontal,
     },
     inputQuantity: {
         marginHorizontal: constantStyle.paddingHorizontal,
         textAlign: "center",
+
         flex: 1
     },
     buttonDelete: {
@@ -264,13 +319,38 @@ const style = EStyleSheet.create({
         color: constantStyle.color2
 
     },
+    discount: {
+        flex: 1,
+        marginTop: constantStyle.headerHeight,
+    },
+    discountItem: {
+        flexDirection: 'row',
+        height: constantStyle.headerHeight,
+    },
+    discountIconBackground: {
+        height: constantStyle.headerHeight,
+        width: constantStyle.headerHeight,
+        backgroundColor: constantStyle.color1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    discountIcon: {
+        fontSize: constantStyle.sizeNormal
+    },
+    discountContent: {
+        flexDirection: 'row',
+        flex: 1,
+        alignItems: 'center',
+        paddingHorizontal: constantStyle.sm
+    },
     '@media (min-width: 768) and (max-width: 1024)': {},
     '@media (min-width: 1024)': {}
 });
 const mapStateToProps = (state) => {
     return {
         popup: state.popupReducer,
-        currency: state.userReducer.currency
+        currency: state.userReducer.currency,
+        discount: state.productReducer.discount
     }
 };
 const mapDispatchToProps = {

@@ -1,6 +1,6 @@
 import {PRODUCT} from "../../constant/constant";
 import {QUERY} from '../../constant/query';
-
+import {omitDeep} from "../../reuseable/function/function";
 import {client} from '../../root';
 
 function getProductAction(payload) {
@@ -9,12 +9,14 @@ function getProductAction(payload) {
         payload
     }
 }
+
 function getCategoryAction(payload) {
     return {
         type: PRODUCT.GET_CATEGORY,
         payload
     }
 }
+
 function getProductAmountAction(payload) {
     return {
         type: PRODUCT.GET_PRODUCT_AMOUNT,
@@ -29,29 +31,42 @@ function getPaymentMethodAction(payload) {
         payload
     }
 }
+
 function getPaymentStatusAction(payload) {
     return {
         type: PRODUCT.GET_PAYMENT_STATUS,
         payload
     }
 }
+
 function subtractInventoryLocalAction(payload) {
     return {
         type: PRODUCT.SUBTRACT_PRODUCT_INVENTORY,
         payload
     }
 }
+
 function returnInventoryLocalAction(payload) {
     return {
         type: PRODUCT.RETURN_PRODUCT_INVENTORY,
         payload
     }
 }
-function switchCategoryViewAction(){
+
+function switchCategoryViewAction() {
     return {
         type: PRODUCT.SWITCH_CATEGORY_VIEW
     }
 }
+
+function getDiscountEmployeeAction(payload) {
+    return {
+        type: PRODUCT.GET_DISCOUNT_EMPLOYEE,
+        payload
+    }
+
+}
+
 export function getProduct(userId, limit, skip) {
     return async (dispatch, getState) => {
         try {
@@ -67,7 +82,7 @@ export function getProduct(userId, limit, skip) {
             dispatch(getProductAction(products.data.getUserProductInventory));
 
         } catch (e) {
-            console.warn("productAction.js-getProduct-"+e);
+            console.warn("productAction.js-getProduct-" + e);
         }
     }
 }
@@ -88,13 +103,14 @@ export function getProductAmount(userId) {
                 dispatch(getProductAmountAction(productAmount.data.getAmountUserProductInventory.inventoryAmount));
                 resolve(productAmount.data.getAmountUserProductInventory.inventoryAmount);
             } catch (e) {
-                console.warn("productAction.js-getProductAmount-"+e);
+                console.warn("productAction.js-getProductAmount-" + e);
                 reject(null)
             }
         })
     }
 }
-export function getCategory(){
+
+export function getCategory() {
     return async (dispatch, getState) => {
         try {
             const category = await client.query({
@@ -105,26 +121,44 @@ export function getCategory(){
             dispatch(getCategoryAction(category.data.categories));
 
         } catch (e) {
-            console.warn("productAction.js-getCategory-"+e);
+            console.warn("productAction.js-getCategory-" + e);
         }
     }
 
 }
+
+export function getDiscountEmployee() {
+
+    return async (dispatch, getState) => {
+
+        try {
+            const discount = await client.query({
+                query: QUERY.GET_DISCOUNT_EMPLOYEE,
+                fetchPolicy: "network-only"
+            });
+            dispatch(getDiscountEmployeeAction(omitDeep(discount.data.GET_DISCOUNT_EMPLOYEE, '__typename')))
+        } catch (e) {
+            console.warn("productAction.js-getDiscountEmployee-" + e);
+        }
+    }
+}
+
 export function getPaymentMethod() {
 
     return async (dispatch, getState) => {
 
-            try {
-                const paymentMethod = await client.query({
-                    query: QUERY.PAYMENT_METHOD,
-                    fetchPolicy: "network-only"
-                });
-                dispatch(getPaymentMethodAction(paymentMethod.data.paymentMethod));
-            } catch (e) {
-                console.warn("productAction.js-getPaymentMethod-"+e);
-            }
+        try {
+            const paymentMethod = await client.query({
+                query: QUERY.PAYMENT_METHOD,
+                fetchPolicy: "network-only"
+            });
+            dispatch(getPaymentMethodAction(paymentMethod.data.paymentMethod));
+        } catch (e) {
+            console.warn("productAction.js-getPaymentMethod-" + e);
+        }
     }
 }
+
 export function getPaymentStatus() {
 
     return async (dispatch, getState) => {
@@ -136,10 +170,11 @@ export function getPaymentStatus() {
             });
             dispatch(getPaymentStatusAction(paymentStatus.data.paymentStatus));
         } catch (e) {
-            console.warn("productAction.js-getPaymentMethod-"+e);
+            console.warn("productAction.js-getPaymentMethod-" + e);
         }
     }
 }
+
 export function subtractInventoryLocal(productItems) {
 
     return async (dispatch, getState) => {
@@ -147,10 +182,11 @@ export function subtractInventoryLocal(productItems) {
         try {
             dispatch(subtractInventoryLocalAction(productItems))
         } catch (e) {
-            console.warn("productAction.js-subtractInventoryLocal-"+e);
+            console.warn("productAction.js-subtractInventoryLocal-" + e);
         }
     }
 }
+
 export function returnInventoryLocal(productItems) {
 
     return async (dispatch, getState) => {
@@ -158,17 +194,18 @@ export function returnInventoryLocal(productItems) {
         try {
             dispatch(returnInventoryLocalAction(productItems))
         } catch (e) {
-            console.warn("productAction.js-returnInventoryLocal-"+e);
+            console.warn("productAction.js-returnInventoryLocal-" + e);
         }
     }
 }
-export function switchCategoryView(){
+
+export function switchCategoryView() {
     return async (dispatch, getState) => {
 
         try {
             dispatch(switchCategoryViewAction())
         } catch (e) {
-            console.warn("productAction.js-switchCategoryView-"+e);
+            console.warn("productAction.js-switchCategoryView-" + e);
         }
     }
 }

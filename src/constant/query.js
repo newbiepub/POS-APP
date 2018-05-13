@@ -120,7 +120,16 @@ export const QUERY = {
                     }
                     totalPrice
                     unit
-                    discount
+                    discounts{
+                        _id
+                        name
+                        type
+                        value
+                        description
+                        appliedDate
+                        dueDate	
+                        createdAt
+                    }
                 }
                 type
                 issueRefund
@@ -169,4 +178,18 @@ export const QUERY = {
                 transactionAmount
             }
         }`,
+    GET_DISCOUNT_EMPLOYEE:gql`
+        query{
+              GET_DISCOUNT_EMPLOYEE{
+                _id
+                products
+                name
+                type
+                value
+                description
+                appliedDate
+                dueDate	
+                createdAt
+              }
+        }`
 };

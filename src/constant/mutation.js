@@ -31,7 +31,16 @@ export const MUTATION = {
                     }
                     totalPrice
                     unit
-                    discount
+                    discounts{
+                        _id
+                        name
+                        type
+                        value
+                        description
+                        appliedDate
+                        dueDate	
+                        createdAt
+                    }
                 }
                 type
                 issueRefund
@@ -95,7 +104,16 @@ export const MUTATION = {
                     }
                     totalPrice
                     unit
-                    discount
+                    discounts{
+                        _id
+                        name
+                        type
+                        value
+                        description
+                        appliedDate
+                        dueDate	
+                        createdAt
+                    }
                 }
                 type
                 issueRefund
@@ -141,21 +159,30 @@ export const MUTATION = {
     ISSUE_REFUND: gql`
         mutation issueRefundTransaction($_id: String!,$issueRefundReason:String!,$refundDate:Date,$productItems:[TransactionProductItemsInput]! ){
             issueRefundTransaction(_id: $_id, issueRefundReason: $issueRefundReason,refundDate:$refundDate,productItems:$productItems) {
-                _id
+                 _id
                 createdAt
                 productItems{
                     _id
                     productId
                     productName
                     quantity
+                    priceImport
                     price{
                         name
                         price
- 
                     }
                     totalPrice
                     unit
-                    discount
+                    discounts{
+                        _id
+                        name
+                        type
+                        value
+                        description
+                        appliedDate
+                        dueDate	
+                        createdAt
+                    }
                 }
                 type
                 issueRefund
@@ -195,7 +222,6 @@ export const MUTATION = {
                     description
                 }
                 description
-           
             }
         }`,
     SEND_INVOICE_EMAIL: gql`

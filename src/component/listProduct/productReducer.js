@@ -1,13 +1,15 @@
 import {PRODUCT, USER} from '../../constant/constant';
 import {REHYDRATE} from 'redux-persist';
 import {omitDeep} from '../../reuseable/function/function';
+
 const initialState = {
     paymentMethod: [],
     paymentStatus: [],
     productAmount: 0,
     product: [],
     category: [],
-    isCategoryViewOpen:true,
+    discount: [],
+    isCategoryViewOpen: true,
 };
 
 function updateProduct(state, newProduct) {
@@ -55,6 +57,7 @@ function subtractInventoryLocal(state, product) {
     return state
 
 }
+
 function returnInventoryLocal(state, product) {
     if (state.length === 0) {
         return product
@@ -76,6 +79,8 @@ function returnInventoryLocal(state, product) {
     return state
 
 }
+
+
 export default function async(state = initialState, action = {}) {
     switch (action.type) {
         case PRODUCT.GET_PRODUCT: {
@@ -108,6 +113,12 @@ export default function async(state = initialState, action = {}) {
                 product: [...newProduct]
             }
         }
+        case PRODUCT.GET_DISCOUNT_EMPLOYEE: {
+            return {
+                ...state,
+                discount: action.payload
+            }
+        }
         case PRODUCT.GET_PRODUCT_AMOUNT : {
             return {
                 ...state,
@@ -127,7 +138,7 @@ export default function async(state = initialState, action = {}) {
                 paymentMethod: action.payload
             }
         }
-        case PRODUCT.SWITCH_CATEGORY_VIEW:{
+        case PRODUCT.SWITCH_CATEGORY_VIEW: {
             return {
                 ...state,
                 isCategoryViewOpen: !state.isCategoryViewOpen
@@ -142,6 +153,7 @@ export default function async(state = initialState, action = {}) {
                     paymentStatus: action.payload.productReducer.paymentStatus,
                     paymentMethod: action.payload.productReducer.paymentMethod,
                     category: action.payload.productReducer.category,
+                    discount: action.payload.productReducer.discount,
                     isCategoryViewOpen: action.payload.productReducer.isCategoryViewOpen
                 };
 
@@ -159,7 +171,8 @@ export default function async(state = initialState, action = {}) {
                 productAmount: 0,
                 product: [],
                 category: [],
-                isCategoryViewOpen:false,
+                discount: [],
+                isCategoryViewOpen: true,
             };
         }
         default:

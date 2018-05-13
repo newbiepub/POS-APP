@@ -13,7 +13,6 @@ export function normalizeProductItemsInput(data) {
                 priceImport: items.priceImport,
                 totalPrice: items.totalPrice,
                 unit: items.unit,
-                discount: items.discount || null
             };
         } else {
             newItem = {
@@ -24,7 +23,7 @@ export function normalizeProductItemsInput(data) {
                 priceImport: items.priceImport,
                 totalPrice: items.totalPrice,
                 unit: items.unit,
-                discount: items.discount || null
+                discounts: items.discounts || null
             };
         }
         result.push(newItem)
@@ -44,7 +43,7 @@ export function normalizeProductItemsIssueRefund(data) {
                 totalPrice: items.totalPrice,
                 priceImport: items.priceImport,
                 unit: items.unit,
-                discount: items.discount || null
+                discounts: items.discounts || null
             };
         } else {
             newItem = {
@@ -55,7 +54,7 @@ export function normalizeProductItemsIssueRefund(data) {
                 totalPrice: items.totalPrice,
                 priceImport: items.priceImport,
                 unit: items.unit,
-                discount: items.discount || null
+                discounts: items.discounts || null
             };
         }
 

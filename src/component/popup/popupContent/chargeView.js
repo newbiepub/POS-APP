@@ -63,9 +63,8 @@ class ChargeView extends React.Component {
     getTotalPrice() {
         let totalPrice = 0;
         for (let i = 0; i < this.props.cart.length; i++) {
-            totalPrice += (this.props.cart[i].price.price * this.props.cart[i].quantity)
+            totalPrice += (this.props.cart[i].totalPrice)
         }
-
         return totalPrice
     }
 

@@ -283,6 +283,7 @@ export function updateTransaction(transaction, dueDate, paid) {
     return async (dispatch, getState) => {
         try {
             if (transaction.async) {
+
                 let newLocalTransaction = Object.assign({}, transaction);
                 newLocalTransaction.dueDate = dueDate;
                 newLocalTransaction.paid.push({date: new Date(), amount: paid});
@@ -310,6 +311,7 @@ export function updateTransaction(transaction, dueDate, paid) {
                 paid: {date: new Date(), amount: paid},
                 description: transaction.description,
             }));
+
             console.warn("transactionAction.js-updateTransaction-" + e)
         }
     }

@@ -21,6 +21,19 @@ class Login extends PureComponent {
     }
 
     async onLogin() {
+        if (this.state.username === "" && this.state.password === "") {
+            return Alert.alert(
+                'Thông báo !',
+                'Bạn phải nhập tài khoản và mật khẩu!',
+                [
+                    {
+                        text: 'OK', onPress: () => {
+                        }
+                    },
+                ],
+                {cancelable: false}
+            )
+        }
         if (this.state.username === "") {
             return Alert.alert(
                 'Thông báo !',
@@ -59,8 +72,8 @@ class Login extends PureComponent {
         response = await response.json();
         if (response.errors) {
             Alert.alert(
-                'Đăng nhập thất bại !',
-                'Đã có lỗi xảy ra !',
+                'Thông báo !',
+                'Sai tài khoản hoặc mật khẩu!',
                 [
                     {
                         text: 'OK', onPress: () => {

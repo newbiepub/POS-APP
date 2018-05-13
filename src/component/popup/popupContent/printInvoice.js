@@ -35,7 +35,19 @@ class PrintInvoice extends React.Component {
     }
 
     onIssueRefund() {
-        if (this.state.email && (new RegExp(/[A-Z0-9._%+-]+@[A-Z0-9-]+.+.[A-Z]{2,4}/igm)).test(this.state.email)) {
+        if (this.state.email === "") {
+            Alert.alert(
+                'Thông báo !',
+                'Bạn phải nhập email !',
+                [
+                    {
+                        text: 'OK', onPress: () => {
+                        }
+                    },
+                ],
+                {cancelable: false})
+        }
+        else if (this.state.email && (new RegExp(/[A-Z0-9._%+-]+@[A-Z0-9-]+.+.[A-Z]{2,4}/igm)).test(this.state.email)) {
             Alert.alert(
                 'Thông báo !',
                 'Bạn có muốn thực hiện gởi hoá đơn này ?',

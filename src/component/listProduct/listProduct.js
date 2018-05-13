@@ -28,27 +28,48 @@ class ListProduct extends React.Component {
             <View style={style.item}>
                 <View style={style.itemName}>
                     <TextNormal
-                        style={[style.itemNameText,{flex:1}]}>{item.name|| item.productName}</TextNormal>
+                        style={[style.itemNameText, {flex: 1}]}>{item.name || item.productName}</TextNormal>
                     <TextNormal numberOfLines={1}
                                 style={style.itemNameText}>{item.quantity > 1 && ` x${item.quantity}`}</TextNormal>
                 </View>
                 <View style={style.itemPrice}>
                     <TextNormal numberOfLines={1}
-                        style={style.itemPriceText}>{numberwithThousandsSeparator(item.price.price)} {_.get(item,"price.currency.symbol","")}</TextNormal>
+                                style={style.itemPriceText}>{numberwithThousandsSeparator(item.price.price)} {_.get(item, "price.currency.symbol", "")}</TextNormal>
                 </View>
             </View>
+            {
+                item.discounts && item.discounts.length > 0 &&
+                <View style={{marginLeft: constantStyle.headerHeight}}>
+                    {
+                        item.discounts.map(itemDiscount => {
+                            return (
+                                <View key={itemDiscount._id} style={style.item}>
+                                    <View style={[style.itemPrice,{flex:1}]}>
+                                        <TextNormal style={style.itemPriceText}>{itemDiscount.name}</TextNormal>
+                                    </View>
+                                    <View style={[style.itemName,{flex:0}]}>
+                                        <TextNormal style={style.itemNameText}>{itemDiscount.type === "amount" ? `${itemDiscount.value}${_.get(this.props.currency, "symbol", "")}` : `${itemDiscount.value}%`}</TextNormal>
+                                    </View>
+                                </View>
+                            )
+                        })
+                    }
+
+                </View>
+            }
 
         </View>
     );
-    getTotalPrice(products){
+
+    getTotalPrice(products) {
         let totalPrice = 0;
-        for(items of products)
-        {
+        for (items of products) {
 
             totalPrice += items.totalPrice
         }
         return totalPrice
     }
+
     render() {
         let data = this.props.data;
         // console.warn(data)
@@ -62,7 +83,7 @@ class ListProduct extends React.Component {
                     renderItem={this._renderItem}
                 />
 
-                <View style={[style.item,{marginTop:constantStyle.md}]}>
+                <View style={[style.item, {marginTop: constantStyle.md}]}>
                     <View style={style.itemName}>
                         <TextNormal
                             style={style.itemNameText}>Tổng:</TextNormal>
@@ -96,7 +117,7 @@ const style = EStyleSheet.create({
         paddingVertical: constantStyle.paddingVerticalSmall,
         paddingHorizontal: constantStyle.paddingHorizontal,
         flexDirection: 'row',
-        alignItems:'center',
+        alignItems: 'center',
         flex: 1,
     },
     itemNameText: {
