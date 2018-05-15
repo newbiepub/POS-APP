@@ -202,7 +202,7 @@ class Transaction extends React.Component {
     render() {
         let currentTransaction = this.props.currentTransaction;
         let totalPaid = currentTransaction._id ? this.getTotalPaid(currentTransaction.paid) : 0;
-        console.warn(this.props.transaction);
+        // console.warn(this.props.transaction);
         return (
             <View style={style.container}>
                 <Header type={"custom-right"} titleLeft={this.state.currentTransactionOption.name}
@@ -249,6 +249,7 @@ class Transaction extends React.Component {
                                     onRefresh={this._onRefresh.bind(this)}
                                 />
                             }
+                            stickySectionHeadersEnabled={true}
                             renderItem={this._renderListTransactionBody}
                             renderSectionHeader={this._renderListTransactionHeader}
                             keyExtractor={(item) => item._id}

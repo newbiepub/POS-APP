@@ -112,7 +112,7 @@ export function getTransactionAmount() {
         try {
             const transactionAmount = await client.query({
                 query: QUERY.GET_TRANSACTION_AMOUNT,
-
+                fetchPolicy: "network-only"
             });
             // console.warn(transactionAmount.data.getAmountTransactionEmployee.transactionAmount);
             dispatch(getTransactionAmountAction(transactionAmount.data.getAmountTransactionEmployee.transactionAmount))

@@ -18,6 +18,7 @@ import _ from 'lodash';
 import {subtractInventoryLocal} from '../../listProduct/productAction';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import {createTransaction} from '../.././../feature/transaction/transactionAction';
+import Feather from 'react-native-vector-icons/Feather'
 
 class ChargeView extends React.Component {
     constructor(props) {
@@ -261,8 +262,11 @@ class Main extends React.Component {
         return (
             <ScrollView style={style.container}>
                 <TouchableWithoutFeedback onPress={() => this.navigatingView("paymentMethod")}>
-                    <TextNormal style={[style.spaceLine]}>Hình thức thanh
-                        toán: {this.props.transaction.paymentMethod ? this.props.transaction.paymentMethod.name : ""}</TextNormal>
+                    <View style={[style.spaceLine, {flexDirection: "row"}]}>
+                        <TextNormal style={[{flex: 1}]}>Hình thức thanh
+                            toán: {this.props.transaction.paymentMethod ? this.props.transaction.paymentMethod.name : ""}</TextNormal>
+                        <Feather style={{fontSize: constantStyle.md}} name={"chevron-right"}/>
+                    </View>
                 </TouchableWithoutFeedback>
                 {
                     _.get(this.props.transaction, "paymentMethod.type", "") !== "prepaid" &&
@@ -272,9 +276,15 @@ class Main extends React.Component {
                     </TouchableWithoutFeedback>
                 }
                 <View style={style.spaceLine}>
-                    <View style={[{flexDirection: 'row'}]}>
-                        <TextNormal>Tiền nhận:</TextNormal>
-                        <TextInputPriceMask style={{flex: 1}} value={this.props.transaction.paid}
+                    <View style={[{flexDirection: 'row', alignItems: 'center'}]}>
+                        <TextNormal style={{padding:0}}>Tiền nhận:</TextNormal>
+                        <TextInputPriceMask style={{
+                            flex: 1,
+                            borderWidth: 1,
+                            borderColor: constantStyle.colorBorder,
+                            padding: constantStyle.sm,
+                            borderRadius: 5
+                        }} value={this.props.transaction.paid}
                                             onChangeText={(cash) => {
                                                 this.props.instance.setState({
                                                     transaction: {
@@ -295,7 +305,10 @@ class Main extends React.Component {
                 <TouchableWithoutFeedback onPress={() => {
                     this.navigatingView("customerInformation")
                 }}>
-                    <TextNormal style={[style.spaceLine]}>Thông tin khách hàng</TextNormal>
+                    <View style={[style.spaceLine, {flexDirection: "row",alignItems:'center'}]}>
+                        <TextNormal style={{flex:1}}>Thông tin khách hàng</TextNormal>
+                        <Feather style={{fontSize: constantStyle.md}} name={"chevron-right"}/>
+                    </View>
                 </TouchableWithoutFeedback>
                 <TextInputNormal style={[style.description, style.spaceLine]} value={this.props.transaction.description}
                                  placeholder={"ghi chú"}
@@ -458,7 +471,7 @@ class CustomerInformation extends React.Component {
 
     render() {
         return (
-            <View style={style.container}>
+            <ScrollView style={style.container}>
                 <TextInputNormal style={[style.description, style.spaceLine]} value={this.props.customer.name}
                                  placeholder={"Tên khách hàng"}
                                  onChangeText={(text) => this.onChangeValue("name", text)}/>
@@ -479,7 +492,8 @@ class CustomerInformation extends React.Component {
                 <TextInputNormal style={[style.description, style.spaceLine]} value={this.props.customer.description}
                                  placeholder={"Ghi chú"}
                                  onChangeText={(text) => this.onChangeValue("description", text)}/>
-            </View>
+                <KeyboardSpacer/>
+            </ScrollView>
         )
     }
 }

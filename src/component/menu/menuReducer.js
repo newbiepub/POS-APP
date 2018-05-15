@@ -5,12 +5,12 @@ const initialState = {
         {id: 'report', name: 'Thống kê'},
         {id: 'transaction', name: 'Giao dịch'},
         {id: 'invoice', name: 'Hoá đơn',disable:true},
-        {id: 'inventory', name: 'Kho',disable:true},
+        {id: 'inventory', name: 'Kho'},
         {id: 'setting', name: 'Cài đặt'},],
     isLoading: false,
     menuVisible: false
 };
-initialState.currentItem = initialState.menuItems[0];
+initialState.currentItem = initialState.menuItems[4];
 export default function (state = initialState, action = {}) {
     switch (action.type) {
 

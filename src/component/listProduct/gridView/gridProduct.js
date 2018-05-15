@@ -14,7 +14,7 @@ import {
 import EStyleSheet from "react-native-extended-stylesheet";
 import {constantStyle} from '../../../style/base';
 import {SearchInput, TextSmall} from '../../text';
-import {numberwithThousandsSeparator} from '../../../reuseable/function/function';
+import {numberwithThousandsSeparator, removeVietSymbol} from '../../../reuseable/function/function';
 import {openPopup} from '../../popup/popupAction';
 import {connect} from 'react-redux';
 import ViewProduct from '../../popup/popupContent/viewProduct';
@@ -78,10 +78,10 @@ class GridProduct extends React.Component {
                 let data = [];
                 if (this.props.products) {
                     this.props.products.forEach((item) => {
-
+                        let searchText = removeVietSymbol(this.state.searchText).toLowerCase();
                         if (item.product.categoryId) {
                             if (item.product.categoryId._id === this.state.categoryFilter) {
-                                if (item.product.name.includes(this.state.searchText)) {
+                                if (removeVietSymbol(item.product.name).toLowerCase().includes(searchText)) {
                                     data.push(item)
                                 }
                             }
@@ -89,7 +89,7 @@ class GridProduct extends React.Component {
 
                         if (this.state.categoryFilter === 'all') {
 
-                            if (item.product.name.includes(this.state.searchText)) {
+                            if (removeVietSymbol(item.product.name).toLowerCase().includes(searchText)) {
                                 data.push(item)
                             }
                         }

@@ -93,7 +93,8 @@ class CategoryView extends React.PureComponent {
             <View style={style.categoryItem}>
                 <View style={style.categoryAvatarWrapper}>
                     <View style={style.categoryAvatar}>
-                        <TextNormal style={[style.categoryAvatarText,
+                        <TextNormal
+                            style={[style.categoryAvatarText,
                             this.props.categoryFilter === item._id && {color: constantStyle.color1}]}>{item.name.substr(0, 2)}</TextNormal>
                     </View>
                 </View>

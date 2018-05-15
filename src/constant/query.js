@@ -104,7 +104,7 @@ export const QUERY = {
             }
         }`,
     TRANSACTION: gql`
-    query getTransactionEmployee($limit:Int, $skip: Int){
+        query getTransactionEmployee($limit:Int, $skip: Int){
             getTransactionEmployee(limit:$limit, skip: $skip){
                 _id
                 createdAt
@@ -127,7 +127,7 @@ export const QUERY = {
                         value
                         description
                         appliedDate
-                        dueDate	
+                        dueDate
                         createdAt
                     }
                 }
@@ -178,9 +178,9 @@ export const QUERY = {
                 transactionAmount
             }
         }`,
-    GET_DISCOUNT_EMPLOYEE:gql`
+    GET_DISCOUNT_EMPLOYEE: gql`
         query{
-              GET_DISCOUNT_EMPLOYEE{
+            GET_DISCOUNT_EMPLOYEE{
                 _id
                 products
                 name
@@ -188,8 +188,51 @@ export const QUERY = {
                 value
                 description
                 appliedDate
-                dueDate	
+                dueDate
                 createdAt
-              }
+            }
+        }`,
+    FETCH_INVENTORY_ACTIVITY_EMPLOYEE_AMOUNT: gql`
+        query{
+            FETCH_INVENTORY_ACTIVITY_EMPLOYEE_AMOUNT
+        }`,
+    FETCH_INVENTORY_ACTIVITY_EMPLOYEE: gql`
+        query FETCH_INVENTORY_ACTIVITY_EMPLOYEE($limit:Int, $skip: Int){
+            FETCH_INVENTORY_ACTIVITY_EMPLOYEE(limit: $limit, skip: $skip) {
+                _id
+                products {
+                    _id
+                    quantity
+                    salePrice
+                }
+                totalQuantity
+                totalPrice
+                from {
+                    _id
+                    name
+                    phone
+                    address
+                    email
+                    description
+                }
+                to {
+                    _id
+                    name
+                    phone
+                    address
+                    email
+                    description
+                }
+                status
+                type
+                dateRequest
+                ingredients {
+                    _id
+                    quantity
+                    salePrice
+                }
+                paid
+                dateReceived
+            }
         }`
 };

@@ -15,6 +15,7 @@ import {constantStyle} from '../../style/base';
 import {SearchInput, TextSmall, TextNormal} from '../text';
 import {numberwithThousandsSeparator} from '../../reuseable/function/function';
 import _ from 'lodash';
+import {connect} from 'react-redux';
 
 class ListProduct extends React.Component {
     constructor(props) {
@@ -32,10 +33,23 @@ class ListProduct extends React.Component {
                     <TextNormal numberOfLines={1}
                                 style={style.itemNameText}>{item.quantity > 1 && ` x${item.quantity}`}</TextNormal>
                 </View>
-                <View style={style.itemPrice}>
-                    <TextNormal numberOfLines={1}
-                                style={style.itemPriceText}>{numberwithThousandsSeparator(item.price.price)} {_.get(item, "price.currency.symbol", "")}</TextNormal>
-                </View>
+                {
+                    item.discounts && item.discounts.length > 0 ?
+                        <View style={style.itemPrice}>
+                            <TextNormal numberOfLines={1}
+
+                                        style={[style.itemPriceText,{fontSize:constantStyle.sizeSmall,textDecorationLine: 'line-through'}]}>{numberwithThousandsSeparator(item.price.price)}{_.get(this.props.currency, "symbol", "")}</TextNormal>
+                            <TextNormal numberOfLines={1}
+                                        style={style.itemPriceText}>{numberwithThousandsSeparator(item.totalPrice)}{_.get(this.props.currency, "symbol", "")}</TextNormal>
+                        </View> :
+                        <View style={style.itemPrice}>
+
+                            <TextNormal numberOfLines={1}
+
+                                        style={style.itemPriceText}>{numberwithThousandsSeparator(item.price.price)} {_.get(this.props.currency, "symbol", "")}</TextNormal>
+                        </View>
+                }
+
             </View>
             {
                 item.discounts && item.discounts.length > 0 &&
@@ -44,11 +58,12 @@ class ListProduct extends React.Component {
                         item.discounts.map(itemDiscount => {
                             return (
                                 <View key={itemDiscount._id} style={style.item}>
-                                    <View style={[style.itemPrice,{flex:1}]}>
+                                    <View style={[style.itemPrice, {flex: 1}]}>
                                         <TextNormal style={style.itemPriceText}>{itemDiscount.name}</TextNormal>
                                     </View>
-                                    <View style={[style.itemName,{flex:0}]}>
-                                        <TextNormal style={style.itemNameText}>{itemDiscount.type === "amount" ? `${itemDiscount.value}${_.get(this.props.currency, "symbol", "")}` : `${itemDiscount.value}%`}</TextNormal>
+                                    <View style={[style.itemName, {flex: 0}]}>
+                                        <TextNormal
+                                            style={style.itemNameText}>{itemDiscount.type === "amount" ? `${itemDiscount.value}${_.get(this.props.currency, "symbol", "")}` : `${itemDiscount.value}%`}</TextNormal>
                                     </View>
                                 </View>
                             )
@@ -141,4 +156,9 @@ const style = EStyleSheet.create({
     '@media (min-width: 768) and (max-width: 1024)': {},
     '@media (min-width: 1024)': {}
 });
-export default ListProduct;
+const mapStateToProps = (state) => {
+    return {
+        currency: state.userReducer.currency,
+    }
+};
+export default connect(mapStateToProps) (ListProduct);

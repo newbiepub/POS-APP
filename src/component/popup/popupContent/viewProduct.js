@@ -252,7 +252,7 @@ class ViewProduct extends React.Component {
                                         </View>
                                         <View style={style.discountContent}>
                                             <TextNormal style={{flex: 1}}>{item.name}</TextNormal>
-                                            <TextNormal>{item.type === "amount" ? `${item.value}${_.get(this.props.currency, "symbol", "")}` : `${item.value}%`}</TextNormal>
+                                            <TextNormal>{item.type === "amount" ? `${numberwithThousandsSeparator(item.value)}${_.get(this.props.currency, "symbol", "")}` : `${item.value}%`}</TextNormal>
                                         </View>
                                     </View>
                                 )
