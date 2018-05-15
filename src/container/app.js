@@ -13,7 +13,7 @@ import {EVENT_TYPE} from "../constant/eventType";
 import IngredientManagement from "../feature/inventory/ingredientManagement/container/ingredientManagement";
 import ImportExportManagement from "../feature/inventory/importExportManagement/index";
 import ConfirmExport from "../feature/inventory/importExportManagement/confirmExport";
-import ProductDetail from "../feature/inventory/productManagement/component/productDetail";
+import ProductDetail from "../feature/inventory/productManagement/component/product/productDetail";
 import ErrorBoundary from "../component/errorBoundary/errorBoundary";
 import ListPos from "../feature/inventory/importExportManagement/listPos";
 import ListExportProducts from "../feature/inventory/importExportManagement/listProduct";

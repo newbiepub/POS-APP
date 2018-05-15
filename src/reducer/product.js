@@ -1,7 +1,12 @@
 import {PRODUCT} from "../constant/actionTypes";
 
 const productInitial  = {
-    data: []
+    data: [],
+    name: '',
+    unit: '',
+    description: '',
+    importPrice: 0,
+    quantity: 0
 };
 
 export function listProduct (state = productInitial, action = {}) {
@@ -10,6 +15,12 @@ export function listProduct (state = productInitial, action = {}) {
             return {
                 ...state,
                 data: action.payload
+            }
+        }
+        case PRODUCT.UPDATE_PRODUCT: {
+            return {
+                ...state,
+                ...action.payload
             }
         }
         default: return state;

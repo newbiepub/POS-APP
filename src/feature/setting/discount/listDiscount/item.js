@@ -89,7 +89,7 @@ const EditButton = () => {
 const DeleteButton = () => {
     return (
         <TouchableOpacity style={[styles.btn, styles.btnDelete,styleBase.center]}>
-            <Ionicons name="ios-close" style={[styleBase.textWhite, styleBase.title]}/>
+            <Ionicons name="md-trash" style={[styleBase.textWhite, styleBase.title]}/>
         </TouchableOpacity>
     )
 }

@@ -151,6 +151,9 @@ const styleBase = EStyleSheet.create({
     bgWhiteTransparent: {
         backgroundColor: 'rgba(255,255,255,0.9)'
     },
+    bgBlue: {
+        backgroundColor: '#008CBA'
+    },
     bgBlack: {
         backgroundColor: "#000"
     },

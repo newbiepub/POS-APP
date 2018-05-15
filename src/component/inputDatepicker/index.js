@@ -9,7 +9,7 @@ class InputDatePicker extends React.Component {
         super(props);
         this.state = {
             datePickerVisible: false,
-            datePicked: null
+            datePicked: props.datePicked
         }
 
         this.handleConfirmDate = this.handleConfirmDate.bind(this);
@@ -61,12 +61,15 @@ class InputDatePicker extends React.Component {
 
 InputDatePicker.propTypes = {
     placeholder: PropTypes.string,
+    datePicked: PropTypes.object,
     onChangeDate: PropTypes.func
 };
 
 InputDatePicker.defaultProps = {
     placeholder: '',
+    datePicked: null,
     onChangeDate: () => {}
+
 };
 
 export default InputDatePicker;

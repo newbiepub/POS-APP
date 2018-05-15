@@ -8,7 +8,7 @@ class GroupCheckbox extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            currentItem: props.options[0]
+            currentItem: props.currentOption
         }
     }
 
@@ -17,7 +17,9 @@ class GroupCheckbox extends React.Component {
      */
 
     handlePickOption (option) {
-        this.setState({currentItem: option})
+        this.setState({currentItem: option}, () => {
+            this.props.onChangeOptions(option)
+        })
     }
 
     /**
@@ -41,11 +43,15 @@ class GroupCheckbox extends React.Component {
 }
 
 GroupCheckbox.propTypes = {
-    options: PropTypes.array
+    options: PropTypes.array,
+    currentOption: PropTypes.object,
+    onChangeOptions: PropTypes.func
 };
 
 GroupCheckbox.defaultProps = {
-    options: []
+    options: [],
+    currentOption: {},
+    onChangeOptions: () => {}
 };
 
 export default GroupCheckbox;

@@ -10,31 +10,80 @@ import {allPOS} from "../../../../selector/pos";
 import {closePopup} from "../../../../component/popup/actions/popupAction";
 import Table from "../../../../component/table/table";
 import {listPOSFields} from "../../../../utils/tableFields";
-import {objectValue} from "../../../../utils/utils";
+import {equals, objectValue} from "../../../../utils/utils";
+import store from "../../../../store/store";
+import {DISCOUNT_ACTION} from "../../../../constant/actionTypes";
 
 const listStyle = EStyleSheet.create({
     listContainer: {
         width: '80%',
         height: '80%',
         backgroundColor: '#fff'
+    },
+    checkBoxContainer: {
+        $size: 20,
+        height: '$size',
+        width: '$size',
+        borderColor: '#444',
+        borderWidth: 1,
+        justifyContent: "center",
+        alignItems: 'center',
+        borderRadius: '0.5 * $size'
+    },
+    checkBoxActive:{
+        $size: 15,
+        height: '$size',
+        width: '$size',
+        borderRadius: '$size * 0.5',
+        backgroundColor: '#444'
     }
 });
 
 class ListPosApply extends React.Component {
     constructor(props) {
         super(props);
+        this.list = null;
+        this.state = {
+            pos: props.employeeIds
+        }
 
         this.renderItem      = this.renderItem.bind(this);
-        this.renderList      = this.renderList.bind(this);
-        this.handlePressItem = this.handlePressItem.bind(this);
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return !equals(this.state, nextState)
     }
 
     /**
      * Handler
      */
 
-    handlePressItem(item) {
+    handleToggle(collection, item) {
+        var idx = collection.indexOf(item);
+        if(idx !== -1) {
+            collection.splice(idx, 1);
+        } else {
+            collection.push(item);
+        }
+    }
 
+    handlePressItem(item) {
+        this.list.onUpdateList();
+        this.setState((state) => {
+            let pos = [...state.pos];
+
+            this.handleToggle(pos, item._id);
+            store.dispatch({
+                type: DISCOUNT_ACTION.PICK_POS,
+                payload: {
+                    employeeIds: pos
+                }
+            })
+            return {
+                ...state,
+                pos
+            };
+        })
     }
 
     /**
@@ -43,37 +92,18 @@ class ListPosApply extends React.Component {
      */
 
     renderItem (item, index) {
-        return <TouchableOpacity onPress={this.handlePressItem(item)}>
-            <View style={[{height: 65},
-                styleBase.alignCenter, styleBase.row,
-                styleBase.p_md_horizontal]}>
-                {
-                    listPOSFields.map((field, i) => {
-                        return (
-                            <View key={`FIELD${i}`} style={[{flex: field.columnWidth}]}>
-                                {field.field === "STT" ?
-                                    <Text style={[styleBase.normalText, styleBase.fontRubik]}>
-                                        {+index + 1}
-                                    </Text>
-                                    :
-                                    <Text style={[styleBase.normalText, styleBase.fontRubik]}>
-                                        {objectValue(item, field.field)}
-                                    </Text>
-                                }
-                            </View>
-                        )
-                    })
-                }
+        return <TouchableOpacity
+            style={[styleBase.row, styleBase.m_md_vertical,
+                styleBase.alignCenter,
+                styleBase.p_md_vertical, styleBase.p_md_horizontal]}
+            onPress={() => this.handlePressItem(item)}>
+            <View style={[listStyle.checkBoxContainer, styleBase.m_md_right]}>
+                {this.state.pos.includes(item._id) && <View style={[listStyle.checkBoxActive]}/>}
             </View>
+            <Text style={[styleBase.fontRubik, styleBase.title]}>
+                { item.profile.name }
+            </Text>
         </TouchableOpacity>;
-    }
-
-    renderList() {
-        return <List
-            disableVirtualization={false}
-            renderItem={this.renderItem.bind(this)}
-            dataSources={this.props.pos}
-            initialNumToRender={5}/>
     }
 
     render() {
@@ -81,9 +111,14 @@ class ListPosApply extends React.Component {
             <View style={[styleBase.fillParent, styleBase.center]}>
                 <View style={[listStyle.listContainer, styleBase.shadowBox]}>
                     <ListHeader/>
-                    <Table
-                        fields={listPOSFields}
-                        renderList={this.renderList}/>
+                    <View style={[styleBase.container]}>
+                        <List
+                            ref={ref => this.list = ref}
+                            disableVirtualization={false}
+                            renderItem={this.renderItem.bind(this)}
+                            dataSources={this.props.pos}
+                            initialNumToRender={5}/>
+                    </View>
                 </View>
             </View>
         )
@@ -92,7 +127,7 @@ class ListPosApply extends React.Component {
 
 const ListHeader = (props) => {
     return (
-        <View style={[styleBase.panelHeader, styleBase.row, styleBase.alignCenter, styleBase.spaceBetween]}>
+        <View style={[styleBase.panelHeader, styleBase.row, styleBase.alignCenter, styleBase.spaceBetween, {height: 65}]}>
             <View>
                 <Text style={[styleBase.text4, styleBase.title]}>
                     ÁP DỤNG CHO CÁC ĐIỂM BÁN HÀNG
@@ -110,15 +145,18 @@ const ListHeader = (props) => {
 
 ListPosApply.propTypes = {
     pos: PropTypes.array,
+    onPickPOS: PropTypes.func
 };
 
 ListPosApply.defaultProps = {
-    pos: []
+    pos: [],
+    onPickPOS: () => {}
 };
 
 const mapStateToProps = (state) => {
     return {
-        pos: allPOS(state)
+        pos: allPOS(state),
+        employeeIds: state.discount.employeeIds
     }
 }
 

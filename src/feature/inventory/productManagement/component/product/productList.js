@@ -1,15 +1,15 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {InteractionManager, ActivityIndicator, View, TextInput, SafeAreaView, Text} from "react-native";
-import styleBase from "../../../../styles/base";
-import NoData from "../../../../component/noData/noData";
+import styleBase from "../../../../../styles/base";
+import NoData from "../../../../../component/noData/noData";
 import ProductItem from "./productItem";
-import List from "../../../../component/list/list";
-import {INVENTORY} from "../../action/index";
+import List from "../../../../../component/list/list";
+import {INVENTORY} from "../../../action/index";
 import {connect} from "react-redux";
-import {equals} from "../../../../utils/utils";
+import {equals} from "../../../../../utils/utils";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import ErrorBoundary from "../../../../component/errorBoundary/errorBoundary";
+import ErrorBoundary from "../../../../../component/errorBoundary/errorBoundary";
 
 
 class ProductList extends React.PureComponent {
@@ -168,11 +168,6 @@ class ProductList extends React.PureComponent {
                             (productItem.length > 0 && this.state.products !== "NoData") &&
                             <List
                                 onRefresh={this.onRefresh.bind(this)}
-                                initialNumToRender={this.NUMBER_OF_ITEM}
-                                getItemLayout={(item, index) => ({
-                                    length: this.ITEM_HEIGHT, offset: this.ITEM_HEIGHT * index, index
-                                })}
-                                onEndReachedThreshold={400}
                                 dataSources={productItem}
                                 renderItem={this.renderItem.bind(this)}
                             />

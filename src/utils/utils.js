@@ -47,3 +47,12 @@ export const objectValue = (target, fields) => {
 
     return convertStringToFields(target, fields);
 }
+
+export const toggleArr = (collection, item) => {
+    var idx = collection.indexOf(item);
+    if(idx !== -1) {
+        collection.splice(idx, 1);
+    } else {
+        collection.push(item);
+    }
+}

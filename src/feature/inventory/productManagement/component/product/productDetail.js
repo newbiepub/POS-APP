@@ -1,11 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {StyleSheet, InteractionManager, ScrollView, View, Text, SafeAreaView} from "react-native";
-import styleBase from "../../../../styles/base";
-import NavBar from "../../../../component/navbar/navbar";
-import {equals} from "../../../../utils/utils";
+import styleBase from "../../../../../styles/base";
+import NavBar from "../../../../../component/navbar/navbar";
+import {equals} from "../../../../../utils/utils";
 import {AfterInteractions} from "react-native-interactions";
-import {product_inventory_data} from "../../../../api/dataHandler/inventory";
+import {product_inventory_data} from "../../../../../api/dataHandler/inventory";
 
 class ProductDetail extends React.Component {
     constructor(props) {

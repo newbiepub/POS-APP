@@ -1,10 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {StyleSheet, InteractionManager, View, Text, TouchableOpacity} from "react-native";
-import styleBase from "../../../../styles/base";
+import styleBase from "../../../../../styles/base";
 import ProductItemCollapse from "./productDetail";
-import {equals} from "../../../../utils/utils";
+import {equals} from "../../../../../utils/utils";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import {openPopup, renderContent} from "../../../../../component/popup/actions/popupAction";
+import ProductUpdate from "./productUpdate";
+import store from "../../../../../store/store";
+import {PRODUCT} from "../../../../../constant/actionTypes";
 
 class ProductItem extends React.Component {
     constructor(props) {
@@ -31,7 +35,21 @@ class ProductItem extends React.Component {
 
     handleNavigateProductDetail() {
         InteractionManager.runAfterInteractions( () => {
-            this.props.navigator.push({id: 'product_detail', product: this.props.item});
+            console.warn(JSON.stringify(this.props.item, null, 4));
+            let { importPrice, salesPrice, product = {}, quantity = 0 } = this.props.item;
+            let { name = '', unit = '' } = product;
+
+            store.dispatch({
+                type: PRODUCT.UPDATE_PRODUCT,
+                payload: {
+                    name,
+                    unit,
+                    importPrice,
+                    quantity
+                }
+            })
+            openPopup();
+            renderContent(<ProductUpdate/>)
         })
     }
 

@@ -11,6 +11,8 @@ class Table extends React.Component {
             searchText: "",
             fields: this.props.fields
         }
+
+        this.handleChangeText = this.handleChangeText.bind(this);
     }
 
     shouldComponentUpdate(nextProps, nextState) {

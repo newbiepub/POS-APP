@@ -6,6 +6,7 @@ import {PRODUCT_STORAGE} from "../../../localStorage/index";
 import {getInventoryHistory} from "../importExportManagement/action";
 import {exportProductToPOS} from "./graph";
 import {inventory_history, product_inventory_data} from "../../../api/dataHandler/inventory";
+import {fetchCategory} from "./category/fetch";
 
 export const INVENTORY = {
     FETCH_USER_PRODUCT: async (userId, type) => {
@@ -39,6 +40,8 @@ export const INVENTORY = {
             throw e;
         }
     },
+
+    FETCH_CATEOGRY: fetchCategory,
 
     FETCH_HISTORY: async (type) => {
         try {
@@ -74,5 +77,5 @@ export const INVENTORY = {
         } catch (e) {
             throw e;
         }
-    }
+    },
 };

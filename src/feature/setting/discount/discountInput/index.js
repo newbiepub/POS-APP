@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {View, ScrollView, TextInput, Text, TouchableOpacity} from "react-native";
+import {View, ScrollView, TextInput, Text, TouchableOpacity, Alert} from "react-native";
 import styleBase from "../../../../styles/base";
 import EStyleSheet from "react-native-extended-stylesheet";
 import GroupCheckbox from "../../../../component/groupCheckbox/index";
@@ -8,6 +8,12 @@ import ListPosApply from '../listPosApply';
 import {openPopup, renderContent} from "../../../../component/popup/actions/popupAction";
 import InputDatePicker from "../../../../component/inputDatepicker/index";
 import ListProductApply from "../listProductApply/index";
+import NavBar from "../../../../component/navbar/navbar";
+import {DISCOUNT_ACTION} from "../../../../constant/actionTypes";
+import store from "../../../../store/store";
+import { connect } from "react-redux";
+import {inputData} from "../../../../selector/discount";
+import DISCOUNT from "../action/index";
 
 const styles = EStyleSheet.create({
     formInner: {
@@ -33,17 +39,144 @@ class DiscountInput extends React.Component {
         this.state = {
             amount: 0
         }
-        this.handleChangeAmount = this.handleChangeAmount.bind(this);
+
+        this.handleChangeName        = this.handleChangeName.bind(this);
+        this.handleChangeDescription = this.handleChangeDescription.bind(this);
+        this.handleChangeAmount      = this.handleChangeAmount.bind(this);
+        this.handleChangeAppliedDate = this.handleChangeAppliedDate.bind(this);
+        this.handleChangeDueDate     = this.handleChangeDueDate.bind(this);
+        this.handleChangeOptions     = this.handleChangeOptions.bind(this);
+
     }
 
     /**
      * handler
      */
 
+    handleChangeName (name) {
+        store.dispatch({
+            type: DISCOUNT_ACTION.CHANGE_AMOUNT,
+            payload: {
+                name
+            }
+        })
+    }
+
+    handleChangeDescription (description) {
+        store.dispatch({
+            type: DISCOUNT_ACTION.CHANGE_AMOUNT,
+            payload: {
+                description
+            }
+        })
+    }
+
     handleChangeAmount (amount) {
         amount = amount.match(/\d/gi) || [0];
         amount = amount.join('');
-        this.setState({amount: +amount})
+        this.setState({amount: +amount}, () => {
+            store.dispatch({
+                type: DISCOUNT_ACTION.CHANGE_AMOUNT,
+                payload: {
+                    amount: this.state.amount
+                }
+            })
+        })
+    }
+
+    handleChangeAppliedDate (date) {
+        store.dispatch({
+            type: DISCOUNT_ACTION.APPLY_DATE,
+            payload: {
+                appliedDate: date
+            }
+        })
+    }
+
+    handleChangeDueDate(date) {
+        store.dispatch({
+            type: DISCOUNT_ACTION.DUE_DATE,
+            payload: {
+                dueDate: date
+            }
+        })
+    }
+
+    handleChangeOptions (option) {
+        store.dispatch({
+            type: DISCOUNT_ACTION.CHANGE_OPTION,
+            payload: {
+                type: option
+            }
+        })
+    }
+
+    handleApplyPOS (pos) {
+        store.dispatch({
+            type: DISCOUNT_ACTION.PICK_POS,
+            payload: {
+                employeeIds: pos
+            }
+        })
+    }
+
+    handleApplyProducts (products) {
+        store.dispatch({
+            type: DISCOUNT_ACTION.PICK_PRODUCTS,
+            payload: {
+                products
+            }
+        })
+    }
+
+    async handleSubmitDiscount() {
+        try {
+            let {
+                amount,
+                type,
+                name,
+                description,
+                appliedDate,
+                dueDate,
+                employeeIds,
+                products
+            } = this.props;
+            let insertItem = {
+                value: amount,
+                type: type.value,
+                name,
+                description,
+                appliedDate,
+                dueDate,
+                employeeIds,
+                products
+            }
+
+            // Validation
+            if(!name.length) throw new Error('Tên khuyến mại bắt buộc');
+            if(!description.length) throw new Error('Mô tả khuyến mại là bắt buộc');
+            if(!appliedDate) throw new Error('Ngày áp dụng là bắt buộc');
+            if(!dueDate) throw new Error('Ngày hết hạn là bắt buộc');
+            if(!type) throw new Error('Loại là bắt buộc');
+            if(!amount) throw new Error('Giá trị khuyến mãi là bắt buộc');
+            if(!products.length) throw new Error('Mời chọn sản phẩm');
+            if(!employeeIds.length) throw new Error('Mời chọn điểm bán hàng');
+
+            // Optimistic Discount
+            store.dispatch({
+                type: DISCOUNT_ACTION.FETCH_ALL_DISCOUNT,
+                payload: [insertItem]
+            })
+            // Navigate back
+            this.props.navigator.pop();
+            // Create discount
+            await DISCOUNT.CREATE_DISCOUNT(
+                name, description, appliedDate, dueDate,
+                type.value , amount, products, employeeIds
+            )
+        } catch (e) {
+            alert(e.message);
+        }
     }
 
     /**
@@ -54,6 +187,7 @@ class DiscountInput extends React.Component {
     render() {
         return (
             <View style={[styleBase.container, styleBase.center]}>
+                <NavBar navigator={this.props.navigator}/>
                 <View style={[ styles.formInner]}>
                     <ScrollView>
                         <TextInput
@@ -62,20 +196,46 @@ class DiscountInput extends React.Component {
                                 styleBase.p_md_horizontal, styleBase.p_md_vertical,
                                 styleBase.m_md_vertical,
                             ]}
+                            value={this.props.name}
+                            onChangeText={this.handleChangeName}
+                            placeholder="TÊN KHUYẾN MẠI"/>
+                        <TextInput
+                            style={[
+                                styles.input,
+                                styleBase.p_md_horizontal, styleBase.p_md_vertical,
+                                styleBase.m_md_vertical,
+                            ]}
+                            value={this.props.description}
+                            onChangeText={this.handleChangeDescription}
+                            placeholder="MÔ TẢ KHUYẾN MẠI"/>
+                        <TextInput
+                            style={[
+                                styles.input,
+                                styleBase.p_md_horizontal, styleBase.p_md_vertical,
+                                styleBase.m_md_vertical,
+                            ]}
                             value={this.state.amount > 0 ? this.state.amount.seperateNumber() : ''}
                             onChangeText={this.handleChangeAmount}
-                            placeholder="Giảm giá"/>
-                        <InputDatePicker placeholder="Thời gian bắt đầu giảm giá" style={[styles.input]}/>
-                        <InputDatePicker placeholder="Thời gian kết thúc giảm giá" style={[styles.input]}/>
-                        <GroupCheckbox options={this.options}/>
-                        <ListApplied title="ÁP DỤNG CHO CÁC ĐIỂM BÁN HÀNG" onPress={() => {
+                            placeholder="GIẢM GIÁ"/>
+                        <InputDatePicker placeholder="Thời gian bắt đầu giảm giá"
+                                         datePicked={this.props.appliedDate}
+                                         onChangeDate={this.handleChangeAppliedDate}
+                                         style={[styles.input]}/>
+                        <InputDatePicker placeholder="Thời gian kết thúc giảm giá"
+                                         datePicked={this.props.dueDate}
+                                         onChangeDate={this.handleChangeDueDate}
+                                         style={[styles.input]}/>
+                        <GroupCheckbox options={this.options}
+                                       onChangeOptions={this.handleChangeOptions}
+                                       currentOption={this.props.type}/>
+                        <ListApplied title={this.props.employeeIds.length > 0 ? `${this.props.employeeIds.length} ĐIỂM BÁN HÀNG` : `ÁP DỤNG CHO CÁC ĐIỂM BÁN HÀNG`} onPress={() => {
                             openPopup();
                             renderContent(<ListPosApply/>)}}/>
-                        <ListApplied title="ÁP DỤNG CHO CÁC SẢN PHẨM" onPress={() => {
+                        <ListApplied title={this.props.products.length > 0 ? `${this.props.products.length} SẢN PHẨM` : 'ÁP DỤNG CHO CÁC SẢN PHẨM'} onPress={() => {
                             openPopup();
                             renderContent(<ListProductApply/>)}}/>
                     </ScrollView>
-                    <SubmitButton/>
+                    <SubmitButton onPress={() => this.handleSubmitDiscount()}/>
                 </View>
             </View>
         )
@@ -99,7 +259,9 @@ const ListApplied = (props) => {
 const SubmitButton = (props) => {
     return (
         <View style={[styleBase.center]}>
-            <TouchableOpacity style={[
+            <TouchableOpacity
+                onPress={props.onPress}
+                style={[
                 styleBase.bgBlack,
                 styleBase.p_md_horizontal, styleBase.p_md_vertical,
                 styleBase.m_md_vertical]}>
@@ -115,4 +277,8 @@ DiscountInput.propTypes = {};
 
 DiscountInput.defaultProps = {};
 
-export default DiscountInput;
+const mapStateToProps = (state) => {
+    return inputData(state)
+}
+
+export default connect(mapStateToProps) (DiscountInput);

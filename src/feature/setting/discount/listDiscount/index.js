@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {View, ScrollView, ActivityIndicator, TouchableOpacity, Text} from "react-native";
+import {View, ScrollView, ActivityIndicator, TouchableOpacity, Text, InteractionManager} from "react-native";
 import styleBase from "../../../../styles/base";
 import DISCOUNT from "../action/index";
 import { connect } from "react-redux";
@@ -8,6 +8,7 @@ import NoData from "../../../../component/noData/noData";
 import DiscountHeader from "./head";
 import DiscountItem from "./item";
 import {uuid} from "../../../../utils/utils";
+import {discounts} from "../../../../selector/discount";
 
 class ListDiscount extends React.Component {
     constructor(props) {
@@ -15,6 +16,8 @@ class ListDiscount extends React.Component {
         this.state = {
             loading: true
         }
+
+        this.handlePressAddDiscount = this.handlePressAddDiscount.bind(this);
     }
 
     componentDidMount() {
@@ -29,7 +32,9 @@ class ListDiscount extends React.Component {
     }
 
     handlePressAddDiscount() {
-
+        InteractionManager.runAfterInteractions(() => {
+            this.props.navigator.push({id: 'discount_input'})
+        })
     }
 
     render() {
@@ -55,7 +60,7 @@ class ListDiscount extends React.Component {
                                 return <DiscountItem key={uuid()} index={index} item={item}/>
                             })}
                         </ScrollView>
-                        <ButtonAddDiscount onPress={() => this.props.navigator.push({id: 'discount_input'})}/>
+                        <ButtonAddDiscount onPress={this.handlePressAddDiscount}/>
                     </React.Fragment>
                 }
             </View>
@@ -83,7 +88,7 @@ ListDiscount.defaultProps = {};
 
 const mapStateToProps = (state) => {
     return {
-        discounts: state.discount.data
+        discounts: discounts(state)
     }
 }
 

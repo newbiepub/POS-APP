@@ -83,3 +83,16 @@ export const listPOSFields = [
         columnWidth: 0.3
     }
 ]
+
+export const listCategory = [
+    {
+        name: 'STT',
+        field: 'STT',
+        columnWidth: 0.5
+    },
+    {
+        name: 'TÊN LOẠI',
+        field: 'name',
+        columnWidth: 0.5
+    }
+]
