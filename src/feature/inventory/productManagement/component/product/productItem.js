@@ -35,9 +35,8 @@ class ProductItem extends React.Component {
 
     handleNavigateProductDetail() {
         InteractionManager.runAfterInteractions( () => {
-            console.warn(JSON.stringify(this.props.item, null, 4));
             let { importPrice, salesPrice, product = {}, quantity = 0 } = this.props.item;
-            let { name = '', unit = '' } = product;
+            let { name = '', unit = '', productCode = '', _id = '' } = product;
 
             store.dispatch({
                 type: PRODUCT.UPDATE_PRODUCT,
@@ -45,11 +44,12 @@ class ProductItem extends React.Component {
                     name,
                     unit,
                     importPrice,
-                    quantity
+                    quantity,
+                    productCode
                 }
             })
             openPopup();
-            renderContent(<ProductUpdate/>)
+            renderContent(<ProductUpdate productId={_id}/>)
         })
     }
 

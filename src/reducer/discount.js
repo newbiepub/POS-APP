@@ -20,7 +20,7 @@ export default function (state = initialState, action = {}) {
         case DISCOUNT_ACTION.FETCH_ALL_DISCOUNT: {
             return {
                 ...state,
-                data: [...state.data, ...action.payload]
+                data: [...action.payload]
             }
         }
         case DISCOUNT_ACTION.CHANGE_AMOUNT:

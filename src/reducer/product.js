@@ -6,7 +6,8 @@ const productInitial  = {
     unit: '',
     description: '',
     importPrice: 0,
-    quantity: 0
+    quantity: 0,
+    productCode: ''
 };
 
 export function listProduct (state = productInitial, action = {}) {

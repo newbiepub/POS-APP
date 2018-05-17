@@ -10,7 +10,8 @@ import {connect} from "react-redux";
 import {equals} from "../../../../../utils/utils";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import ErrorBoundary from "../../../../../component/errorBoundary/errorBoundary";
-
+import emitter from "../../../../../event/emitter";
+import {EVENT_TYPE} from "../../../../../constant/eventType";
 
 class ProductList extends React.PureComponent {
     constructor(props) {
@@ -24,14 +25,14 @@ class ProductList extends React.PureComponent {
             }
         ];
         this.delayed = (time) => new Promise((resolve) => setTimeout(resolve, time));
-        this.ITEM_HEIGHT = 65;
-        this.NUMBER_OF_ITEM = 15;
+        this.list = null;
         this.state = {
             products: [],
             searchText: "",
             loading: true
         };
 
+        this.handleUpdateList    = this.handleUpdateList.bind(this);
         this.handleChangeText    = this.handleChangeText.bind(this);
         this.handleFetchProducts = this.handleFetchProducts.bind(this);
         this.onRefresh           = this.onRefresh.bind(this);
@@ -45,12 +46,17 @@ class ProductList extends React.PureComponent {
      * Component life cycle
      * */
     componentDidMount() {
-        this.handleFetchProducts()
+        emitter.addListener(EVENT_TYPE.UPDATE_PRODUCT, this.handleUpdateList)
+        this.handleFetchProducts();
         InteractionManager.runAfterInteractions(() => {
             this.setState({
                 products: this.props.products
             }, () => this.setState({loading: false}))
         })
+    }
+
+    componentWillUnmount() {
+        emitter.removeListener(EVENT_TYPE.UPDATE_PRODUCT, this.handleUpdateList)
     }
 
     componentWillReceiveProps(nextProps) {
@@ -64,6 +70,10 @@ class ProductList extends React.PureComponent {
     /**
      * Handle
      * */
+
+    handleUpdateList() {
+        this.list.onUpdateList();
+    }
 
     async handleFetchProducts () {
         try {
@@ -107,9 +117,10 @@ class ProductList extends React.PureComponent {
      * Render
      * */
 
-    renderItem(rowData, sectionId, index, numberOfRows) {
+    renderItem(rowData, index) {
         return <ErrorBoundary>
-            <ProductItem key={index} navigator={this.props.navigator} item={rowData}/>
+            <ProductItem key={index} navigator={this.props.navigator}
+                         item={rowData}/>
         </ErrorBoundary>
     }
 
@@ -167,9 +178,10 @@ class ProductList extends React.PureComponent {
                         {
                             (productItem.length > 0 && this.state.products !== "NoData") &&
                             <List
+                                ref={ref => this.list = ref}
                                 onRefresh={this.onRefresh.bind(this)}
                                 dataSources={productItem}
-                                renderItem={this.renderItem.bind(this)}
+                                renderItem={(item, index) => this.renderItem(item, index)}
                             />
                         }
                         {

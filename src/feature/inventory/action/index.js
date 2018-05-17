@@ -7,6 +7,9 @@ import {getInventoryHistory} from "../importExportManagement/action";
 import {exportProductToPOS} from "./graph";
 import {inventory_history, product_inventory_data} from "../../../api/dataHandler/inventory";
 import {fetchCategory} from "./category/fetch";
+import {updateProduct} from "../productManagement/action/product/update";
+import {createCategory} from "./category/create";
+import {updateCategory} from "./category/update";
 
 export const INVENTORY = {
     FETCH_USER_PRODUCT: async (userId, type) => {
@@ -43,6 +46,10 @@ export const INVENTORY = {
 
     FETCH_CATEOGRY: fetchCategory,
 
+    CREATE_CATEGORY: createCategory,
+
+    UPDATE_CATEGORY: updateCategory,
+
     FETCH_HISTORY: async (type) => {
         try {
             // FETCH INVENTORY HISTORY FROM API
@@ -78,4 +85,6 @@ export const INVENTORY = {
             throw e;
         }
     },
+
+    UPDATE_PRODUCT: updateProduct
 };

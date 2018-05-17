@@ -67,6 +67,10 @@ const styleBase = EStyleSheet.create({
     textInput: {
         height: 40
     },
+    input: {
+        borderWidth: 1,
+        borderColor: '#e5e5e5'
+    },
     fontRubik: {
         fontFamily: 'Rubik',
         color: "#444"

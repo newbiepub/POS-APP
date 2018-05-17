@@ -145,7 +145,7 @@ class Management extends React.Component {
             if(inventoryHistory.length){
                 renderManagement = (
                     <Table fields={this.fields}
-                           renderList={this.renderList}
+                           renderList={() => this.renderList()}
                     />
                 )
             } else {

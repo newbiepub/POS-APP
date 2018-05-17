@@ -12,7 +12,7 @@ import NavBar from "../../../../component/navbar/navbar";
 import {DISCOUNT_ACTION} from "../../../../constant/actionTypes";
 import store from "../../../../store/store";
 import { connect } from "react-redux";
-import {inputData} from "../../../../selector/discount";
+import {discounts, inputData} from "../../../../selector/discount";
 import DISCOUNT from "../action/index";
 
 const styles = EStyleSheet.create({
@@ -132,6 +132,8 @@ class DiscountInput extends React.Component {
     async handleSubmitDiscount() {
         try {
             let {
+                discountId,
+                discounts,
                 amount,
                 type,
                 name,
@@ -150,7 +152,7 @@ class DiscountInput extends React.Component {
                 dueDate,
                 employeeIds,
                 products
-            }
+            }, updateItemIndex;
 
             // Validation
             if(!name.length) throw new Error('Tên khuyến mại bắt buộc');
@@ -162,18 +164,34 @@ class DiscountInput extends React.Component {
             if(!products.length) throw new Error('Mời chọn sản phẩm');
             if(!employeeIds.length) throw new Error('Mời chọn điểm bán hàng');
 
-            // Optimistic Discount
-            store.dispatch({
-                type: DISCOUNT_ACTION.FETCH_ALL_DISCOUNT,
-                payload: [insertItem]
-            })
             // Navigate back
             this.props.navigator.pop();
-            // Create discount
-            await DISCOUNT.CREATE_DISCOUNT(
-                name, description, appliedDate, dueDate,
-                type.value , amount, products, employeeIds
-            )
+            if(this.props.modifiedType === 'create') {
+                // Optimistic Discount
+                store.dispatch({
+                    type: DISCOUNT_ACTION.FETCH_ALL_DISCOUNT,
+                    payload: [...discounts, insertItem]
+                })
+                // Create discount
+                await DISCOUNT.CREATE_DISCOUNT(
+                    name, description, appliedDate, dueDate,
+                    type.value , amount, products, employeeIds
+                )
+            } else {
+
+                // Optimistic Update
+                updateItemIndex = discounts.findIndex(discount => discount._id === discountId);
+                discounts[updateItemIndex] = {...discounts[updateItemIndex], ...insertItem}
+                updateItemIndex > -1 && store.dispatch({
+                    type: DISCOUNT_ACTION.FETCH_ALL_DISCOUNT,
+                    payload: discounts
+                })
+
+                await DISCOUNT.UPDATE_DISCOUNT(
+                    discountId, name, description, appliedDate, dueDate,
+                    type.value , amount, products, employeeIds
+                )
+            }
         } catch (e) {
             alert(e.message);
         }
@@ -214,7 +232,7 @@ class DiscountInput extends React.Component {
                                 styleBase.p_md_horizontal, styleBase.p_md_vertical,
                                 styleBase.m_md_vertical,
                             ]}
-                            value={this.state.amount > 0 ? this.state.amount.seperateNumber() : ''}
+                            value={this.props.amount > 0 ? this.props.amount.seperateNumber() : ''}
                             onChangeText={this.handleChangeAmount}
                             placeholder="GIẢM GIÁ"/>
                         <InputDatePicker placeholder="Thời gian bắt đầu giảm giá"
@@ -273,12 +291,21 @@ const SubmitButton = (props) => {
     )
 }
 
-DiscountInput.propTypes = {};
+DiscountInput.propTypes = {
+    modifiedType: PropTypes.string,
+    discountId: PropTypes.string
+};
 
-DiscountInput.defaultProps = {};
+DiscountInput.defaultProps = {
+    modifiedType: 'create',
+    discountId: ''
+};
 
 const mapStateToProps = (state) => {
-    return inputData(state)
+    return {
+        discounts: discounts(state),
+        ...inputData(state)
+    }
 }
 
 export default connect(mapStateToProps) (DiscountInput);

@@ -15,15 +15,16 @@ class CategoryList extends React.Component {
     constructor(props) {
         super(props);
         this.categories = [];
+        this.list = null;
         this.state = {
             loading: true,
             categories: []
         }
 
         this.renderListItem         = this.renderListItem.bind(this);
-        this.renderList             = this.renderList.bind(this);
         this.handlePressAddCategory = this.handlePressAddCategory.bind(this);
         this.handleSearchCategories = this.handleSearchCategories.bind(this);
+        this.handleOnRefresh        = this.handleOnRefresh.bind(this);
     }
 
     componentDidMount() {
@@ -44,7 +45,7 @@ class CategoryList extends React.Component {
 
     handlePressAddCategory() {
         openPopup();
-        renderContent(<AddCategory type='create'/>)
+        renderContent(<AddCategory type='create' handleModifiedCategory={() => this.handleModifiedCategory()}/>)
     }
 
     handleSearchCategories (searchText) {
@@ -58,15 +59,32 @@ class CategoryList extends React.Component {
         })
     }
 
+    async handleOnRefresh() {
+        try {
+            await this.handleFetchCategories();
+        } catch (e) {
+            alert('ĐÃ CÓ LỖI XẢY RA')
+        }
+    }
+
+    async handleModifiedCategory() {
+        let categories = await INVENTORY.FETCH_CATEOGRY(this.props.user._id);
+        this.setState({categories}, () => {
+            this.list.onUpdateList();
+        });
+    }
+
     // renderer
 
     renderListItem (item, index) {
-        return <CategoryListItem item={item} index={index}/>
+        return <CategoryListItem item={item} index={index} handleModifiedCategory={() => this.handleModifiedCategory()} />
     }
 
     renderList() {
         return <List disableVirtualization={false}
+                     ref={ref => this.list = ref}
                      initialNumToRender={10}
+                     onRefresh={this.handleOnRefresh}
                      renderItem={this.renderListItem}
                      dataSources={this.state.categories}/>
     }
@@ -83,7 +101,7 @@ class CategoryList extends React.Component {
                         <React.Fragment>
                             <View style={[styleBase.grow]}>
                                 <Table fields={listCategory}
-                                       renderList={this.renderList}
+                                       renderList={() => this.renderList()}
                                        onSearchText={this.handleSearchCategories}
                                 />
                             </View>

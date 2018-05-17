@@ -25,6 +25,8 @@ class AppContainer extends React.Component {
     constructor(props) {
         super(props);
         this.navigator = null;
+
+        this.handleResetRoute = this.handleResetRoute.bind(this);
     }
 
     static propTypes = {};
@@ -33,13 +35,15 @@ class AppContainer extends React.Component {
 
     componentDidMount() {
         // User logout handler
-        emitter.addListener(EVENT_TYPE.USER_LOGOUT, () => {
-            this.navigator.resetTo({id: 'login'}); // Reset to login view
-        })
+        emitter.addListener(EVENT_TYPE.USER_LOGOUT, this.handleResetRoute)
     }
 
     componentWillUnmount () {
-        emitter.removeAllListeners();
+        emitter.removeListener(EVENT_TYPE.USER_LOGOUT, this.handleResetRoute);
+    }
+
+    handleResetRoute () {
+        this.navigator.resetTo({id: 'login'}); // Reset to login view
     }
 
     configureScene(route, navigator) {

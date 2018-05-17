@@ -13,7 +13,8 @@ export const product_inventory_data = (item) => {
             category: categoryId,
             name: product.name,
             unit: product.unit || '',
-            _id: product._id || ''
+            _id: product._id || '',
+            productCode: product.productCode || ''
         },
         quantity: item.quantity || 0
     }

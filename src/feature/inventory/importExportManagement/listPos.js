@@ -96,7 +96,7 @@ class ListPos extends React.PureComponent {
                 <AfterInteractions placeholder={(<ActivityIndicator size="large"/>)}>
                     <NavBar title={this.props.title} navigator={this.props.navigator}/>
                     <Table fields={listPOSFields}
-                           renderList={this.renderList}
+                           renderList={() => this.renderList()}
                     />
                 </AfterInteractions>
             </SafeAreaView>

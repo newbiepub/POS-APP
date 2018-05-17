@@ -13,6 +13,7 @@ export const getProductInventory = gql`
                         name
                         description
                     }
+                    productCode
                 }
                 importPrice
                 prices {

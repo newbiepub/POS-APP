@@ -7,6 +7,7 @@ import {discount_data} from "../../../../api/dataHandler/discount";
 const FETCH_ALL_DISCOUNT = gql`
     query FETCH_ALL_DISCOUNT{
         discounts : FETCH_ALL_DISCOUNT {
+            _id
             products
             companyId
             employeeIds

@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import styleBase from "../../styles/base";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-class Table extends React.Component {
+class Table extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
@@ -13,12 +13,6 @@ class Table extends React.Component {
         }
 
         this.handleChangeText = this.handleChangeText.bind(this);
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-        let searchText = this.state.searchText !== nextState.searchText;
-
-        return searchText;
     }
 
     handleChangeText(text) {

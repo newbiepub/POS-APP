@@ -24,7 +24,9 @@ class Discount extends React.Component {
             case 'list_discount':
                 return <ListDiscount navigator={navigator}/>
             case 'discount_input':
-                return <DiscountInput navigator={navigator}/>
+                return <DiscountInput navigator={navigator}
+                                      discountId={route.discountId}
+                                      modifiedType={route.modifiedType}/>
         }
     }
 

@@ -57,7 +57,7 @@ class ListDiscount extends React.Component {
                         <DiscountHeader/>
                         <ScrollView removeClippedSubviews={true}>
                             {this.props.discounts.map((item, index) => {
-                                return <DiscountItem key={uuid()} index={index} item={item}/>
+                                return <DiscountItem key={uuid()} index={index} item={item} navigator={this.props.navigator}/>
                             })}
                         </ScrollView>
                         <ButtonAddDiscount onPress={this.handlePressAddDiscount}/>

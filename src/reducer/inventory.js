@@ -14,6 +14,12 @@ export default function (state = initialState, action = {}) {
                 products: action.payload
             }
         }
+        case INVENTORY_ACTION.UPDATE_PRODUCT: {
+            return {
+                ...state,
+                products: action.payload
+            }
+        }
         case INVENTORY_ACTION.FETCH_INVENTORY_HISTORY: {
             return {
                 ...state,

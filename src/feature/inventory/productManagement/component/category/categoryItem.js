@@ -29,6 +29,7 @@ class CategoryListItem extends React.Component {
         let products = productInventory.filter(data => {
             return !!data.product && !!data.product.category && data.product.category._id === item._id
         });
+
         products = products.map(data => data.product._id);
         store.dispatch({
             type: CATEGORY_ACTION.UPDATE_CATEGORY,
@@ -38,7 +39,9 @@ class CategoryListItem extends React.Component {
             }
         })
         openPopup();
-        renderContent(<AddCategory type='update'/>)
+        renderContent(<AddCategory type='update'
+                                   handleModifiedCategory={this.props.handleModifiedCategory}
+                                   categoryId={item._id}/>)
     }
 
     render() {
@@ -63,12 +66,14 @@ class CategoryListItem extends React.Component {
 
 CategoryListItem.propTypes = {
     item: PropTypes.object,
-    index: PropTypes.number
+    index: PropTypes.number,
+    handleModifiedCategory: PropTypes.func
 };
 
 CategoryListItem.defaultProps = {
     item: null,
-    index: 0
+    index: 0,
+    handleModifiedCategory: () => {}
 };
 
 const mapStateToProps = (state) => {
