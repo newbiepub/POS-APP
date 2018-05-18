@@ -114,6 +114,10 @@ export const QUERY = {
                     productName
                     quantity
                     priceImport
+                    category{
+                        categoryId
+                        categoryName
+                    }
                     price{
                         name
                         price
@@ -203,7 +207,7 @@ export const QUERY = {
                 products {
                     _id
                     quantity
-                    salePrice
+           
                 }
                 totalQuantity
                 totalPrice

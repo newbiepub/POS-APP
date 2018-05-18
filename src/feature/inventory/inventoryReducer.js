@@ -5,8 +5,9 @@ import {omitDeep} from "../../reuseable/function/function";
 const initialState = {
     inventoryActivityAmount: 0,
     inventoryActivity: [],
-    inventoryActivitySelected:{}
+    inventoryActivitySelected: {}
 };
+
 function updateInventory(state, inventory) {
     if (state.length === 0) {
         return inventory
@@ -19,15 +20,14 @@ function updateInventory(state, inventory) {
                     break;
                 } else {
                     if (j === state.length - 1) {
-
-                        state.push(inventory[i])
+                        state.push(inventory[i]);
                     }
                 }
             }
 
         }
     }
-    state.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    state.sort((a, b) => new Date(b.dateRequest).getTime() - new Date(a.dateRequest).getTime());
     return state
 
 }
@@ -60,7 +60,7 @@ export default function (state = initialState, action = {}) {
                     ...state,
                     inventoryActivityAmount: action.payload.inventoryReducer.inventoryActivityAmount,
                     inventoryActivity: action.payload.inventoryReducer.inventoryActivity,
-                    inventoryActivitySelected:action.payload.inventoryReducer.inventoryActivitySelected,
+                    inventoryActivitySelected: action.payload.inventoryReducer.inventoryActivitySelected,
                 };
 
             } else {
@@ -73,7 +73,8 @@ export default function (state = initialState, action = {}) {
         case USER.LOG_OUT: {
             return {
                 inventoryActivityAmount: 0,
-                inventoryActivity: []
+                inventoryActivity: [],
+                inventoryActivitySelected: {}
             }
         }
         default:

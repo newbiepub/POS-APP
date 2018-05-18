@@ -53,7 +53,7 @@ export class SearchInput extends React.PureComponent {
                            onBlur={() => {
                                this.setState({onFocus: false})
                            }}
-                           style={[this.state.onFocus && {}, style.fontSizeNormal, {flex: 1}, this.props.style]}
+                           style={[this.state.onFocus && {flex:1}, style.fontSizeNormal, this.props.style]}
                 />
                 {
                     this.props.value != undefined && this.props.value != "" &&
@@ -276,7 +276,6 @@ const style = EStyleSheet.create({
     },
     searchInput: {
         flexDirection: 'row',
-        flex: 1,
         alignItems: 'center',
         padding: 10,
         borderWidth: 1,

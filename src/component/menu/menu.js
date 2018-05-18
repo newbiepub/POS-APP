@@ -57,7 +57,7 @@ class Menu extends PureComponent {
             )
         }
 
-    }
+    };
 
 
     render() {

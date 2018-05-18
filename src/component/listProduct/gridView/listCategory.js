@@ -100,6 +100,7 @@ class CategoryView extends React.PureComponent {
                 </View>
                 <View style={style.categoryName}>
                     <TextNormal
+                        numberOfLines={2}
                         style={this.props.categoryFilter === item._id && {color: constantStyle.color1}}>{item.name}</TextNormal>
                 </View>
             </View>
@@ -205,6 +206,7 @@ const style = EStyleSheet.create({
     categoryAvatarText: {},
     categoryName: {
         marginLeft: 10,
+        flex:1
     },
     '@media (min-width: 768) and (max-width: 1024)': {},
     '@media (min-width: 1024)': {}

@@ -163,8 +163,6 @@ class ChargeView extends React.Component {
                                 paymentMethod = await removeTypeName(this.state.transaction.paymentMethod),
 
                                 productItems = await normalizeProductItemsInput(this.state.transaction.productItems);
-                            console.warn(this.state.transaction.productItems);
-                            console.warn(productItems)
                             //Subtract inventory
                             this.props.subtractInventoryLocal(productItems);
                             //Mutate Transaction

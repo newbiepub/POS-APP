@@ -21,6 +21,7 @@ export function normalizeProductItemsInput(data) {
                 quantity: items.quantity,
                 price: getPriceInput(items.price),
                 priceImport: items.priceImport,
+                category: items.category || null,
                 totalPrice: items.totalPrice,
                 unit: items.unit,
                 discounts: items.discounts || null
@@ -53,6 +54,7 @@ export function normalizeProductItemsIssueRefund(data) {
                 price: getPriceInput(items.price),
                 totalPrice: items.totalPrice,
                 priceImport: items.priceImport,
+                category: items.category||null,
                 unit: items.unit,
                 discounts: items.discounts || null
             };

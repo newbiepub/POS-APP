@@ -116,7 +116,17 @@ class App extends PureComponent {
         let {_id} = this.props.user;
         // await this.initData();
     }
+    async initProduct() {
+        let {_id} = this.props.user;
+        let amount = await this.props.getProductAmount(_id);
+        InteractionManager.runAfterInteractions(async () => {
+            for (let i = 0; i <= amount; i += 10) {
+                // console.warn(i)
+                await this.props.getProduct(_id, 10, i);
+            }
 
+        });
+    }
 
     async initData() {
         await this.props.getProfile();
@@ -124,6 +134,7 @@ class App extends PureComponent {
         await this.props.getPaymentStatus();
         await this.props.getCurrency();
         await this.props.getDiscountEmployee();
+        await this.initProduct()
         // let {_id} = this.props.user;
         // let amount = await this.props.getProductAmount(_id);
         // for (let i = 0; i <= amount; i += 10) {
@@ -183,7 +194,7 @@ class Home extends React.Component {
         this.props.initDatabase()
     }
     shouldComponentUpdate(nextProps, nextState) {
-        const changeRoute = this.props.router.currentItem.id !== nextProps.router.currentItem.id;
+        const changeRoute = this.props.router != nextProps.router;
         return changeRoute;
     }
 

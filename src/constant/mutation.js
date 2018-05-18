@@ -38,7 +38,7 @@ export const MUTATION = {
                         value
                         description
                         appliedDate
-                        dueDate	
+                        dueDate
                         createdAt
                     }
                 }
@@ -80,7 +80,7 @@ export const MUTATION = {
                     description
                 }
                 description
-           
+
             }
         }`,
     UPDATE_TRANSACTION: gql`
@@ -111,7 +111,7 @@ export const MUTATION = {
                         value
                         description
                         appliedDate
-                        dueDate	
+                        dueDate
                         createdAt
                     }
                 }
@@ -153,13 +153,13 @@ export const MUTATION = {
                     description
                 }
                 description
-           
+
             }
         }`,
     ISSUE_REFUND: gql`
         mutation issueRefundTransaction($_id: String!,$issueRefundReason:String!,$refundDate:Date,$productItems:[TransactionProductItemsInput]! ){
             issueRefundTransaction(_id: $_id, issueRefundReason: $issueRefundReason,refundDate:$refundDate,productItems:$productItems) {
-                 _id
+                _id
                 createdAt
                 productItems{
                     _id
@@ -180,7 +180,7 @@ export const MUTATION = {
                         value
                         description
                         appliedDate
-                        dueDate	
+                        dueDate
                         createdAt
                     }
                 }
@@ -229,6 +229,18 @@ export const MUTATION = {
         $transaction:TransactionInput!,
         $email:String!){
             sendMailInvoice(transaction:$transaction, email: $email)
+        }`,
+    REQUEST_INVENTORY_ORDER: gql`
+        mutation REQUEST_INVENTORY_ORDER($products:[ProductRequest]! ){
+            REQUEST_INVENTORY_ORDER(products:$products) {
+                success
+            }
+        }`,
+    CONFIRM_INVENTORY_ORDER: gql`
+        mutation CONFIRM_INVENTORY_ORDER($activityId:String! ){
+            CONFIRM_INVENTORY_ORDER(activityId:$activityId) {
+                success
+            }
         }`,
 };
 export const FRAGMENT = {

@@ -172,6 +172,13 @@ class Report extends React.Component {
                                        childOption={this.childOption} currentChildOption={this.state.currentChildOption}
                                        currency={this.props.currency}/>
                         }
+                        {
+                            this.state.currentOption.id === this.option[2].id &&
+                            <ByCategory transaction={[...this.props.asyncTransaction, ...this.props.transaction]}
+                                        childOption={this.childOption}
+                                        currentChildOption={this.state.currentChildOption}
+                                        currency={this.props.currency}/>
+                        }
 
                         {
                             this.state.timeOptionVisible &&
@@ -244,7 +251,7 @@ class ByTime extends React.PureComponent {
         this.state = {
             dataToDay: [],
             dataMonth: [],
-            dataWeek:[]
+            dataWeek: []
         }
     }
 
@@ -388,6 +395,71 @@ class ByProduct extends React.PureComponent {
         )
     }
 }
+
+class ByCategory extends React.PureComponent {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: this.getData(this.props.transaction),
+        }
+    }
+
+    getData(transaction) {
+        let dataByQuantity = [];
+        for (tran of transaction) {
+            if (!tran.issueRefund) {
+                for (product of tran.productItems) {
+                    if (product.category && product.category.categoryId) {
+                        if (dataByQuantity.length === 0) {
+                            dataByQuantity.push({
+                                y: {quantity: product.quantity, money: product.totalPrice},
+                                x: product.category.categoryName,
+                                _id: product.category.categoryId
+                            })
+                        } else {
+                            for (itemData of dataByQuantity) {
+                                if (itemData._id === product.category.categoryId) {
+                                    itemData.y.quantity += product.quantity;
+                                    itemData.y.money += product.totalPrice;
+
+                                    break;
+                                } else {
+                                    if (dataByQuantity.indexOf(itemData) === dataByQuantity.length - 1) {
+                                        dataByQuantity.push({
+                                            y: {quantity: product.quantity, money: product.totalPrice},
+                                            x: product.category.categoryName,
+                                            _id: product.category.categoryId
+                                        });
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+            }
+
+
+        }
+        return dataByQuantity;
+    }
+
+    render() {
+        let type = this.props.currentChildOption.id === this.props.childOption[1].id ? 1 : 0;
+        return (
+            <View style={style.container}>
+                <ChartBar y={type === 1 ? "Số lượng" : this.props.currency.name} x={"Mặt hàng"}
+                          data={type === 1 ? this.state.data : this.state.data}
+                          yType={type === 1 ? "quantity" : "money"}/>
+
+            </View>
+        )
+    }
+}
+
 
 const style = EStyleSheet.create({
     container: {

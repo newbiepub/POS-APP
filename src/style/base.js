@@ -2,7 +2,7 @@ import EStyleSheet from "react-native-extended-stylesheet";
 import {Dimensions} from 'react-native';
 
 let {width} = Dimensions.get('window');
-let sm = 10, md = 20, lg = 30, xl = 50;
+let xs = 5, sm = 10, md = 20, lg = 30, xl = 50;
 export const constantStyle = {
         headerHeight: 65,
         sizeLarge: width > 1024 ? 46 : width > 768 ? 35 : 20,
@@ -12,7 +12,7 @@ export const constantStyle = {
         "$md": 20,
         "$lg": 30,
         //BLue
-        color1: '#9398a0',
+        color1: '#626d71',//'#9398a0' 336B87 375e97
 //    white
         color2: '#fff',
         colorBackground: '#E9EBEE',
@@ -22,7 +22,7 @@ export const constantStyle = {
         paddingHorizontal: md,
         paddingGridItem: sm,
         sm: sm,
-        md, lg, xl,
+        md, lg, xl,xs,
         marginVerticalSmall:
         sm,
         marginVerticalNormal:

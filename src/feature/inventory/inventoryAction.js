@@ -17,12 +17,14 @@ function fetchInventoryActivityEmployeeAction(payload) {
         payload
     }
 }
+
 function selectInventoryActivityAction(payload) {
     return {
         type: INVENTORY.SELECT_INVENTORY_ACTIVITY,
         payload
     }
 }
+
 export function fetchInventoryActivityEmployeeAmount() {
     return async (dispatch, getState) => {
         try {
@@ -37,6 +39,7 @@ export function fetchInventoryActivityEmployeeAmount() {
 
     }
 }
+
 export function selectInventoryActivity(item) {
     return async (dispatch, getState) => {
         try {
@@ -47,6 +50,7 @@ export function selectInventoryActivity(item) {
 
     }
 }
+
 export function fetchInventoryActivityEmployee(limit, skip) {
     return async (dispatch, getState) => {
         try {
@@ -62,6 +66,54 @@ export function fetchInventoryActivityEmployee(limit, skip) {
         } catch (e) {
             console.warn("inventoryAction.js-fetchInventoryActivityEmployee-" + e)
         }
+
+    }
+}
+
+export function requestInventoryOrder(products) {
+    return async (dispatch, getState) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const request = await
+                    client.mutate({
+                        mutation: MUTATION.REQUEST_INVENTORY_ORDER,
+                        variables: {
+                            products: products,
+                        },
+                        fetchPolicy: "network-only"
+                    });
+                resolve(request)
+                // dispatch(fetchInventoryActivityEmployeeAction(omitDeep(inventoryActivity.data.FETCH_INVENTORY_ACTIVITY_EMPLOYEE, '__typename')))
+            } catch (e) {
+                console.warn("inventoryAction.js-requestInventoryOrder-" + e);
+                reject(false);
+
+            }
+        })
+
+    }
+}
+
+export function confirmInventory(activityId) {
+    return async (dispatch, getState) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const request = await
+                    client.mutate({
+                        mutation: MUTATION.CONFIRM_INVENTORY_ORDER,
+                        variables: {
+                            activityId: activityId,
+                        },
+                        fetchPolicy: "network-only"
+                    });
+                resolve(request)
+                // dispatch(fetchInventoryActivityEmployeeAction(omitDeep(inventoryActivity.data.FETCH_INVENTORY_ACTIVITY_EMPLOYEE, '__typename')))
+            } catch (e) {
+                console.warn("inventoryAction.js-confirmInventory-" + e);
+                reject(false);
+
+            }
+        })
 
     }
 }

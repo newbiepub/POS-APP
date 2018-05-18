@@ -35,11 +35,11 @@ export default function (state = initialState, action = {}) {
                     {id: 'report', name: 'Thống kê'},
                     {id: 'transaction', name: 'Giao dịch'},
                     {id: 'invoice', name: 'Hoá đơn',disable:true},
-                    {id: 'inventory', name: 'Kho',disable:true},
+                    {id: 'inventory', name: 'Kho'},
                     {id: 'setting', name: 'Cài đặt'},],
                 isLoading: false,
-                menuVisible: false,
-                currentItem: {id: 'pos', name: 'Điểm bán hàng'}
+                currentItem:{id: 'pos', name: 'Điểm bán hàng'},
+                menuVisible: false
             }
         }
         default:

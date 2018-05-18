@@ -27,6 +27,10 @@ class ViewProduct extends React.Component {
                 price: this.props.item.prices[0],
                 priceImport: this.props.item.importPrice,
                 prices: this.props.item.prices,
+                category: this.props.item.product.categoryId ? {
+                    categoryId: this.props.item.product.categoryId._id,
+                    categoryName: this.props.item.product.categoryId.name,
+                } : null,
                 unit: this.props.item.product.unit,
                 inventoryQuantity: this.props.item.quantity,
                 discounts: this.getDiscount()

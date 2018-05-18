@@ -28,7 +28,7 @@ class LoadingOverlay extends React.PureComponent {
                     position:'absolute',
                     width:"100%",
                     height:'100%',
-                    backgroundColor: "rgba(0,0,0,0.08)"
+                    backgroundColor: "rgba(0,0,0,0.2)"
                 }, this.props.style]}>
                     <ActivityIndicator size="large"/>
                     <Text style={[{fontSize: constantStyle.sizeNormal, color: constantStyle.color2, marginTop: 15}]}>

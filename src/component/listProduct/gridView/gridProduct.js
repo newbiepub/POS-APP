@@ -57,7 +57,7 @@ class GridProduct extends React.Component {
         Dimensions.addEventListener("change", () => {
             let {width, height} = Dimensions.get('window');
         });
-        await this.initProduct();
+        // await this.initProduct();
 
     }
 
@@ -208,7 +208,12 @@ class GridProduct extends React.Component {
                     data={data}
                     extraData={this.props.products}
                     numColumns={this.state.columnNumber}
-                    initialNumToRender={10}
+                    updateCellsBatchingPeriod={6}
+                    maxToRenderPerBatch={1}
+                    disableVirtualization={true}
+                    removeClippedSubviews={true}
+                    windowSize={this.state.gridViewItemSize}
+                    initialNumToRender={6}
                     getItemLayout={(data, index) => (
                         {length: this.props.productAmount, offset: this.state.gridViewItemSize * index, index}
                     )}
