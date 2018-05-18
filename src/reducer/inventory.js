@@ -3,7 +3,8 @@ import {INVENTORY_ACTION, INVENTORY_ACTIVITY_ACTION} from "../constant/actionTyp
 const initialState = {
     products: [],
     history: [],
-    activity: []
+    activity: [],
+    activityRequest: []
 };
 
 export default function (state = initialState, action = {}) {
@@ -30,6 +31,12 @@ export default function (state = initialState, action = {}) {
             return {
                 ...state,
                 activity: [...state.activity, ...action.payload]
+            }
+        }
+        case INVENTORY_ACTIVITY_ACTION.FETCH_INVENTORY_ACTIVITY_COMPANY: {
+            return {
+                ...state,
+                activityRequest: action.payload
             }
         }
         default: return state

@@ -11,6 +11,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import {openPopup, renderContent} from "../../../component/popup/actions/popupAction";
 import DropDown from "../../../component/dropDown/index";
 import ErrorBoundary from "../../../component/errorBoundary/errorBoundary";
+import OrderRequestContainer from "../order/request/container/index";
 
 class ImportExportManagement extends React.Component {
     constructor(props) {
@@ -96,6 +97,12 @@ class ImportExportManagement extends React.Component {
                     this.state.currentRoute.route === "inventory_export_action" &&
                         <ErrorBoundary>
                             <ExportAction navigator={this.props.navigator}/>
+                        </ErrorBoundary>
+                }
+                {
+                    this.state.currentRoute.route === 'inventory_import_request' &&
+                        <ErrorBoundary>
+                            <OrderRequestContainer navigator={this.props.navigator}/>
                         </ErrorBoundary>
                 }
             </SafeAreaView>

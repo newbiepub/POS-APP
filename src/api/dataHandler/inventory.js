@@ -5,6 +5,7 @@ export const product_inventory_data = (item) => {
     let { categoryId = {name: 'Không có'} } = product;
 
     return {
+        _id: item._id || '',
         employeeId: item.employeeId,
         companyId: item.companyId,
         importPrice: item.importPrice,
@@ -17,6 +18,36 @@ export const product_inventory_data = (item) => {
             productCode: product.productCode || ''
         },
         quantity: item.quantity || 0
+    }
+}
+
+export const inventory_order_data = item => {
+    let { products = [], from = {}, to = {} } = item;
+
+    products = products.map(product => {
+        return {
+            "_id": product._id || '',
+            "name": product.name || '',
+            "quantity": product.quantity || 0,
+            "salePrice": product.salePrice || 0
+        }
+    })
+    return {
+        "_id": item._id,
+        "products": products,
+        "totalPrice": item.totalPrice || 0,
+        "from": {
+            "_id": from._id
+        },
+        "to": {
+            "_id": to._id,
+            "name": to.name || '',
+            "phone": to.phone || '',
+            "email": to.email || '',
+            "address": to.address || ''
+        },
+        "totalQuantity": item.totalQuantity || 0,
+        "dateRequest": item.dateRequest
     }
 }
 

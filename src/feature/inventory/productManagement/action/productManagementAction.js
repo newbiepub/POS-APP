@@ -21,6 +21,7 @@ export const getProductInventory = gql`
                     price
                 }
                 quantity
+                _id
             }
             ... on ProductInventoryCompany {
                 companyId

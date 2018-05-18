@@ -19,9 +19,11 @@ class Management extends React.Component {
     constructor(props) {
         super(props);
         this.fields = inventoryHistoryFields.map(item => {
-            item.name = item.name.replace("$type", '');
+            item = {...item}; // Prevent mutation
+            item.name = item.name.replace("$type", props.type === "import" ? "NHẬP" : "XUẤT");
             return item;
         });
+
         this.list = null;
 
         this.state = {
