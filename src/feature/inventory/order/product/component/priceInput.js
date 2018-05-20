@@ -15,10 +15,16 @@ class PriceInput extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            value: 0
+            value: props.value
         }
 
         this.handleChangeValue = this.handleChangeValue.bind(this);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            value: nextProps.value
+        })
     }
 
     handleChangeValue(ratio) {
@@ -47,10 +53,12 @@ class PriceInput extends React.PureComponent {
 }
 
 PriceInput.propTypes = {
+    value: PropTypes.number,
     onChangePrice: PropTypes.func
 };
 
 PriceInput.defaultProps = {
+    value: 0,
     onChangePrice: () => {}
 };
 

@@ -8,6 +8,7 @@ export const pos_data = (item) => {
             name: profile.name || '',
             phoneNumber: profile.phoneNumber || '',
         },
-        username: item.username || ''
+        username: item.username || '',
+        status: item.status || ''
     }
 }

@@ -5,6 +5,8 @@ import {connect} from 'react-redux';
 import styleBase from "../../../../styles/base";
 import ACTIVITY_LOGGER from "../action/index";
 import NoData from "../../../../component/noData/noData";
+import List from "../../../../component/list/list";
+import ListLogItem from "./item";
 
 class ListLog extends React.Component {
     constructor(props) {
@@ -12,6 +14,8 @@ class ListLog extends React.Component {
         this.state = {
             loading: true
         }
+
+        this.renderItem = this.renderItem.bind(this);
     }
 
     componentDidMount() {
@@ -25,19 +29,27 @@ class ListLog extends React.Component {
         this.setState({loading:false})
     }
 
+    renderItem(item, index) {
+        return <ListLogItem item={item} index={index}/>
+    }
+
     render() {
         return (
             <View style={[styleBase.container, styleBase.bgWhite]}>
-                {this.state.loading &&
+                {this.state.loading && !this.props.activity.length &&
                 <View style={[styleBase.center]}>
-
                     <ActivityIndicator size="large"/>
-
                 </View>
                 }
                 {
                     !this.state.loading && !this.props.activity.length &&
                         <NoData/>
+                }
+                {
+                    this.props.activity.length > 0 &&
+                        <List
+                            renderItem={this.renderItem}
+                            dataSources={this.props.activity}/>
                 }
             </View>
         )

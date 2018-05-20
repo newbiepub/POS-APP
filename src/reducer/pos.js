@@ -14,6 +14,7 @@ export default function (state = initialState, action = {}) {
         }
         case POS_ACTION.ADD_OPTIMISTIC: {
             return {
+                ...state,
                 all: [...state.all, action.payload]
             }
         }
@@ -25,7 +26,47 @@ export default function (state = initialState, action = {}) {
 
             pos[index]       = payload.data
             return {
-                all: [...state.all]
+                ...state,
+                all: [...pos]
+            }
+        }
+        case POS_ACTION.UPDATE: {
+            let pos = state.all;
+            let {
+                username = '',
+                name = '',
+                address = '',
+                phoneNumber = ''
+            } = action.payload;
+            let employeeId = action.payload.employeeId;
+            let posIndex = pos.findIndex(item => item._id === employeeId);
+
+            pos[posIndex] = {
+                ...pos[posIndex],
+                username,
+                profile: {
+                    name,
+                    address,
+                    phoneNumber
+                }
+            }
+            return {
+                ...state,
+                all: [...pos]
+            }
+        }
+        case POS_ACTION.DEACTIVATE: {
+            let pos = state.all;
+            let employeeId = action.payload.employeeId;
+            let posIndex = pos.findIndex(item => item._id === employeeId);
+
+            pos[posIndex] = {
+                ...pos[posIndex],
+                status: action.payload.status
+            }
+            return {
+                ...state,
+                all: [...pos]
             }
         }
         default: return state;

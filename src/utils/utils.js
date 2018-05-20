@@ -9,6 +9,10 @@ export function formatDate(date) {
     return moment(date).format('dddd DD-MM-YYYY [lúc] h:mm a');
 }
 
+export function formatTimes(date) {
+    return moment(date).format('hh:mm a');
+}
+
 export const uuid = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
 export const equals = (a, b) => {

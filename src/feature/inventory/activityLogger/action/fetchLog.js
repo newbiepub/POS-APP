@@ -9,6 +9,7 @@ const FETCH_INVENTORY_LOGS = gql`
         FETCH_LOGS {
             message
             data
+            type
             createdAt
         }
     }
@@ -26,7 +27,7 @@ export const fetchLog = async () => {
         data = response.data.FETCH_LOGS;
         data = data.map(activity_logger)
         store.dispatch({
-            type: INVENTORY_ACTIVITY_ACTION,
+            type: INVENTORY_ACTIVITY_ACTION.FETCH_LOGS,
             payload: data
         })
     } catch (e) {

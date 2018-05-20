@@ -96,7 +96,7 @@ class TableProducts extends React.PureComponent {
     }
 
     handleSubmitExport () {
-        let { products = [] } = this.state;
+        let { products = [], confirmOption } = this.state;
         products = products.reduce((result, item) => {
             let { product = {}, quantityExport = 0 } = item;
 
@@ -111,8 +111,9 @@ class TableProducts extends React.PureComponent {
                 })
             }
             return result;
+
         }, []);
-        return products;
+        return {products, confirmOption};;
     }
 
     /**

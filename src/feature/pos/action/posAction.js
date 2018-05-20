@@ -3,6 +3,8 @@ import {client} from "../../../../App";
 import store from "../../../store/store";
 import {POS_ACTION} from "../../../constant/actionTypes";
 import {pos_data} from "../../../api/dataHandler/pos";
+import {update} from "../setting/action/update";
+import {deactivate} from "../setting/action/deactivate";
 
 const getAllPOS = gql`
     query getAllPOS {
@@ -16,6 +18,7 @@ const getAllPOS = gql`
             ...on CurrentEmployee {
                 username
                 companyId
+                status
             }
         }
     }
@@ -33,6 +36,7 @@ const createPOS = gql`
             ...on CurrentEmployee {
                 username
                 companyId
+                status
             }
         }
     }
@@ -45,19 +49,7 @@ export const POS_MANAGEMENT = {
             fetchPolicy: 'network-only'
         });
         let pos = data.getAllPOS;
-        let payload = pos.map(item => {
-            let { profile = {} } = item;
-            return {
-                _id: item._id || '',
-                companyId: item.companyId || null,
-                profile: {
-                    address: profile.address || '',
-                    name: profile.name || '',
-                    phoneNumber: profile.phoneNumber || '',
-                },
-                username: item.username || ''
-            }
-        });
+        let payload = pos.map(pos_data);
         store.dispatch({
             type: POS_ACTION.FETCH_ALL,
             payload
@@ -103,7 +95,9 @@ export const POS_MANAGEMENT = {
             console.warn(e.message);
             alert('Đã có lỗi xảy ra !');
         }
-    }
+    },
+    UPDATE_POS: update,
+    DEACTIVATE_POS: deactivate
 };
 
 export {getAllPOS, createPOS};

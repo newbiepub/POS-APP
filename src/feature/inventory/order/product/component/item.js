@@ -58,7 +58,7 @@ class OrderProductItem extends React.Component {
 
 
     render() {
-        let {item} = this.props
+        let {item} = this.props;
 
         return (
             <View style={[styleBase.m_md_vertical,
@@ -75,9 +75,11 @@ class OrderProductItem extends React.Component {
                 <View style={[styleBase.row, styleBase.spaceBetween]}>
                     <View style={[styleBase.row, styleBase.alignCenter]}>
                         <Text style={[styleBase.fontRubik, styleBase.fontBold, styleBase.m_sm_right]}>
-                            GIÁ NHẬP
+                            NHẬP GIÁ
                         </Text>
-                        <PriceInput onChangePrice={(price) => this.props.onChangePrice(price, this.props.index)}/>
+                        <PriceInput
+                            value={this.state.currentProduct ? this.state.currentProduct.salesPrice || 0 : 0}
+                            onChangePrice={(price) => this.props.onChangePrice(price, this.props.index)}/>
                     </View>
                     <View style={[styleBase.row, styleBase.alignCenter]}>
                         <Text style={[styleBase.fontRubik,

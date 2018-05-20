@@ -115,6 +115,9 @@ const styleBase = EStyleSheet.create({
         borderColor: "#e5e5e5",
         borderRadius: 5
     },
+    errorInput: {
+        color: 'red'
+    },
     colorInput: {
         color: "#55db55"
     },

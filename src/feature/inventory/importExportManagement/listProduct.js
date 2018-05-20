@@ -55,8 +55,8 @@ class ListExportProducts extends React.Component {
            this.loading.show();
            let { employee = {} } = this.props;
            let { _id = '' } = employee;
-           let products = this.table.handleSubmitExport();
-           let response = await INVENTORY.EXPORT_PRODUCT(_id, products, false);
+           let {products, confirmOption} = this.table.handleSubmitExport();
+           let response = await INVENTORY.EXPORT_PRODUCT(_id, products, confirmOption);
 
            Alert.alert('Thông báo', 'Xuất kho thành công',[
                {text: 'OK', onPress: () => this.props.navigator.pop()},

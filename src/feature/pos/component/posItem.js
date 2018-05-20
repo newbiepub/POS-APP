@@ -63,9 +63,16 @@ class POSItem extends React.Component {
                     <View style={[styleBase.row, styleBase.m_sm_bottom]}>
                         <Text style={[styleBase.fontRubik, styleBase.normalText]}>
                             {"Trạng thái: "}
-                            <Text style={[styleBase.colorInput]}>
-                                Đang Hoạt Động
-                            </Text>
+                            {
+                                item.status === 'activate' ?
+                                <Text style={[styleBase.colorInput]}>
+                                    Đang Hoạt Động
+                                </Text>
+                                    : item.status === 'deactivate' &&
+                                    <Text style={[styleBase.errorInput]}>
+                                        Ngừng Hoạt Động
+                                    </Text>
+                            }
                         </Text>
                     </View>
                 </View>

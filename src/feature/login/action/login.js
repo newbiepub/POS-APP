@@ -20,11 +20,13 @@ const getCurrentUser = gql`
         currentUser {
             ...userProfile
             ... on CurrentCompany {
-                email
+                email,
+                status
             }
             ... on CurrentEmployee {
                 username
-                companyId
+                companyId,
+                status
             }
         }
     }

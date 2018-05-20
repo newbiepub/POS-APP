@@ -43,7 +43,7 @@ class POS extends React.PureComponent {
     }
 
     renderRow(item, index) {
-        return <POSItem key={index} {...this.props} item={item}/>
+        return <POSItem key={index} {...this.props} item={item} navigator={this.props.navigator}/>
     }
 
     async onRefresh() {

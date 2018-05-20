@@ -14,6 +14,7 @@ import NavBar from "../../../component/navbar/navbar";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {openPopup, renderContent} from "../../../component/popup/actions/popupAction";
 import DropDown from "../../../component/dropDown/index";
+import POSSettingContainer from "../setting/container/index";
 
 class POSDetail extends React.Component {
     constructor(props) {
@@ -104,6 +105,7 @@ class POSDetail extends React.Component {
                         renderLeftComponent={this.renderLeftComponent}
                         renderRightComponent={this.renderRightContent}
                     />
+                    {this.state.currentRoute.route === 'inventory' &&
                     <ScrollView>
                         <View style={[styleBase.m_lg_top]}>
                             <View style={[
@@ -134,6 +136,11 @@ class POSDetail extends React.Component {
                             </View>
                         </View>
                     </ScrollView>
+                    }
+                    {
+                        this.state.currentRoute.route === 'setting' &&
+                            <POSSettingContainer user={this.props.user} navigator={this.props.navigator}/>
+                    }
                 </View>
             </SafeAreaView>
         )

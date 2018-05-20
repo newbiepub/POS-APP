@@ -30,7 +30,7 @@ export default function (state = initialState, action = {}) {
         case INVENTORY_ACTIVITY_ACTION.FETCH_LOGS: {
             return {
                 ...state,
-                activity: [...state.activity, ...action.payload]
+                activity: action.payload
             }
         }
         case INVENTORY_ACTIVITY_ACTION.FETCH_INVENTORY_ACTIVITY_COMPANY: {
