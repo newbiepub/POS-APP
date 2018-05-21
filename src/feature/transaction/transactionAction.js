@@ -2,6 +2,7 @@ import {TRANSACTION} from "../../constant/constant";
 import {client} from '../../root';
 import {QUERY} from "../../constant/query";
 import {MUTATION} from "../../constant/mutation";
+import {omitDeep} from "../../reuseable/function/function";
 
 function getTransactionAction(payload) {
     return {
@@ -99,7 +100,8 @@ export function getTransaction(limit, skip) {
                 fetchPolicy: "network-only"
             });
             // console.warn(transaction.data.getTransactionEmployee)
-            dispatch(getTransactionAction(transaction.data.getTransactionEmployee))
+    console.warn(omitDeep(transaction.data.getTransactionEmployee, '__typename'))
+            dispatch(getTransactionAction(omitDeep(transaction.data.getTransactionEmployee, '__typename')))
         } catch (e) {
             console.warn("transactionAction.js-getTransaction-" + e)
         }

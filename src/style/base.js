@@ -12,7 +12,7 @@ export const constantStyle = {
         "$md": 20,
         "$lg": 30,
         //BLue
-        color1: '#626d71',//'#9398a0' 336B87 375e97
+        color1: '#8593ae',//'#9398a0' 336B87 375e97
 //    white
         color2: '#fff',
         colorBackground: '#E9EBEE',

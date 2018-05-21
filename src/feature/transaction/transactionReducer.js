@@ -10,8 +10,7 @@ const initialState = {
     currentTransaction: {},
 };
 
-function updateTransaction(state, newTransaction) {
-    let transaction = omitDeep(newTransaction, '__typename');
+function updateTransaction(state, transaction) {
     if (state.length === 0) {
         return transaction
     } else {

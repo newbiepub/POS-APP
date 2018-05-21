@@ -25,6 +25,11 @@ export const MUTATION = {
                     productId
                     productName
                     quantity
+                    priceImport
+                    category{
+                        categoryId
+                        categoryName
+                    }
                     price{
                         name
                         price
@@ -80,7 +85,6 @@ export const MUTATION = {
                     description
                 }
                 description
-
             }
         }`,
     UPDATE_TRANSACTION: gql`
@@ -97,10 +101,14 @@ export const MUTATION = {
                     productId
                     productName
                     quantity
+                    priceImport
+                    category{
+                        categoryId
+                        categoryName
+                    }
                     price{
                         name
                         price
-
                     }
                     totalPrice
                     unit
@@ -153,7 +161,6 @@ export const MUTATION = {
                     description
                 }
                 description
-
             }
         }`,
     ISSUE_REFUND: gql`
@@ -167,6 +174,10 @@ export const MUTATION = {
                     productName
                     quantity
                     priceImport
+                    category{
+                        categoryId
+                        categoryName
+                    }
                     price{
                         name
                         price

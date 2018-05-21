@@ -163,7 +163,9 @@ class GridProduct extends React.Component {
         <View>
             {((data && data.length > 0) || this.state.searchText !== "") &&
             <View style={style.search}>
-                <SearchInput value={this.state.searchText} onChangeText={(text) => this.setState({searchText: text})}
+                <SearchInput value={this.state.searchText}
+                             style={{flex:1}}
+                             onChangeText={(text) => this.setState({searchText: text})}
                              clean={() => this.setState({searchText: ''})}/>
             </View>
             }
@@ -246,7 +248,7 @@ const style = EStyleSheet.create({
         backgroundColor: constantStyle.color2
     },
     gridItemName: {
-        paddingVertical: constantStyle.md,
+        paddingVertical: constantStyle.sm,
         paddingHorizontal:constantStyle.sm,
         justifyContent: 'center',
         backgroundColor: constantStyle.color1

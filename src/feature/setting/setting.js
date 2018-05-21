@@ -92,6 +92,24 @@ class Setting extends React.Component {
                         </ScrollView>
                     </View>
                     <View style={style.rightView}>
+                        <View style={{padding:constantStyle.xl}}>
+                            <View style={style.posItem}>
+                                <TextNormal style={style.posText}>Tên điểm bán hàng: </TextNormal>
+                                <TextNormal style={style.posInfo}>{this.props.profile.name || ""}</TextNormal>
+                            </View>
+                            <View style={style.posItem}>
+                                <TextNormal style={style.posText}>Địa chỉ: </TextNormal>
+                                <TextNormal style={style.posInfo}>{this.props.profile.address || ""}</TextNormal>
+                            </View>
+                            <View style={style.posItem}>
+                                <TextNormal style={style.posText}>Số điện thoại: </TextNormal>
+                                <TextNormal style={style.posInfo}>{this.props.profile.phoneNumber || ""}</TextNormal>
+                            </View>
+                            <View style={style.posItem}>
+                                <TextNormal style={style.posText}>Email: </TextNormal>
+                                <TextNormal style={style.posInfo}>{this.props.profile.email || ""}</TextNormal>
+                            </View>
+                        </View>
 
                     </View>
                 </View>
@@ -117,6 +135,8 @@ const style = EStyleSheet.create({
     },
     rightView: {
         flex: 0.7,
+        // padding: constantStyle.xl,
+        backgroundColor: constantStyle.color2
     },
     item: {
         width: '100%',
@@ -125,7 +145,12 @@ const style = EStyleSheet.create({
         borderBottomColor: constantStyle.colorBorder,
         borderBottomWidth: 1,
     },
-    itemText: {}
+    itemText: {},
+    posItem: {flexDirection: 'row', marginBottom: constantStyle.md},
+    posText: {fontWeight: "700"},
+    posInfo: {
+        flex: 1, textAlign: 'right'
+    }
     ,
     '@media (min-width: 768) and (max-width: 1024)': {},
     '@media (min-width: 1024)': {}
@@ -138,7 +163,8 @@ const mapStateToProps = (state) => {
     return {
         asyncTransaction: state.transactionReducer.asyncTransaction,
         asyncUpdateTransaction: state.transactionReducer.asyncUpdateTransaction,
-        asyncIssueRefund: state.transactionReducer.asyncIssueRefund
+        asyncIssueRefund: state.transactionReducer.asyncIssueRefund,
+        profile: state.userReducer.profile
     }
 
 };

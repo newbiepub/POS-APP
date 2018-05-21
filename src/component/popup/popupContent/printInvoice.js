@@ -56,6 +56,7 @@ class PrintInvoice extends React.Component {
                     {
                         text: 'Có', onPress: async () => {
                             try {
+                                console.warn(this.props.transaction)
                                 const invoice = await client.mutate({
                                     mutation: MUTATION.SEND_INVOICE_EMAIL,
                                     variables: {

@@ -258,12 +258,28 @@ class ByTime extends React.PureComponent {
     componentWillMount() {
         this.getDataToday(this.props.transaction)
     }
+    getPaid(paid) {
+        let result = 0;
+        for (itemPaid of paid) {
+            result += itemPaid.amount
+        }
+        return result
+    }
 
+    getPrice(tran) {
+        let paid = this.getPaid(tran.paid);
+        if (paid > tran.totalPrice) {
+            return tran.totalPrice
+        }
+        else {
+            return paid
+        }
+    }
     pushData(dataByQuantity, tran) {
         for (product of tran.productItems) {
             if (dataByQuantity.length === 0) {
                 dataByQuantity.push({
-                    y: {quantity: product.quantity, money: product.totalPrice},
+                    y: {quantity: product.quantity, money:this.getPrice(tran)},
                     x: product.productName,
                     _id: product.productId
                 })
@@ -271,13 +287,13 @@ class ByTime extends React.PureComponent {
                 for (itemData of dataByQuantity) {
                     if (itemData._id === product.productId) {
                         itemData.y.quantity += product.quantity;
-                        itemData.y.money += product.totalPrice;
+                        itemData.y.money += this.getPrice(tran);
 
                         break;
                     } else {
                         if (dataByQuantity.indexOf(itemData) === dataByQuantity.length - 1) {
                             dataByQuantity.push({
-                                y: {quantity: product.quantity, money: product.totalPrice},
+                                y: {quantity: product.quantity, money: this.getPrice(tran)},
                                 x: product.productName,
                                 _id: product.productId
                             });
@@ -345,6 +361,24 @@ class ByProduct extends React.PureComponent {
         }
     }
 
+    getPaid(paid) {
+        let result = 0;
+        for (itemPaid of paid) {
+            result += itemPaid.amount
+        }
+        return result
+    }
+
+    getPrice(tran) {
+        let paid = this.getPaid(tran.paid);
+        if (paid > tran.totalPrice) {
+            return tran.totalPrice
+        }
+        else {
+            return paid
+        }
+    }
+
     getData(transaction) {
         let dataByQuantity = [];
         for (tran of transaction) {
@@ -352,7 +386,7 @@ class ByProduct extends React.PureComponent {
                 for (product of tran.productItems) {
                     if (dataByQuantity.length === 0) {
                         dataByQuantity.push({
-                            y: {quantity: product.quantity, money: product.totalPrice},
+                            y: {quantity: product.quantity, money: this.getPrice(tran)},
                             x: product.productName,
                             _id: product.productId
                         })
@@ -360,13 +394,13 @@ class ByProduct extends React.PureComponent {
                         for (itemData of dataByQuantity) {
                             if (itemData._id === product.productId) {
                                 itemData.y.quantity += product.quantity;
-                                itemData.y.money += product.totalPrice;
+                                itemData.y.money += this.getPrice(tran);
 
                                 break;
                             } else {
                                 if (dataByQuantity.indexOf(itemData) === dataByQuantity.length - 1) {
                                     dataByQuantity.push({
-                                        y: {quantity: product.quantity, money: product.totalPrice},
+                                        y: {quantity: product.quantity, money: this.getPrice(tran)},
                                         x: product.productName,
                                         _id: product.productId
                                     });
@@ -405,15 +439,33 @@ class ByCategory extends React.PureComponent {
         }
     }
 
+    getPaid(paid) {
+        let result = 0;
+        for (itemPaid of paid) {
+            result += itemPaid.amount
+        }
+        return result
+    }
+
+    getPrice(tran) {
+        let paid = this.getPaid(tran.paid);
+        if (paid > tran.totalPrice) {
+            return tran.totalPrice
+        }
+        else {
+            return paid
+        }
+    }
     getData(transaction) {
         let dataByQuantity = [];
         for (tran of transaction) {
             if (!tran.issueRefund) {
                 for (product of tran.productItems) {
+                    console.warn(product.category);
                     if (product.category && product.category.categoryId) {
                         if (dataByQuantity.length === 0) {
                             dataByQuantity.push({
-                                y: {quantity: product.quantity, money: product.totalPrice},
+                                y: {quantity: product.quantity, money: this.getPrice(tran)},
                                 x: product.category.categoryName,
                                 _id: product.category.categoryId
                             })
@@ -421,13 +473,13 @@ class ByCategory extends React.PureComponent {
                             for (itemData of dataByQuantity) {
                                 if (itemData._id === product.category.categoryId) {
                                     itemData.y.quantity += product.quantity;
-                                    itemData.y.money += product.totalPrice;
+                                    itemData.y.money += this.getPrice(tran);
 
                                     break;
                                 } else {
                                     if (dataByQuantity.indexOf(itemData) === dataByQuantity.length - 1) {
                                         dataByQuantity.push({
-                                            y: {quantity: product.quantity, money: product.totalPrice},
+                                            y: {quantity: product.quantity, money: this.getPrice(tran)},
                                             x: product.category.categoryName,
                                             _id: product.category.categoryId
                                         });

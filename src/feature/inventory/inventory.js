@@ -420,7 +420,7 @@ class Inventory extends React.Component {
                                         maxToRenderPerBatch={1}
                                         windowSize={400}
                                         initialNumToRender={3}
-                                        ListFooterComponent={this._renderFooter}
+                                        // ListFooterComponent={this._renderFooter}
                                         contentContainerStyle={style.listItem}
                                         renderItem={this._renderItemProduct}
                                     />
@@ -432,66 +432,36 @@ class Inventory extends React.Component {
                                     // width: this.state.rightSideWidth,
                                     // zIndex: this.state.isRequest ? 7 : 3,
                                     backgroundColor: 'white',
-                                    padding: constantStyle.xl,
+                                    paddingHorizontal: constantStyle.xl,
                                     flex: 1,
-                                    paddingBottom: 0
 
                                 }}>
                                     <View>
                                         <View style={{
                                             flexDirection: 'row',
                                             alignItems: 'center',
-                                            paddingBottom: constantStyle.md
+                                            paddingVertical: constantStyle.sm
                                         }}>
                                             <View style={{
                                                 flex: 1,
                                                 flexDirection: "row",
-
                                             }}>
                                                 <TextNormal>{`Số lượng ít hơn: `}</TextNormal>
                                                 <TextInputNumber value={this.state.maxQuantity}
-                                                                 style={{flex: 1}}
+                                                                 style={{flex: 1,borderBottomWidth:1,borderColor:constantStyle.colorBorder}}
                                                                  onChangeText={(text) => this.setState({maxQuantity: text})}/>
                                                 <TextNormal>Số lượng mặc định: </TextNormal>
                                                 <TextInputNumber value={this.state.defaultQuantity}
-                                                                 style={{flex: 1}}
+                                                                 style={{flex: 1,borderBottomWidth:1,borderColor:constantStyle.colorBorder}}
                                                                  onChangeText={(text) => this.setState({defaultQuantity: text})}/>
-                                            </View>
-                                            <View style={{flexDirection: 'row',}}>
-                                                <TouchableOpacity onPress={() => {
-                                                    this.checkAll()
-                                                }}>
-                                                    <View style={{
-                                                        padding: constantStyle.sm,
-                                                        backgroundColor: constantStyle.color1,
-                                                        borderTopLeftRadius: constantStyle.lg,
-                                                        borderBottomLeftRadius: constantStyle.lg,
-                                                        borderWidth: 1,
-                                                        borderColor: constantStyle.color1,
-                                                    }}>
-                                                        <TextNormal style={{color: constantStyle.color2}}>Chọn tất
-                                                            cả</TextNormal>
-                                                    </View>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity onPress={() => this.unCheckAll()}>
-                                                    <View style={{
-                                                        borderWidth: 1,
-                                                        borderColor: constantStyle.colorBorder,
-                                                        padding: constantStyle.sm,
-                                                        backgroundColor: constantStyle.color2,
-                                                        borderTopRightRadius: constantStyle.lg,
-                                                        borderBottomRightRadius: constantStyle.lg
-                                                    }}>
-                                                        <TextNormal>Bỏ tất cả</TextNormal>
-                                                    </View>
-                                                </TouchableOpacity>
                                             </View>
 
                                         </View>
+
                                         <View style={{
                                             flexDirection: 'row',
                                             alignItems: 'center',
-                                            paddingBottom: constantStyle.md,
+                                            paddingBottom: constantStyle.sm,
                                         }}>
                                             <View style={{flex: 1, marginRight: constantStyle.sm}}>
                                                 <SearchInput value={this.state.searchText}
@@ -512,6 +482,37 @@ class Inventory extends React.Component {
                                                 </View>
                                             </TouchableOpacity>
                                         </View>
+                                        <View style={{flexDirection: 'row',paddingVertical: constantStyle.sm}}>
+                                            <TouchableOpacity style={{
+                                                padding: constantStyle.sm,
+                                                backgroundColor: constantStyle.color1,
+                                                borderTopLeftRadius: constantStyle.lg,
+                                                borderBottomLeftRadius: constantStyle.lg,
+                                                borderWidth: 1,
+                                                flex:1,
+                                                borderColor: constantStyle.color1,
+                                            }} onPress={() => {
+                                                this.checkAll()
+                                            }}>
+                                                <View >
+                                                    <TextNormal style={{color: constantStyle.color2,textAlign:'center',}}>Chọn tất
+                                                        cả</TextNormal>
+                                                </View>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={{
+                                                borderWidth: 1,
+                                                borderColor: constantStyle.colorBorder,
+                                                padding: constantStyle.sm,
+                                                flex:1,
+                                                backgroundColor: constantStyle.color2,
+                                                borderTopRightRadius: constantStyle.lg,
+                                                borderBottomRightRadius: constantStyle.lg
+                                            }} onPress={() => this.unCheckAll()}>
+                                                <View >
+                                                    <TextNormal style={{textAlign:'center',}}>Bỏ tất cả</TextNormal>
+                                                </View>
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
                                     <FlatList
                                         data={this.filterProductRequest()}
@@ -522,7 +523,7 @@ class Inventory extends React.Component {
                                         disableVirtualization={true}
                                         removeClippedSubviews={true}
                                         initialNumToRender={3}
-                                        ListFooterComponent={this._renderFooter}
+                                        // ListFooterComponent={this._renderFooter}
                                         keyExtractor={(item) => item._id}
                                         contentContainerStyle={style.listItem}
                                         renderItem={this._renderItemProductRequest}
@@ -640,7 +641,7 @@ class ProductRequest extends React.PureComponent {
                     <View style={{flexDirection: 'row'}}>
                         <TextNormal
                             style={[{flex: 1}]}>Số lượng cần nhập:</TextNormal>
-                        <TextInputNumber style={{flex: 1}} value={this.state.quantityRequest} onChangeText={(text) => {
+                        <TextInputNumber style={{flex: 1, borderBottomWidth:1,borderColor:constantStyle.colorBorder}} value={this.state.quantityRequest} onChangeText={(text) => {
                             this.onChangeQuantity(text)
                         }}/>
                     </View>

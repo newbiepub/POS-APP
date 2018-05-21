@@ -108,14 +108,12 @@ class ViewProduct extends React.Component {
             }
         }
         if (subtend === "set") {
-            if (value >= min && value <= max) {
-                await this.setState({
-                    product: {
-                        ...this.state.product,
-                        quantity: value
-                    }
-                })
-            }
+            await this.setState({
+                product: {
+                    ...this.state.product,
+                    quantity: value
+                }
+            })
         }
         this.updateProduct()
     }
@@ -225,6 +223,7 @@ class ViewProduct extends React.Component {
                         </TouchableWithoutFeedback>
                         <TextInputNumber
                             minValue={1}
+                            maxValue={this.state.product.inventoryQuantity}
                             value={this.state.product.quantity}
                             onChangeText={(num) => this.changeQuantity("set", num)}
                             style={style.inputQuantity}/>

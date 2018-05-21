@@ -26,7 +26,7 @@ export class TextInputNormal extends React.PureComponent {
                        style={[style.fontSizeNormal, {
                            borderWidth: 1,
                            borderRadius: 10,
-                           padding:constantStyle.sm,
+                           padding: constantStyle.sm,
                            borderColor: constantStyle.colorBorder
                        }, this.props.style, this.state.onFocus && {borderColor: constantStyle.color1}]}
             />
@@ -44,7 +44,7 @@ export class SearchInput extends React.PureComponent {
 
     render() {
         return (
-            <View style={style.searchInput}>
+            <View style={[style.searchInput]}>
                 <EvilIcons name={"search"} style={[style.fontSizeLarge, {marginRight: constantStyle.paddingGridItem}]}/>
                 <TextInput {...this.props}
                            onFocus={() => {
@@ -53,7 +53,7 @@ export class SearchInput extends React.PureComponent {
                            onBlur={() => {
                                this.setState({onFocus: false})
                            }}
-                           style={[this.state.onFocus && {flex:1}, style.fontSizeNormal, this.props.style]}
+                           style={[this.state.onFocus && {}, {flex: 1}, style.fontSizeNormal, this.props.style]}
                 />
                 {
                     this.props.value != undefined && this.props.value != "" &&
@@ -154,7 +154,7 @@ export class TextInputNumber extends React.PureComponent {
         }
         if (this.props.hasOwnProperty("maxValue")) {
             if (newText > this.props.maxValue) {
-                newText = this.props.maxValue
+                newText = text[text.length-1]
             }
         }
         if (this.props.hasOwnProperty("minValue")) {
