@@ -1,4 +1,4 @@
-import {formatDate} from "./utils";
+import {formatDate, objectValue} from "./utils";
 
 export const inventoryHistoryFields = [
     {
@@ -12,7 +12,7 @@ export const inventoryHistoryFields = [
         handle: (v) => {
             return formatDate(new Date(v));
         },
-        columnWidth: 0.3
+        columnWidth: 0.25
     },
     {
         name: "Ngày $type kho",
@@ -20,7 +20,15 @@ export const inventoryHistoryFields = [
         handle: (v) => {
             return formatDate(new Date(v));
         },
-        columnWidth: 0.3
+        columnWidth: 0.25
+    },
+    {
+        name: "NHẬP ĐẾN",
+        field: "to",
+        handle: (v) => {
+            return v.name
+        },
+        columnWidth: 0.1
     },
     {
         name: "Số lượng $type",

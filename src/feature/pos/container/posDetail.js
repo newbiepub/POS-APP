@@ -125,7 +125,8 @@ class POSDetail extends React.Component {
                                     onPress={() => this.props.navigator.push({
                                         id: "pos_product_management",
                                         user: this.props.user,
-                                        title: `QUẢN LÝ SẢN PHẨM - ${this.props.title}`
+                                        title: `QUẢN LÝ SẢN PHẨM - ${this.props.title}`,
+                                        editable: false,
                                     })}
                                     style={[styleBase.center,
                                         styleBase.p_md_horizontal,

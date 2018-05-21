@@ -98,7 +98,7 @@ class ProductManagement extends React.Component {
                 <SafeAreaView style={[styleBase.container]}>
                     <NavBar
                         navigator={this.props.navigator}
-                        renderRightComponent={this.renderRightComponent}
+                        renderRightComponent={this.props.editable ? this.renderRightComponent: () => null}
                         renderCenterComponent={this.renderCenterComponent}/>
                     {
                         this.state.currentRoute.route === "product" &&
@@ -119,5 +119,13 @@ class ProductManagement extends React.Component {
         )
     }
 }
+
+ProductManagement.propTypes = {
+    editable: PropTypes.bool
+};
+
+ProductManagement.defaultProps = {
+    editable: true
+};
 
 export default (ProductManagement);

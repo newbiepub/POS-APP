@@ -64,7 +64,9 @@ class AppContainer extends React.Component {
                 </ErrorBoundary>;
             case "pos_product_management":
                 return <ErrorBoundary>
-                    <ProductManagement navigator={navigator} title={route.title} user={route.user} type={"employee"}/>
+                    <ProductManagement navigator={navigator} title={route.title} user={route.user}
+                                       editable={route.editable}
+                                       type={"employee"}/>
                 </ErrorBoundary>;
             case "company_product_management":
                 return <ErrorBoundary>

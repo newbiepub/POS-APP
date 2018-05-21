@@ -34,7 +34,7 @@ class ProductItem extends React.Component {
      */
 
     handleNavigateProductDetail() {
-        InteractionManager.runAfterInteractions( () => {
+        this.props.editable && InteractionManager.runAfterInteractions( () => {
             let { importPrice, salesPrice, product = {}, quantity = 0 } = this.props.item;
             let { name = '', unit = '', productCode = '', _id = '' } = product;
 

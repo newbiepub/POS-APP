@@ -16,6 +16,12 @@ export const getInventoryHistory = gql`
                 unit
                 productCode
             }
+            to {
+                name
+            }
+            from {
+                name
+            }
             type
             totalQuantity
             totalPrice

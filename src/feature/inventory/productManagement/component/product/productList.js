@@ -120,6 +120,7 @@ class ProductList extends React.PureComponent {
     renderItem(rowData, index) {
         return <ErrorBoundary>
             <ProductItem key={index} navigator={this.props.navigator}
+                         editable={this.props.editable}
                          item={rowData}/>
         </ErrorBoundary>
     }

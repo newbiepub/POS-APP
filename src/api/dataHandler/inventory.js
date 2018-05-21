@@ -52,7 +52,7 @@ export const inventory_order_data = item => {
 }
 
 export const inventory_history = item => {
-    let { products = []} = item;
+    let { products = [], from = {}, to = {}} = item;
     products = products.map(product => {
         return {
             "_id": product._id || '',
@@ -68,6 +68,12 @@ export const inventory_history = item => {
         _id: item._id || '',
         products,
         type: item.type || '',
+        from: {
+            name: from.name || ''
+        },
+        to: {
+            name: to.name || ''
+        },
         "totalQuantity": item.totalQuantity || 0,
         "totalPrice": item.totalPrice || 0,
         "dateDelivered": item.dateDelivered || 0,
