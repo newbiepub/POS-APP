@@ -178,7 +178,9 @@ export function createTransaction(productItems, paymentStatus, paymentMethod, du
 export function createTransactionAsync(productAsync) {
     return async (dispatch, getState) => {
         try {
+
             for (item of productAsync) {
+                console.warn(item);
                 const transactionCreated = await client.mutate({
                     mutation: MUTATION.CREATE_TRANSACTION,
                     variables: {

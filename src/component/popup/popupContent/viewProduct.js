@@ -133,7 +133,7 @@ class ViewProduct extends React.Component {
                 <View
                     style={[style.pricePicker, this.state.product.price._id === item._id && {backgroundColor: constantStyle.color1}]}>
                     <TextSmall numberOfLines={1}
-                               style={[{flex: 1}, this.state.product.price._id === item._id && {color: constantStyle.color2}]}>{item.name}</TextSmall>
+                               style={[{flex: 1}, this.state.product.price._id === item._id && {color: constantStyle.color2}]}>{item.name === "default" ? "Giá bán": item.name}</TextSmall>
                     <TextSmall
                         style={this.state.product.price._id === item._id && {color: constantStyle.color2}}>{numberwithThousandsSeparator(item.price)}{_.get(this.props.currency, "symbol", "")}/{this.state.product.unit}</TextSmall>
 

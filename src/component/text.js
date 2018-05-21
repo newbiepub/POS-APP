@@ -144,9 +144,7 @@ export class TextInputNumber extends React.PureComponent {
 
                 } else {
                     newText = newText + text[i];
-
                 }
-
             }
         }
         if (newText < 1) {
@@ -154,7 +152,8 @@ export class TextInputNumber extends React.PureComponent {
         }
         if (this.props.hasOwnProperty("maxValue")) {
             if (newText > this.props.maxValue) {
-                newText = text[text.length-1]
+                let max = text[text.length-1];
+                newText = max > this.props.maxValue ? this.props.maxValue : max
             }
         }
         if (this.props.hasOwnProperty("minValue")) {

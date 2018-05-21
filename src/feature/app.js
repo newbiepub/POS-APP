@@ -18,6 +18,7 @@ import {ASYNC_STORAGE} from '../constant/constant'
 import {getProfile, getCurrency} from './login/userAction';
 import config from '../config';
 EStyleSheet.build(); // Build Extended StyleSheet
+console.disableYellowBox = true;
 var socket = require('socket.io-client')('http://localhost:3000');
 import {createTransactionAsync, issueRefundAsync} from '../feature/transaction/transactionAction';
 class App extends PureComponent {
