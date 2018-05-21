@@ -5,6 +5,7 @@ import {POS_ACTION} from "../../../constant/actionTypes";
 import {pos_data} from "../../../api/dataHandler/pos";
 import {update} from "../setting/action/update";
 import {deactivate} from "../setting/action/deactivate";
+import {fetchTransaction} from "../report/action/fetchTransaction";
 
 const getAllPOS = gql`
     query getAllPOS {
@@ -97,7 +98,8 @@ export const POS_MANAGEMENT = {
         }
     },
     UPDATE_POS: update,
-    DEACTIVATE_POS: deactivate
+    DEACTIVATE_POS: deactivate,
+    FETCH_TRANSACTION: fetchTransaction
 };
 
 export {getAllPOS, createPOS};

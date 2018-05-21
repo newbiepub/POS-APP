@@ -7,6 +7,7 @@ import inventory from "../reducer/inventory";
 import discount from "../reducer/discount";
 import category from "../reducer/category";
 import report from '../feature/report/reportReducer';
+import reportEmployee from "../reducer/report";
 
 const rootReducer = combineReducers({
     popup,
@@ -16,7 +17,8 @@ const rootReducer = combineReducers({
     inventory,
     listProduct,
     discount,
-    report
+    report,
+    reportEmployee
 });
 
 export default rootReducer;

@@ -27,7 +27,7 @@ class Home extends React.PureComponent {
             ],
             isChangeDimension: false
         };
-        this.state.currentRoute = this.state.routes[1];
+        this.state.currentRoute = this.state.routes[0];
 
         this.renderLeftComponent     = this.renderLeftComponent.bind(this);
         this.renderCenterComponent   = this.renderCenterComponent.bind(this);

@@ -15,6 +15,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import {openPopup, renderContent} from "../../../component/popup/actions/popupAction";
 import DropDown from "../../../component/dropDown/index";
 import POSSettingContainer from "../setting/container/index";
+import ReportContainer from "../report/container/index";
 
 class POSDetail extends React.Component {
     constructor(props) {
@@ -140,6 +141,10 @@ class POSDetail extends React.Component {
                     {
                         this.state.currentRoute.route === 'setting' &&
                             <POSSettingContainer user={this.props.user} navigator={this.props.navigator}/>
+                    }
+                    {
+                        this.state.currentRoute.route === 'report' &&
+                            <ReportContainer user={this.props.user} navigator={this.props.navigator}/>
                     }
                 </View>
             </SafeAreaView>
