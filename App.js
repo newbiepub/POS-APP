@@ -28,7 +28,7 @@ const authLink = setContext(async (req, {headers}) => {
         return {
             ...headers,
             headers: {
-                "Authentication": token ? token.access_token : null,
+                "Authentication": token ? token.access_token : "795998e3-1cca-22de-8377-a8ee75821ab5",
                 "x-refresh-token": token ? token.refresh_token : null
             },
         };

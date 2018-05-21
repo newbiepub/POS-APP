@@ -12,6 +12,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import DropDown from "../../../component/dropDown/index";
 import ErrorBoundary from "../../../component/errorBoundary/errorBoundary";
 import NoData from "../../../component/noData/noData";
+import Report from '../../report/report';
 import Setting from "../../setting/index";
 
 class Home extends React.PureComponent {
@@ -26,7 +27,7 @@ class Home extends React.PureComponent {
             ],
             isChangeDimension: false
         };
-        this.state.currentRoute = this.state.routes[0];
+        this.state.currentRoute = this.state.routes[1];
 
         this.renderLeftComponent     = this.renderLeftComponent.bind(this);
         this.renderCenterComponent   = this.renderCenterComponent.bind(this);
@@ -148,7 +149,7 @@ class Home extends React.PureComponent {
                         }
                         {
                             (this.state.currentRoute.route === "report") &&
-                            <CommingSoon/>
+                            <Report/>
                         }
                     </View>
                 </SafeAreaView>

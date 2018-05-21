@@ -78,7 +78,7 @@ class AppContainer extends React.Component {
             case 'company_inventory_activity_management':
                 return <ImportExportManagement navigator={navigator} title={route.title} user={route.user} type="company"/>;
             case 'company_inventory_export_list_pos':
-                return <ListPos navigator={navigator} title="CHỌN ĐIỂM BÁN HÀNG"/>
+                return <ListPos navigator={navigator} title="CHỌN ĐIỂM BÁN HÀNG"/>;
             case 'company_inventory_export_list_product':
                 return <ListExportProducts navigator={navigator} title="SẢN PHẨM XUẤT KHO" employee={route.employee}/>
             case  'product_detail':
@@ -97,7 +97,7 @@ class AppContainer extends React.Component {
                     ref={(ref) => {
                         this.navigator = ref;
                     }}
-                    initialRoute={{id: 'login', index: 0}}
+                    initialRoute={{id: 'home', index: 0}}
                     configureScene={this.configureScene.bind(this)}
                     renderScene={this.renderScene.bind(this)}
                 />
